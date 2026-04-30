@@ -146,7 +146,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       body: Stack(
         children: [
           // Fundo com gradiente animado
-          // Fundo com imagem da taça + gradiente escuro
           Positioned.fill(
             child: Stack(
               children: [
@@ -168,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   child: Opacity(
                     opacity: 0.22,
                     child: Transform.translate(
-                      offset: const Offset(-220, 0), // move para a esquerda
+                      offset: const Offset(-220, 0),
                       child: Image.asset(
                         'assets/taca_copa.png',
                         fit: BoxFit.cover,
@@ -205,18 +204,20 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 children: [
                   Positioned(
                     top: 80 + _floatingAnimation.value,
-                    left: 30,
-                    child: _buildFloatingBall(60, Colors.white.withValues(alpha: 0.1)),
+                    left: 24,
+                    child: _buildFloatingBall(
+                      48,
+                      Colors.white.withValues(alpha: 0.07),
+                    ),
                   ),
+
                   Positioned(
-                    top: 200 - _floatingAnimation.value * 0.5,
-                    right: 40,
-                    child: _buildFloatingBall(40, Colors.amber.withValues(alpha: 0.2)),
-                  ),
-                  Positioned(
-                    bottom: 150 + _floatingAnimation.value * 0.7,
-                    left: 60,
-                    child: _buildFloatingBall(30, Colors.white.withValues(alpha: 0.08)),
+                    bottom: 180 - _floatingAnimation.value,
+                    right: 54,
+                    child: _buildFloatingBall(
+                      38,
+                      const Color(0xFFFFC107).withValues(alpha: 0.12),
+                    ),
                   ),
                   Positioned(
                     bottom: 300 - _floatingAnimation.value,
@@ -225,11 +226,19 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   ),
                   // Bola de futebol estilizada
                   Positioned(
-                    top: 120 + _floatingAnimation.value * 1.5,
-                    right: 20,
+                    top: 58 + _floatingAnimation.value * 1.2,
+                    right: -28,
                     child: Transform.rotate(
-                      angle: _floatingAnimation.value * 0.05,
-                      child: _buildSoccerBall(70),
+                      angle: _floatingAnimation.value * 0.025,
+                      child: _buildWorldCupBall(118),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 58 + _floatingAnimation.value * 1.2,
+                    left: -28,
+                    child: Transform.rotate(
+                      angle: _floatingAnimation.value * 0.025,
+                      child: _buildWorldCupBall(118),
                     ),
                   ),
                 ],
@@ -737,26 +746,78 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildSoccerBall(double size) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: 0.15),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+  Widget _buildWorldCupBall(double size) {
+    return SizedBox(
+      width: size + 36,
+      height: size + 52,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Brilho dourado atrás da bola
+          Positioned(
+            top: 6,
+            child: Container(
+              width: size + 28,
+              height: size + 28,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFFFFC107).withValues(alpha: 0.34),
+                    const Color(0xFFFFC107).withValues(alpha: 0.10),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Aro sutil para dar acabamento
+          Positioned(
+            top: 14,
+            child: Container(
+              width: size + 10,
+              height: size + 10,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  width: 1.2,
+                ),
+              ),
+            ),
+          ),
+
+          // Bola
+          Positioned(
+            top: 18,
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.34),
+                    blurRadius: 22,
+                    offset: const Offset(0, 12),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.18),
+                    blurRadius: 8,
+                    offset: const Offset(-4, -4),
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/bola_copa.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
           ),
         ],
-      ),
-      child: Icon(
-        Icons.sports_soccer,
-        size: size * 0.6,
-        color: Colors.white.withValues(alpha: 0.4),
       ),
     );
   }
