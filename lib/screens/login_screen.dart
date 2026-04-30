@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 import '../services/api_service.dart';
 import 'admin_login_screen.dart';
 
@@ -486,12 +487,20 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                       ),
                                     ),
                                     child: _isLoading
-                                        ? const SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2.5,
+                                        ? SizedBox(
+                                            width: 68,
+                                            height: 58,
+                                            child: ColorFiltered(
+                                              colorFilter: const ColorFilter.mode(
+                                                Colors.black,
+                                                BlendMode.srcIn,
+                                              ),
+                                              child: Lottie.asset(
+                                                'assets/animations/football_loading.json',
+                                                fit: BoxFit.fill,
+                                                repeat: true,
+                                                animate: true,
+                                              ),
                                             ),
                                           )
                                         : const Row(
