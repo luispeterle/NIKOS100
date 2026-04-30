@@ -14,7 +14,7 @@ class ApiService {
           "nascimento": nascimento,
         },
       );
-      
+
       if (resp == true || resp == null) {
         return null; // Erro
       }
@@ -25,10 +25,12 @@ class ApiService {
         if (responseList.isNotEmpty) {
           final userData = responseList[0];
           final maxPalpites = userData['max_palpites'] ?? 25;
+          final nome = userData['nomcli'] ?? '';
 
           // Salvar na sessão global
           UserSession.setSession(
             cpf: cgccpf,
+            nome: nome,
             dataNascimento: nascimento,
             maxPalp: maxPalpites,
           );
@@ -36,7 +38,7 @@ class ApiService {
           return {
             'cpf': userData['cpf']?.toString() ?? cgccpf,
             'max_palpites': maxPalpites,
-            'nome': 'Usuário',
+            'nome': nome,
             'isAdmin': false,
           };
         }
@@ -47,14 +49,16 @@ class ApiService {
       return null;
     }
   }
-  
+
   // ============================================
   // BUSCAR JOGOS
 
   static Future<List<Map<String, dynamic>>> getJogos() async {
     try {
-      final resp = await serverPost("bolao_get_jogos");
-      
+      final resp = await serverPost(
+        "bolao_get_jogos",
+      );
+
       if (resp == true || resp == null) {
         return [];
       }
@@ -81,7 +85,7 @@ class ApiService {
       return [];
     }
   }
-  
+
   // ============================================
   // SALVAR PALPITE
   // ============================================
@@ -150,7 +154,7 @@ class ApiService {
       return false;
     }
   }
-  
+
   // ============================================
   // BUSCAR RANKING
   static Future<List<Map<String, dynamic>>> getRanking() async {

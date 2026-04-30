@@ -193,31 +193,64 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
           children: [
             // Info de palpites restantes
             Container(
-              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.amber.shade100, Colors.amber.shade200],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.amber.shade50,
+                    Colors.amber.shade100,
+                    Colors.amber.shade200,
+                  ],
                 ),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: Colors.amber.shade200,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.sports_soccer, size: 18),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Palpites: ${UserSession.palpitesFeitos}/${UserSession.maxPalpites ?? 0}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  Icon(
+                    Icons.sports_soccer,
+                    size: 18,
+                    color: Colors.amber.shade900,
                   ),
-                  const SizedBox(width: 16),
+
+                  const SizedBox(width: 10),
+
+                  Expanded(
+                    child: Text(
+                      'Palpites: ${UserSession.palpitesFeitos}/${UserSession.maxPalpites ?? 0}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white.withValues(alpha: 0.75),
+                      borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
                       '${_jogos.length} jogos',
-                      style: const TextStyle(fontSize: 12),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.amber.shade900,
+                      ),
                     ),
                   ),
                 ],
@@ -231,13 +264,101 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                 child: _jogos.isEmpty && !_loading
                     ? ListView(
                         padding: const EdgeInsets.all(16),
-                        children: const [
-                          SizedBox(height: 64),
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          const SizedBox(height: 80),
+
                           Center(
-                            child: Text(
-                              'Nenhum jogo encontrado. Puxe para atualizar.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                            child: Container(
+                              width: double.infinity,
+                              constraints: const BoxConstraints(maxWidth: 360),
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(22),
+                                border: Border.all(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.06),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 72,
+                                    height: 72,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.sports_soccer_rounded,
+                                      size: 38,
+                                      color: Color(0xFFCC0000),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 18),
+
+                                  const Text(
+                                    'Nenhum jogo encontrado',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF222222),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 8),
+
+                                  Text(
+                                    'Ainda não há jogos disponíveis para exibir. Puxe a tela para baixo e tente atualizar.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 13.5,
+                                      height: 1.4,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 18),
+
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.keyboard_double_arrow_down_rounded,
+                                          size: 18,
+                                          color: Color(0xFFCC0000),
+                                        ),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          'Puxe para atualizar',
+                                          style: TextStyle(
+                                            color: Color(0xFFCC0000),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -249,34 +370,84 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                       ),
               ),
             ),
+            const SizedBox(height: 92),
           ],
         ),
 
         // Loading
         if (_loading)
           Container(
-            color: Colors.black54,
+            color: Colors.black.withValues(alpha: 0.55),
             child: Center(
-              child: Container(
-                padding: const EdgeInsets.all(40),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    const BoxShadow(
-                      color: Color.fromRGBO(0, 0, 0, 0.3),
-                      blurRadius: 20,
-                      offset: Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: const Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(color: Color(0xFFCC0000)),
-                    SizedBox(height: 20),
-                    Text('Carregando jogos...', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ],
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.92, end: 1),
+                duration: const Duration(milliseconds: 350),
+                curve: Curves.easeOutBack,
+                builder: (context, scale, child) {
+                  return Transform.scale(
+                    scale: scale,
+                    child: child,
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(22),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.28),
+                        blurRadius: 24,
+                        offset: Offset(0, 12),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 54,
+                            height: 54,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 4,
+                              color: const Color(0xFFCC0000),
+                              backgroundColor: Colors.red.shade50,
+                            ),
+                          ),
+                          const Icon(
+                            Icons.sports_soccer,
+                            size: 24,
+                            color: Color(0xFFCC0000),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      const Text(
+                        'Carregando jogos...',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black87,
+                        ),
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      Text(
+                        'Aguarde um momento',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -316,350 +487,422 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     final gol2Controller = TextEditingController(text: palpiteAtual == null ? '' : '${palpiteAtual['palpbb']}');
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: ehBrasil ? Colors.green.shade200 : Colors.grey.shade200,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: ehBrasil ? Colors.green.shade200 : Colors.grey.shade200,
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: Column(
-        children: [
-          // Header do card
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: ehBrasil ? [Colors.green.shade100, Colors.yellow.shade100] : [Colors.grey.shade100, Colors.grey.shade200],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: ehBrasil
+                      ? [
+                          Color(0xFFF1FAF4),
+                          Color(0xFFD9F2E2),
+                          Color(0xFFBFE8CA),
+                        ]
+                      : [
+                          Colors.grey.shade50,
+                          Colors.grey.shade100,
+                          Colors.white,
+                        ],
+                ),
               ),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
+              child: Row(
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: ehBrasil ? Colors.green.shade100 : Colors.grey.shade200,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
                       Icons.sports_soccer,
                       size: 16,
-                      color: ehBrasil ? Colors.green.shade700 : Colors.grey.shade600,
+                      color: ehBrasil ? Colors.green.shade800 : Colors.grey.shade700,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  Expanded(
+                    child: Text(
                       'Jogo #$idjogo',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        color: ehBrasil ? Colors.green.shade800 : Colors.grey.shade700,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: ehBrasil ? Colors.green.shade900 : Colors.grey.shade800,
                       ),
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    if (ehBrasil)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        margin: const EdgeInsets.only(right: 8),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF009739), Color(0xFFFFDF00)],
+                  ),
+
+                  if (ehBrasil) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF009739),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.star_rounded, size: 12, color: Colors.white),
+                          SizedBox(width: 3),
+                          Text(
+                            '2X',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
                           ),
-                          borderRadius: BorderRadius.circular(20),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.schedule_rounded, size: 12, color: Colors.grey.shade600),
+                        const SizedBox(width: 4),
+                        Text(
+                          _formatarData(datjog),
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade700,
+                          ),
                         ),
-                        child: const Row(
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
                           children: [
-                            Icon(Icons.star, size: 12, color: Colors.white),
-                            SizedBox(width: 4),
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.grey.shade50,
+                                shape: BoxShape.rectangle,
+                                border: Border.all(color: Colors.grey.shade200),
+                              ),
+                              child: _getBandeira(siglaa),
+                            ),
+                            const SizedBox(height: 8),
                             Text(
-                              '2X',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              timeaa,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 12,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Column(
+                          children: [
+                            if (jogoFinalizado)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade900,
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.12),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  '$plcraa X $plcrbb',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+
+                            if (!jogoFinalizado && podeEditar)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade50,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: Colors.grey.shade200),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _buildScoreInput(gol1Controller),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                                      child: Text(
+                                        'X',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                    _buildScoreInput(gol2Controller),
+                                  ],
+                                ),
+                              ),
+
+                            if (!jogoFinalizado && !podeEditar && palpiteLocal != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Color(0xFFCC0000),
+                                      Color(0xFF990000),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Text(
+                                  '${palpiteLocal['palpaa']} X ${palpiteLocal['palpbb']}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+
+                            if (!jogoFinalizado && !podeEditar && palpiteLocal == null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(color: Colors.grey.shade300),
+                                ),
+                                child: Text(
+                                  '- X -',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.grey.shade50,
+                                shape: BoxShape.rectangle,
+                                border: Border.all(color: Colors.grey.shade200),
+                              ),
+                              child: _getBandeira(siglbb),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              timebb,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 12,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  if (jogoFinalizado)
+                    _buildStatusContainer(
+                      icon: Icons.check_circle,
+                      text: 'Jogo finalizado',
+                      color: Colors.grey,
+                    )
+                  else if (!podeEditar)
+                    _buildStatusContainer(
+                      icon: Icons.timer_off,
+                      text: 'Palpites bloqueados',
+                      color: Colors.orange,
+                    )
+                  else if (!UserSession.canMakePalpite() && palpiteLocal == null)
+                    _buildStatusContainer(
+                      icon: Icons.block,
+                      text: 'Limite de palpites atingido',
+                      color: Colors.red,
+                    )
+                  else
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final palpaa = gol1Controller.text;
+                          final palpbb = gol2Controller.text;
+
+                          if (palpaa.isEmpty || palpbb.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text('Preencha o placar dos dois times'),
+                                backgroundColor: Colors.orange.shade600,
+                              ),
+                            );
+                            return;
+                          }
+
+                          setState(() => _loading = true);
+
+                          final sucesso = await ApiService.salvarPalpite(
+                            idjogo: idjogo.toString(),
+                            palpaa: palpaa,
+                            palpbb: palpbb,
+                          );
+
+                          setState(() => _loading = false);
+                          if (!mounted) return;
+
+                          if (sucesso) {
+                            setState(() {
+                              _palpitesLocais[idjogo] = {
+                                'palpaa': palpaa,
+                                'palpbb': palpbb,
+                              };
+                            });
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Row(
+                                  children: [
+                                    Icon(Icons.check_circle, color: Colors.white),
+                                    SizedBox(width: 10),
+                                    Text('Palpite salvo!'),
+                                  ],
+                                ),
+                                backgroundColor: Colors.green.shade600,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Row(
+                                  children: [
+                                    Icon(Icons.error, color: Colors.white),
+                                    SizedBox(width: 10),
+                                    Text('Erro ao salvar palpite'),
+                                  ],
+                                ),
+                                backgroundColor: Colors.red.shade600,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFCC0000),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              palpiteLocal != null ? Icons.edit_rounded : Icons.save_rounded,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              palpiteLocal != null ? 'EDITAR PALPITE' : 'SALVAR PALPITE',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.8,
+                                fontSize: 13,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.schedule, size: 12, color: Colors.grey),
-                          const SizedBox(width: 4),
-                          Text(
-                            _formatarData(datjog),
-                            style: const TextStyle(fontSize: 11, color: Colors.grey),
-                          ),
-                        ],
-                      ),
                     ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-
-          // Conteudo do card
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                // Times e placar
-                Row(
-                  children: [
-                    // Time 1
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _getBandeira(siglaa),
-                          const SizedBox(height: 8),
-                          Text(
-                            timeaa,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Placar / Input
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Column(
-                        children: [
-                          // Se jogo finalizado, mostra placar oficial
-                          if (jogoFinalizado)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade800,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                '$plcraa X $plcrbb',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-
-                          // Campo de palpite (se pode editar)
-                          if (!jogoFinalizado && podeEditar)
-                            Row(
-                              children: [
-                                _buildScoreInput(gol1Controller),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  child: Text(
-                                    'X',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                                _buildScoreInput(gol2Controller),
-                              ],
-                            ),
-
-                          // Mostra palpite já feito (se existe e não pode editar)
-                          if (!jogoFinalizado && !podeEditar && palpiteLocal != null)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFFCC0000), Color(0xFF990000)],
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                '${palpiteLocal['palpaa']} X ${palpiteLocal['palpbb']}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-
-                          // Sem palpite e bloqueado
-                          if (!jogoFinalizado && !podeEditar && palpiteLocal == null)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                '- X -',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-
-                    // Time 2
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _getBandeira(siglbb),
-                          const SizedBox(height: 8),
-                          Text(
-                            timebb,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Status / Botão
-                if (jogoFinalizado)
-                  _buildStatusContainer(
-                    icon: Icons.check_circle,
-                    text: 'Jogo finalizado',
-                    color: Colors.grey,
-                  )
-                else if (!podeEditar)
-                  _buildStatusContainer(
-                    icon: Icons.timer_off,
-                    text: 'Palpites bloqueados',
-                    color: Colors.orange,
-                  )
-                else if (!UserSession.canMakePalpite() && palpiteLocal == null)
-                  _buildStatusContainer(
-                    icon: Icons.block,
-                    text: 'Limite de palpites atingido',
-                    color: Colors.red,
-                  )
-                else
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final palpaa = gol1Controller.text;
-                        final palpbb = gol2Controller.text;
-
-                        if (palpaa.isEmpty || palpbb.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Preencha o placar dos dois times'),
-                              backgroundColor: Colors.orange.shade600,
-                            ),
-                          );
-                          return;
-                        }
-
-                        setState(() => _loading = true);
-
-                        final sucesso = await ApiService.salvarPalpite(
-                          idjogo: idjogo.toString(),
-                          palpaa: palpaa,
-                          palpbb: palpbb,
-                        );
-
-                        setState(() => _loading = false);
-                        if (!mounted) return;
-
-                        if (sucesso) {
-                          setState(() {
-                            _palpitesLocais[idjogo] = {
-                              'palpaa': palpaa,
-                              'palpbb': palpbb,
-                            };
-                          });
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Row(
-                                children: [
-                                  Icon(Icons.check_circle, color: Colors.white),
-                                  SizedBox(width: 10),
-                                  Text('Palpite salvo!'),
-                                ],
-                              ),
-                              backgroundColor: Colors.green.shade600,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Row(
-                                children: [
-                                  Icon(Icons.error, color: Colors.white),
-                                  SizedBox(width: 10),
-                                  Text('Erro ao salvar palpite'),
-                                ],
-                              ),
-                              backgroundColor: Colors.red.shade600,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFCC0000),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        elevation: 8,
-                        shadowColor: Colors.red.shade300,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            palpiteLocal != null ? Icons.edit : Icons.save,
-                            size: 18,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            palpiteLocal != null ? 'EDITAR PALPITE' : 'SALVAR PALPITE',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1,
-                              color: Colors.white,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

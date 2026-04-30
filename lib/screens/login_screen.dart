@@ -32,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   late Animation<double> _logoScale;
   late Animation<double> _formSlide;
   late Animation<double> _floatingAnimation;
+  late final AnimationController _copaReflexoController;
 
   @override
   void initState() {
@@ -42,6 +43,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
+
+    _copaReflexoController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    )..repeat();
 
     _logoScale = Tween<double>(begin: 1.0, end: 1.05).animate(
       CurvedAnimation(parent: _logoController, curve: Curves.easeInOut),
@@ -79,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     _diaController.dispose();
     _mesController.dispose();
     _anoController.dispose();
-
+    _copaReflexoController.dispose();
     _diaFocus.dispose();
     _mesFocus.dispose();
     _anoFocus.dispose();
@@ -122,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
     if (user != null) {
       setState(() {
-        _isLoading = false; 
+        _isLoading = false;
       });
 
       widget.onLogin(user);
@@ -140,17 +146,54 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       body: Stack(
         children: [
           // Fundo com gradiente animado
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFCC0000),
-                  Color(0xFF8B0000),
-                  Color(0xFF660000),
-                ],
-              ),
+          // Fundo com imagem da taça + gradiente escuro
+          Positioned.fill(
+            child: Stack(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFFCC0000),
+                        Color(0xFF8B0000),
+                        Color(0xFF3F0000),
+                      ],
+                    ),
+                  ),
+                ),
+
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.22,
+                    child: Transform.translate(
+                      offset: const Offset(-220, 0), // move para a esquerda
+                      child: Image.asset(
+                        'assets/taca_copa.png',
+                        fit: BoxFit.cover,
+                        alignment: Alignment.centerLeft,
+                      ),
+                    ),
+                  ),
+                ),
+
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.10),
+                          Colors.black.withValues(alpha: 0.35),
+                          Colors.black.withValues(alpha: 0.55),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -244,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                 ScaleTransition(
                                   scale: _logoScale,
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
@@ -256,32 +299,100 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                         ),
                                       ],
                                     ),
-                                    child: const Text(
-                                      "NIKO'\$",
-                                      style: TextStyle(
-                                        fontSize: 36,
-                                        fontWeight: FontWeight.w900,
-                                        color: Color(0xFFCC0000),
-                                        letterSpacing: 4,
+                                    // child: const Text(
+                                    //   "NIKO'\$",
+                                    //   style: TextStyle(
+                                    //     fontSize: 36,
+                                    //     fontWeight: FontWeight.w900,
+                                    //     color: Color(0xFFCC0000),
+                                    //     letterSpacing: 4,
+                                    //   ),
+                                    // ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.asset(
+                                        'assets/adelino.webp',
+                                        fit: BoxFit.contain,
                                       ),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.amber,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Text(
-                                    'COPA DO MUNDO 2026',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                      letterSpacing: 2,
-                                    ),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: AnimatedBuilder(
+                                    animation: _copaReflexoController,
+                                    builder: (context, _) {
+                                      return Stack(
+                                        clipBehavior: Clip.hardEdge,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 7),
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                colors: [
+                                                  Color(0xFFFFE082),
+                                                  Color(0xFFFFC107),
+                                                  Color(0xFFFFA000),
+                                                ],
+                                              ),
+                                              borderRadius: BorderRadius.circular(24),
+                                              border: Border.all(
+                                                color: Colors.white.withValues(alpha: 0.55),
+                                                width: 1,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.amber.withValues(alpha: 0.45),
+                                                  blurRadius: 16,
+                                                  offset: const Offset(0, 5),
+                                                ),
+                                              ],
+                                            ),
+                                            child: const Text(
+                                              'COPA DO MUNDO 2026',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w900,
+                                                color: Colors.black87,
+                                                letterSpacing: 2,
+                                              ),
+                                            ),
+                                          ),
+
+                                          Positioned.fill(
+                                            child: IgnorePointer(
+                                              child: Transform.translate(
+                                                offset: Offset(
+                                                  -100 + (_copaReflexoController.value * 260),
+                                                  0,
+                                                ),
+                                                child: Transform.rotate(
+                                                  angle: -0.45,
+                                                  child: Align(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Container(
+                                                      width: 38,
+                                                      decoration: BoxDecoration(
+                                                        gradient: LinearGradient(
+                                                          colors: [
+                                                            Colors.white.withValues(alpha: 0),
+                                                            Colors.white.withValues(alpha: 0.65),
+                                                            Colors.white.withValues(alpha: 0),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                 ),
                               ],
@@ -300,6 +411,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                   controller: _cpfController,
                                   hint: '000.000.000-00',
                                   icon: Icons.person_outline,
+                                  cpfMask: true,
                                 ),
                                 const SizedBox(height: 24),
 
@@ -498,6 +610,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     required TextEditingController controller,
     required String hint,
     required IconData icon,
+    bool cpfMask = false,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -513,10 +626,13 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       child: TextField(
         controller: controller,
         keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(11),
-        ],
+        inputFormatters: cpfMask
+            ? [
+                CpfInputFormatter(),
+              ]
+            : [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
         decoration: InputDecoration(
           hintText: hint,
           prefixIcon: Icon(icon, color: Colors.grey.shade500),
@@ -646,4 +762,37 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   }
 }
 
+class CpfInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
 
+    if (digits.length > 11) {
+      digits = digits.substring(0, 11);
+    }
+
+    final buffer = StringBuffer();
+
+    for (var i = 0; i < digits.length; i++) {
+      if (i == 3 || i == 6) {
+        buffer.write('.');
+      }
+
+      if (i == 9) {
+        buffer.write('-');
+      }
+
+      buffer.write(digits[i]);
+    }
+
+    final formatted = buffer.toString();
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}

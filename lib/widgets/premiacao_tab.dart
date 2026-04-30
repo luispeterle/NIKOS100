@@ -36,82 +36,194 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
           // Header com trofeu animado
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.fromLTRB(28, 32, 28, 30),
             decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(26),
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFFCC0000), Color(0xFF8B0000), Color(0xFF660000)],
+                colors: [
+                  Color(0xFFCC0000),
+                  Color(0xFF9B0000),
+                  Color(0xFF5E0000),
+                ],
               ),
-              borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.red.shade300,
-                  blurRadius: 25,
-                  offset: const Offset(0, 12),
+                  color: Colors.black.withValues(alpha: 0.14),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: const Color(0xFFCC0000).withValues(alpha: 0.22),
+                  blurRadius: 28,
+                  spreadRadius: -8,
+                  offset: const Offset(0, 14),
                 ),
               ],
             ),
-            child: Column(
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
               children: [
-                // Trofeu animado
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: 1.0 + (_controller.value * 0.1),
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.amber.shade400, Colors.amber.shade700],
-                          ),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.amber.withValues(alpha: 0.6),
-                              blurRadius: 20 + (_controller.value * 10),
-                              spreadRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(Icons.emoji_events, color: Colors.white, size: 56),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'PREMIAÃ‡ÃƒO',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 4,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black38,
-                        offset: Offset(0, 3),
-                        blurRadius: 6,
-                      ),
-                    ],
+                Positioned(
+                  right: -22,
+                  top: -26,
+                  child: Icon(
+                    Icons.emoji_events_rounded,
+                    size: 120,
+                    color: Colors.white.withValues(alpha: 0.06),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    "NIKO'\$ - Copa do Mundo 2026",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+
+                Positioned(
+                  left: -35,
+                  bottom: -35,
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(alpha: 0.05),
                     ),
                   ),
+                ),
+
+                Column(
+                  children: [
+                    AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, child) {
+                        final wave = _controller.value;
+
+                        return SizedBox(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children: [
+                              Opacity(
+                                opacity: (1 - wave) * 0.22,
+                                child: Transform.scale(
+                                  scale: 0.85 + (wave * 0.55),
+                                  child: Container(
+                                    width: 88,
+                                    height: 88,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.amber.shade200,
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Transform.scale(
+                                scale: 1.0 + ((1 - wave) * 0.025),
+                                child: Container(
+                                  padding: const EdgeInsets.all(7),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white.withValues(alpha: 0.08),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(alpha: 0.18),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.amber.withValues(alpha: 0.22),
+                                        blurRadius: 18,
+                                        spreadRadius: -2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Container(
+                                    width: 78,
+                                    height: 78,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.amber.shade300,
+                                          Colors.amber.shade500,
+                                          Colors.orange.shade700,
+                                        ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.16),
+                                          blurRadius: 12,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.emoji_events_rounded,
+                                      color: Colors.white,
+                                      size: 42,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 22),
+
+                    const Text(
+                      'PREMIAÇÃO',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 3,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black38,
+                            offset: Offset(0, 3),
+                            blurRadius: 7,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.18),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.sports_soccer_rounded,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Lojas Adelino - Copa do Mundo 2026",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -123,9 +235,13 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
             posicao: 1,
             premio: 'R\$ 5.000,00',
             descricao: 'via PIX',
-            gradientColors: [Colors.amber.shade400, Colors.amber.shade700],
+            gradientColors: [
+              Colors.amber.shade400,
+              Colors.orange.shade700,
+            ],
             isGold: true,
           ),
+
           _buildPremioCard(
             posicao: 2,
             premio: 'TV 50 Polegadas',
@@ -156,36 +272,78 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
           // Observacao
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade200),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.blue.shade50,
+                  Colors.white,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: Colors.blue.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.blue.shade100,
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(Icons.info_outline, color: Colors.blue.shade600, size: 24),
+                  child: Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.blue.shade700,
+                    size: 22,
+                  ),
                 ),
-                const SizedBox(width: 16),
+
+                const SizedBox(width: 14),
+
                 Expanded(
-                  child: Text(
-                    'Os premios serao entregues em ate 30 dias apos o termino do bolao.',
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 14,
-                      height: 1.4,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Entrega dos prêmios',
+                        style: TextStyle(
+                          color: Colors.blue.shade900,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      Text(
+                        'Os prêmios serão entregues em até 30 dias após o término do bolão.',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
+          const SizedBox(height: 92),
         ],
       ),
     );
@@ -198,124 +356,254 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
     required List<Color> gradientColors,
     bool isGold = false,
   }) {
+    final isTop3 = posicao <= 3;
+    final mainColor = gradientColors.first;
+    final secondColor = gradientColors.length > 1 ? gradientColors[1] : gradientColors.first;
+
+    IconData icon;
+    String label;
+
+    switch (posicao) {
+      case 1:
+        icon = Icons.emoji_events_rounded;
+        label = 'Campeão';
+        break;
+      case 2:
+        icon = Icons.workspace_premium_rounded;
+        label = 'Vice-campeão';
+        break;
+      case 3:
+        icon = Icons.military_tech_rounded;
+        label = 'Terceiro lugar';
+        break;
+      default:
+        icon = Icons.card_giftcard_rounded;
+        label = '$posicaoº colocado';
+    }
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: isGold ? Border.all(color: Colors.amber.shade300, width: 2) : null,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: isGold ? Colors.amber.shade400 : mainColor.withValues(alpha: 0.28),
+          width: isGold ? 1.5 : 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: isGold ? Colors.amber.shade200 : Colors.grey.shade200,
-            blurRadius: isGold ? 20 : 12,
-            offset: const Offset(0, 6),
+            color: isGold ? Colors.amber.withValues(alpha: 0.22) : Colors.black.withValues(alpha: 0.07),
+            blurRadius: 16,
+            spreadRadius: -3,
+            offset: const Offset(0, 7),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          // Lado esquerdo com posicao
-          Container(
-            width: 90,
-            padding: const EdgeInsets.symmetric(vertical: 28),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: gradientColors,
-              ),
-              borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
-              boxShadow: [
-                BoxShadow(
-                  color: gradientColors[0].withValues(alpha: 0.4),
-                  blurRadius: 8,
-                  offset: const Offset(2, 0),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (posicao <= 3)
-                  Icon(
-                    Icons.emoji_events,
-                    color: Colors.white.withValues(alpha: 0.9),
-                    size: 28,
-                  ),
-                const SizedBox(height: 4),
-                Text(
-                  '$posicaoº',
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Lado direito com detalhes
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Row(
                 children: [
-                  Text(
-                    '$posicaoº Colocado',
-                    style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1,
+                  Container(
+                    width: 7,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          mainColor,
+                          secondColor,
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    premio,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: isGold ? Colors.amber.shade700 : const Color(0xFFCC0000),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    descricao,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 13,
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            mainColor.withValues(alpha: isGold ? 0.16 : 0.10),
+                            Colors.white,
+                            Colors.white,
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
 
-          // Icone lateral
-          if (posicao <= 3)
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: gradientColors[0].withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.star,
-                  color: gradientColors[0],
-                  size: 24,
-                ),
+            Positioned(
+              right: 14,
+              top: 12,
+              bottom: 12,
+              child: Icon(
+                icon,
+                size: 78,
+                color: mainColor.withValues(alpha: 0.08),
               ),
             ),
-        ],
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 16, 16, 16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 58,
+                    height: 58,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          mainColor,
+                          secondColor,
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: mainColor.withValues(alpha: 0.32),
+                          blurRadius: 12,
+                          spreadRadius: -2,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Icon(
+                          icon,
+                          color: Colors.white.withValues(alpha: 0.25),
+                          size: 38,
+                        ),
+                        Text(
+                          '$posicaoº',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(width: 14),
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: mainColor.withValues(alpha: 0.13),
+                                borderRadius: BorderRadius.circular(999),
+                                border: Border.all(
+                                  color: mainColor.withValues(alpha: 0.15),
+                                ),
+                              ),
+                              child: Text(
+                                label.toUpperCase(),
+                                style: TextStyle(
+                                  color: mainColor,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+
+                            if (isGold)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.withValues(alpha: 0.14),
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(
+                                    color: Colors.orange.withValues(alpha: 0.18),
+                                  ),
+                                ),
+                                child: Text(
+                                  'PRÊMIO PRINCIPAL',
+                                  style: TextStyle(
+                                    color: Colors.orange.shade900,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0.4,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 9),
+
+                        Text(
+                          premio,
+                          style: TextStyle(
+                            fontSize: isGold ? 24 : 22,
+                            fontWeight: FontWeight.w900,
+                            color: isGold ? Colors.orange.shade800 : const Color(0xFFCC0000),
+                            height: 1.05,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        Text(
+                          descricao,
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            height: 1.25,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  if (isTop3) ...[
+                    const SizedBox(width: 10),
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: mainColor.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: mainColor.withValues(alpha: 0.18),
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.star_rounded,
+                        color: mainColor,
+                        size: 22,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
-
-
-

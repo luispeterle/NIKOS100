@@ -82,6 +82,15 @@ class AuthService {
       'isAdmin': true,
       'todosJogosLiberados': true,
     },
+    {
+      'id': '8',
+      'cpf': '6129211902',
+      'nome': 'Arthur Paulino Malgarisi Aguiar',
+      'dataNascimento': '2003-05-03',
+      'pontos': 0,
+      'isAdmin': true,
+      'todosJogosLiberados': true,
+    },
   ];
 
   // ============================================
