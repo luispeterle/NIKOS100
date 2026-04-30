@@ -92,6 +92,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               width: 240,
               height: 240,
               decoration: BoxDecoration(
+                shape: BoxShape.circle,
                 color: Colors.white.withValues(alpha: 0.08),
                 boxShadow: [
                   BoxShadow(
