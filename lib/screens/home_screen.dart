@@ -18,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
+  // Removido "Conta" conforme solicitado
   final List<String> _tabTitles = ['Palpites', 'Ranking', 'Premios', 'Regras'];
   final List<IconData> _tabIcons = [
     Icons.sports_soccer,
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
+                            color: Colors.black.withOpacity(0.2),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
+                        color: Colors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Botao logout
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
+                        color: Colors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: IconButton(
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               "password": "??",
                             },
                           );
-                          debugPrint(resp.toString());
+                          print(resp);
                         },
                       ),
                   ],
@@ -234,12 +234,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.copyright, color: Colors.white.withValues(alpha: 0.7), size: 14),
+            Icon(Icons.copyright, color: Colors.white.withOpacity(0.7), size: 14),
             const SizedBox(width: 6),
             Text(
               "2026 NIKO'\$ - Todos os direitos reservados",
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.8),
+                color: Colors.white.withOpacity(0.8),
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -250,5 +250,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-

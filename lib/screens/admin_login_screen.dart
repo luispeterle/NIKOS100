@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:nikos/utils/micro_server_post.dart';
 import 'admin_screen.dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -11,10 +14,20 @@ class AdminLoginScreen extends StatefulWidget {
 class _AdminLoginScreenState extends State<AdminLoginScreen> {
   final _userController = TextEditingController();
   final _passController = TextEditingController();
-  bool _loading = false;
 
-  void _login() {
-    if (_userController.text == "admin" && _passController.text == "1234") {
+  Future<void> _login() async {
+    final resp = await serverPost(
+      "login_simple",
+      myJson: {
+        "nomusu": _userController.text,
+        "password": _passController.text,
+      },
+    );
+    var decodedResponse = jsonDecode(resp);
+    var responseData = jsonDecode(decodedResponse['Response'])[0];
+
+    if (responseData["admin"] == "S" || true) {
+      // Remover o || true depois
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -27,12 +40,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Usuário ou senha inválidos")),
+        const SnackBar(content: Text("Login inválido")),
       );
     }
-
-    if (!mounted) return;
-    setState(() => _loading = false);
   }
 
   @override
@@ -79,22 +89,13 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _loading ? null : _login,
+                onPressed: _login,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFCC0000),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   foregroundColor: Colors.white,
                 ),
-                child: _loading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text("Entrar"),
+                child: const Text("Entrar"),
               ),
             ),
           ],

@@ -33,7 +33,7 @@ class RegulamentoTab extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Icon(Icons.menu_book, color: Colors.white, size: 48),
@@ -52,7 +52,7 @@ class RegulamentoTab extends StatelessWidget {
                 Text(
                   'Confira as regras completas para participar do bolao e garantir sua chance de ganhar!',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: Colors.white.withOpacity(0.8),
                     fontSize: 14,
                   ),
                 ),
@@ -228,7 +228,7 @@ class RegulamentoTab extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
@@ -299,5 +299,3 @@ class RegulamentoTab extends StatelessWidget {
     );
   }
 }
-
-

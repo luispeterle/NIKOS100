@@ -1,10 +1,11 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import '../utils/micro_server_post.dart';
 import 'user_session.dart';
 
 class ApiService {
+  // ============================================
   // LOGIN
+  // ============================================
   static Future<Map<String, dynamic>?> login(String cgccpf, String nascimento) async {
     try {
       final resp = await serverPost(
@@ -14,7 +15,6 @@ class ApiService {
           "nascimento": nascimento,
         },
       );
-      
       if (resp == true || resp == null) {
         return null; // Erro
       }
@@ -43,18 +43,18 @@ class ApiService {
       }
       return null;
     } catch (e) {
-      debugPrint('Erro no login: $e');
+      print('Erro no login: $e');
       return null;
     }
   }
-  
+
   // ============================================
   // BUSCAR JOGOS
-
+  // ============================================
   static Future<List<Map<String, dynamic>>> getJogos() async {
     try {
-      final resp = await serverPost("bolao_get_jogos");
-      
+      final resp = await serverPost("bolao_get_jogos", myJson: {"cgccpf": UserSession.cgccpf});
+
       if (resp == true || resp == null) {
         return [];
       }
@@ -72,16 +72,18 @@ class ApiService {
             'siglbb': item['siglbb'],
             'plcraa': item['plcraa'],
             'plcrbb': item['plcrbb'],
+            'usupla': item['usupla'],
+            'usuplb': item['usuplb'],
           };
         }).toList();
       }
       return [];
     } catch (e) {
-      debugPrint('Erro ao buscar jogos: $e');
+      print('Erro ao buscar jogos: $e');
       return [];
     }
   }
-  
+
   // ============================================
   // SALVAR PALPITE
   // ============================================
@@ -111,48 +113,14 @@ class ApiService {
       UserSession.palpitesFeitos++;
       return true;
     } catch (e) {
-      debugPrint('Erro ao salvar palpite: $e');
+      print('Erro ao salvar palpite: $e');
       return false;
     }
   }
 
-  static Future<bool> salvarJogoAdmin({
-    required String idjogo,
-    required String datjog,
-    required String timeaa,
-    required String siglaa,
-    required String timebb,
-    required String siglbb,
-    required String plcraa,
-    required String plcrbb,
-  }) async {
-    try {
-      final resp = await serverPost(
-        "adm_bolao_salva_jogos",
-        myJson: {
-          "idjogo": idjogo,
-          "datjog": datjog,
-          "timeaa": timeaa,
-          "siglaa": siglaa,
-          "timebb": timebb,
-          "siglbb": siglbb,
-          "plcraa": plcraa,
-          "plcrbb": plcrbb,
-        },
-      );
-
-      if (resp == true || resp == null) {
-        return false;
-      }
-      return true;
-    } catch (e) {
-      debugPrint('Erro ao salvar jogo admin: $e');
-      return false;
-    }
-  }
-  
   // ============================================
   // BUSCAR RANKING
+  // ============================================
   static Future<List<Map<String, dynamic>>> getRanking() async {
     try {
       final resp = await serverPost(
@@ -179,7 +147,7 @@ class ApiService {
       }
       return [];
     } catch (e) {
-      debugPrint('Erro ao buscar ranking: $e');
+      print('Erro ao buscar ranking: $e');
       return [];
     }
   }

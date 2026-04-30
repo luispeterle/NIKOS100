@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 // SERVICO DE AUTENTICACAO - gerencia login, logout e usuarios
 class AuthService {
   // Usuario logado no momento (null se ninguem ta logado)
@@ -98,18 +96,29 @@ class AuthService {
 
   static Map<String, dynamic>? login(String cpf, String dataNascimento) {
     try {
+      // 🔍 DEBUG (pode apagar depois)
+      print('Tentando login...');
+      print('CPF: $cpf');
+      print('Data: $dataNascimento');
+
       final cpfLimpo = cpf.replaceAll(RegExp(r'[^0-9]'), '');
 
       for (var user in _users) {
         if (user['cpf'] == cpfLimpo && user['dataNascimento'] == dataNascimento) {
           _currentUser = user;
+
+          print('✅ Login OK: ${user['nome']}');
+
           return user;
         }
       }
 
+      print('❌ Login falhou');
+
       return null;
     } catch (e) {
-      debugPrint('ERRO NO LOGIN: $e');
+      // 🔥 NUNCA DEIXA QUEBRAR O APP
+      print('ERRO NO LOGIN: $e');
       return null;
     }
   }

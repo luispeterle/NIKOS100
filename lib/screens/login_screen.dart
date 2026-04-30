@@ -163,22 +163,22 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   Positioned(
                     top: 80 + _floatingAnimation.value,
                     left: 30,
-                    child: _buildFloatingBall(60, Colors.white.withValues(alpha: 0.1)),
+                    child: _buildFloatingBall(60, Colors.white.withOpacity(0.1)),
                   ),
                   Positioned(
                     top: 200 - _floatingAnimation.value * 0.5,
                     right: 40,
-                    child: _buildFloatingBall(40, Colors.amber.withValues(alpha: 0.2)),
+                    child: _buildFloatingBall(40, Colors.amber.withOpacity(0.2)),
                   ),
                   Positioned(
                     bottom: 150 + _floatingAnimation.value * 0.7,
                     left: 60,
-                    child: _buildFloatingBall(30, Colors.white.withValues(alpha: 0.08)),
+                    child: _buildFloatingBall(30, Colors.white.withOpacity(0.08)),
                   ),
                   Positioned(
                     bottom: 300 - _floatingAnimation.value,
                     right: 80,
-                    child: _buildFloatingBall(50, Colors.amber.withValues(alpha: 0.15)),
+                    child: _buildFloatingBall(50, Colors.amber.withOpacity(0.15)),
                   ),
                   // Bola de futebol estilizada
                   Positioned(
@@ -217,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
+                          color: Colors.black.withOpacity(0.3),
                           blurRadius: 30,
                           offset: const Offset(0, 15),
                         ),
@@ -250,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.3),
+                                          color: Colors.black.withOpacity(0.3),
                                           blurRadius: 20,
                                           offset: const Offset(0, 8),
                                         ),
@@ -607,12 +607,12 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: RadialGradient(
-          colors: [color.withValues(alpha: 0.8), color.withValues(alpha: 0.2)],
+          colors: [color.withOpacity(0.8), color.withOpacity(0.2)],
           center: const Alignment(-0.3, -0.3),
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.3),
+            color: color.withOpacity(0.3),
             blurRadius: size * 0.3,
             spreadRadius: size * 0.1,
           ),
@@ -627,11 +627,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: 0.15),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+        color: Colors.white.withOpacity(0.15),
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.black.withOpacity(0.2),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -640,10 +640,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       child: Icon(
         Icons.sports_soccer,
         size: size * 0.6,
-        color: Colors.white.withValues(alpha: 0.4),
+        color: Colors.white.withOpacity(0.4),
       ),
     );
   }
 }
-
-
