@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 import '../services/api_service.dart';
 import 'admin_login_screen.dart';
 
@@ -32,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   late Animation<double> _logoScale;
   late Animation<double> _formSlide;
   late Animation<double> _floatingAnimation;
+  late final AnimationController _copaReflexoController;
 
   @override
   void initState() {
@@ -42,6 +44,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
+
+    _copaReflexoController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    )..repeat();
 
     _logoScale = Tween<double>(begin: 1.0, end: 1.05).animate(
       CurvedAnimation(parent: _logoController, curve: Curves.easeInOut),
@@ -79,6 +86,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     _diaController.dispose();
     _mesController.dispose();
     _anoController.dispose();
+    _copaReflexoController.dispose();
 
     _diaFocus.dispose();
     _mesFocus.dispose();
@@ -122,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
     if (user != null) {
       setState(() {
-        _isLoading = false; 
+        _isLoading = false;
       });
 
       widget.onLogin(user);
@@ -140,17 +148,53 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       body: Stack(
         children: [
           // Fundo com gradiente animado
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFCC0000),
-                  Color(0xFF8B0000),
-                  Color(0xFF660000),
-                ],
-              ),
+          Positioned.fill(
+            child: Stack(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFFCC0000),
+                        Color(0xFF8B0000),
+                        Color(0xFF3F0000),
+                      ],
+                    ),
+                  ),
+                ),
+
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.22,
+                    child: Transform.translate(
+                      offset: const Offset(-220, 0),
+                      child: Image.asset(
+                        'assets/taca_copa.png',
+                        fit: BoxFit.cover,
+                        alignment: Alignment.centerLeft,
+                      ),
+                    ),
+                  ),
+                ),
+
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.10),
+                          Colors.black.withValues(alpha: 0.35),
+                          Colors.black.withValues(alpha: 0.55),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -162,31 +206,41 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 children: [
                   Positioned(
                     top: 80 + _floatingAnimation.value,
-                    left: 30,
-                    child: _buildFloatingBall(60, Colors.white.withOpacity(0.1)),
+                    left: 24,
+                    child: _buildFloatingBall(
+                      48,
+                      Colors.white.withValues(alpha: 0.07),
+                    ),
                   ),
+
                   Positioned(
-                    top: 200 - _floatingAnimation.value * 0.5,
-                    right: 40,
-                    child: _buildFloatingBall(40, Colors.amber.withOpacity(0.2)),
-                  ),
-                  Positioned(
-                    bottom: 150 + _floatingAnimation.value * 0.7,
-                    left: 60,
-                    child: _buildFloatingBall(30, Colors.white.withOpacity(0.08)),
+                    bottom: 180 - _floatingAnimation.value,
+                    right: 54,
+                    child: _buildFloatingBall(
+                      38,
+                      const Color(0xFFFFC107).withValues(alpha: 0.12),
+                    ),
                   ),
                   Positioned(
                     bottom: 300 - _floatingAnimation.value,
                     right: 80,
-                    child: _buildFloatingBall(50, Colors.amber.withOpacity(0.15)),
+                    child: _buildFloatingBall(50, Colors.amber.withValues(alpha: 0.15)),
                   ),
                   // Bola de futebol estilizada
                   Positioned(
-                    top: 120 + _floatingAnimation.value * 1.5,
-                    right: 20,
+                    top: 58 + _floatingAnimation.value * 1.2,
+                    right: -28,
                     child: Transform.rotate(
-                      angle: _floatingAnimation.value * 0.05,
-                      child: _buildSoccerBall(70),
+                      angle: _floatingAnimation.value * 0.025,
+                      child: _buildWorldCupBall(118),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 58 + _floatingAnimation.value * 1.2,
+                    left: -28,
+                    child: Transform.rotate(
+                      angle: _floatingAnimation.value * 0.025,
+                      child: _buildWorldCupBall(118),
                     ),
                   ),
                 ],
@@ -217,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withValues(alpha: 0.3),
                           blurRadius: 30,
                           offset: const Offset(0, 15),
                         ),
@@ -244,44 +298,112 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                 ScaleTransition(
                                   scale: _logoScale,
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.3),
+                                          color: Colors.black.withValues(alpha: 0.3),
                                           blurRadius: 20,
                                           offset: const Offset(0, 8),
                                         ),
                                       ],
                                     ),
-                                    child: const Text(
-                                      "NIKO'\$",
-                                      style: TextStyle(
-                                        fontSize: 36,
-                                        fontWeight: FontWeight.w900,
-                                        color: Color(0xFFCC0000),
-                                        letterSpacing: 4,
+                                    // child: const Text(
+                                    //   "NIKO'\$",
+                                    //   style: TextStyle(
+                                    //     fontSize: 36,
+                                    //     fontWeight: FontWeight.w900,
+                                    //     color: Color(0xFFCC0000),
+                                    //     letterSpacing: 4,
+                                    //   ),
+                                    // ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.asset(
+                                        'assets/adelino.webp',
+                                        fit: BoxFit.contain,
                                       ),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.amber,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Text(
-                                    'COPA DO MUNDO 2026',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                      letterSpacing: 2,
-                                    ),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: AnimatedBuilder(
+                                    animation: _copaReflexoController,
+                                    builder: (context, _) {
+                                      return Stack(
+                                        clipBehavior: Clip.hardEdge,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 7),
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                colors: [
+                                                  Color(0xFFFFE082),
+                                                  Color(0xFFFFC107),
+                                                  Color(0xFFFFA000),
+                                                ],
+                                              ),
+                                              borderRadius: BorderRadius.circular(24),
+                                              border: Border.all(
+                                                color: Colors.white.withValues(alpha: 0.55),
+                                                width: 1,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.amber.withValues(alpha: 0.45),
+                                                  blurRadius: 16,
+                                                  offset: const Offset(0, 5),
+                                                ),
+                                              ],
+                                            ),
+                                            child: const Text(
+                                              'COPA DO MUNDO 2026',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w900,
+                                                color: Colors.black87,
+                                                letterSpacing: 2,
+                                              ),
+                                            ),
+                                          ),
+
+                                          Positioned.fill(
+                                            child: IgnorePointer(
+                                              child: Transform.translate(
+                                                offset: Offset(
+                                                  -100 + (_copaReflexoController.value * 260),
+                                                  0,
+                                                ),
+                                                child: Transform.rotate(
+                                                  angle: -0.45,
+                                                  child: Align(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Container(
+                                                      width: 38,
+                                                      decoration: BoxDecoration(
+                                                        gradient: LinearGradient(
+                                                          colors: [
+                                                            Colors.white.withValues(alpha: 0),
+                                                            Colors.white.withValues(alpha: 0.65),
+                                                            Colors.white.withValues(alpha: 0),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                 ),
                               ],
@@ -300,6 +422,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                   controller: _cpfController,
                                   hint: '000.000.000-00',
                                   icon: Icons.person_outline,
+                                  cpfMask: true,
                                 ),
                                 const SizedBox(height: 24),
 
@@ -365,12 +488,20 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                       ),
                                     ),
                                     child: _isLoading
-                                        ? const SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2.5,
+                                        ? SizedBox(
+                                            width: 68,
+                                            height: 58,
+                                            child: ColorFiltered(
+                                              colorFilter: const ColorFilter.mode(
+                                                Colors.black,
+                                                BlendMode.srcIn,
+                                              ),
+                                              child: Lottie.asset(
+                                                'assets/animations/football_loading.json',
+                                                fit: BoxFit.fill,
+                                                repeat: true,
+                                                animate: true,
+                                              ),
                                             ),
                                           )
                                         : const Row(
@@ -498,6 +629,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     required TextEditingController controller,
     required String hint,
     required IconData icon,
+    bool cpfMask = false,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -513,10 +645,13 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       child: TextField(
         controller: controller,
         keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(11),
-        ],
+        inputFormatters: cpfMask
+            ? [
+                CpfInputFormatter(),
+              ]
+            : [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
         decoration: InputDecoration(
           hintText: hint,
           prefixIcon: Icon(icon, color: Colors.grey.shade500),
@@ -607,12 +742,12 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: RadialGradient(
-          colors: [color.withOpacity(0.8), color.withOpacity(0.2)],
+          colors: [color.withValues(alpha: 0.8), color.withValues(alpha: 0.2)],
           center: const Alignment(-0.3, -0.3),
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: size * 0.3,
             spreadRadius: size * 0.1,
           ),
@@ -621,27 +756,114 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildSoccerBall(double size) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.15),
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+  Widget _buildWorldCupBall(double size) {
+    return SizedBox(
+      width: size + 36,
+      height: size + 52,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Brilho dourado atrás da bola
+          Positioned(
+            top: 6,
+            child: Container(
+              width: size + 28,
+              height: size + 28,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFFFFC107).withValues(alpha: 0.34),
+                    const Color(0xFFFFC107).withValues(alpha: 0.10),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Aro sutil para dar acabamento
+          Positioned(
+            top: 14,
+            child: Container(
+              width: size + 10,
+              height: size + 10,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  width: 1.2,
+                ),
+              ),
+            ),
+          ),
+
+          // Bola
+          Positioned(
+            top: 18,
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.34),
+                    blurRadius: 22,
+                    offset: const Offset(0, 12),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.18),
+                    blurRadius: 8,
+                    offset: const Offset(-4, -4),
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/bola_copa.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
           ),
         ],
       ),
-      child: Icon(
-        Icons.sports_soccer,
-        size: size * 0.6,
-        color: Colors.white.withOpacity(0.4),
-      ),
+    );
+  }
+}
+
+class CpfInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+
+    if (digits.length > 11) {
+      digits = digits.substring(0, 11);
+    }
+
+    final buffer = StringBuffer();
+
+    for (var i = 0; i < digits.length; i++) {
+      if (i == 3 || i == 6) {
+        buffer.write('.');
+      }
+
+      if (i == 9) {
+        buffer.write('-');
+      }
+
+      buffer.write(digits[i]);
+    }
+
+    final formatted = buffer.toString();
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }

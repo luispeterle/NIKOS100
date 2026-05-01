@@ -12,48 +12,143 @@ class RegulamentoTab extends StatelessWidget {
           // Header 3D
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFFCC0000), Color(0xFF8B0000), Color(0xFF660000)],
+                colors: [
+                  Color(0xFFCC0000),
+                  Color(0xFF990000),
+                  Color(0xFF690000),
+                ],
               ),
-              borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.red.shade300,
-                  blurRadius: 25,
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: const Color(0xFFCC0000).withValues(alpha: 0.18),
+                  blurRadius: 24,
+                  spreadRadius: -8,
                   offset: const Offset(0, 12),
                 ),
               ],
             ),
-            child: Column(
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(Icons.menu_book, color: Colors.white, size: 48),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  '📜 Regulamento Oficial',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 3,
+                Positioned(
+                  right: 2,
+                  top: -8,
+                  child: Icon(
+                    Icons.menu_book_rounded,
+                    size: 180,
+                    color: Colors.white.withValues(alpha: 0.06),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Confira as regras completas para participar do bolao e garantir sua chance de ganhar!',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
+
+                Positioned(
+                  left: -34,
+                  bottom: -34,
+                  child: Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(alpha: 0.05),
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 76,
+                        height: 76,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.18),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.12),
+                              blurRadius: 12,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.menu_book_rounded,
+                          color: Colors.white,
+                          size: 38,
+                        ),
+                      ),
+
+                      const SizedBox(height: 18),
+
+                      const Text(
+                        'Regulamento Oficial',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      Text(
+                        'Confira as regras completas para participar do bolão e garantir sua chance de ganhar.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.82),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          height: 1.35,
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.13),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.16),
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.rule_rounded,
+                              color: Colors.white,
+                              size: 15,
+                            ),
+                            SizedBox(width: 7),
+                            Text(
+                              'Bolão Copa do Mundo 2026',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -148,45 +243,130 @@ class RegulamentoTab extends StatelessWidget {
           // Contato
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(24),
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.blue.shade50, Colors.blue.shade100],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.blue.shade50,
+                  Colors.white,
+                ],
               ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.blue.shade200),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: Colors.blue.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
-            child: Column(
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade100,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Icon(Icons.help_outline, color: Colors.blue.shade700, size: 28),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Duvidas?',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.blue.shade800,
+                Positioned(
+                  right: -8,
+                  top: -8,
+                  child: Icon(
+                    Icons.help_outline_rounded,
+                    size: 180,
+                    color: Colors.blue.shade700.withValues(alpha: 0.07),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Entre em contato com o RH ou envie email para bolao@nikos.com.br',
-                  style: TextStyle(
-                    color: Colors.blue.shade700,
-                    fontSize: 14,
+
+                Positioned(
+                  left: -36,
+                  bottom: -36,
+                  child: Container(
+                    width: 96,
+                    height: 96,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue.shade100.withValues(alpha: 0.35),
+                    ),
                   ),
-                  textAlign: TextAlign.center,
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(22),
+
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade100.withValues(alpha: 0.75),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.blue.shade200,
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.help_outline_rounded,
+                          color: Colors.blue.shade700,
+                          size: 26,
+                        ),
+                      ),
+
+                      const SizedBox(height: 14),
+
+                      Text(
+                        'Dúvidas?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 17,
+                          color: Colors.blue.shade900,
+                        ),
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      Text(
+                        'Entre em contato com o RH ou envie um e-mail para:',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          height: 1.35,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.85),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: Colors.blue.shade100,
+                          ),
+                        ),
+                        child: Text(
+                          'bolao@nikos.com.br',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.blue.shade800,
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
+          const SizedBox(height: 92),
         ],
       ),
     );
@@ -203,98 +383,142 @@ class RegulamentoTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.grey.shade100,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 14,
+            spreadRadius: -3,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: Column(
-        children: [
-          // Header da secao
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFCC0000), Color(0xFF990000)],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFCC0000),
+                    Color(0xFF990000),
+                    Color(0xFF750000),
+                  ],
+                ),
               ),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: Text(
-                      numero,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+              child: Row(
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.18),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        numero,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 17,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 14),
-                Icon(icon, color: Colors.white, size: 22),
-                const SizedBox(width: 10),
-                Text(
-                  titulo,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ],
-            ),
-          ),
 
-          // Itens
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: items.map((item) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 6),
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFCC0000),
-                          shape: BoxShape.circle,
-                        ),
+                  const SizedBox(width: 12),
+
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  Expanded(
+                    child: Text(
+                      titulo,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                        letterSpacing: 0.6,
                       ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          item,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            height: 1.5,
-                            color: Colors.black87,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+              child: Column(
+                children: List.generate(items.length, (index) {
+                  final item = items[index];
+                  final isLast = index == items.length - 1;
+
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: isLast ? 0 : 13),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          margin: const EdgeInsets.only(top: 1),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.check_rounded,
+                            size: 16,
+                            color: Color(0xFFCC0000),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Text(
+                            item,
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              height: 1.45,
+                              color: Colors.grey.shade800,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

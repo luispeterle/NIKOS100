@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+
 import '../utils/micro_server_post.dart';
 import 'user_session.dart';
 
@@ -30,13 +32,14 @@ class ApiService {
           UserSession.setSession(
             cpf: cgccpf,
             dataNascimento: nascimento,
+            nome: userData['nomcli'] ?? '',
             maxPalp: maxPalpites,
           );
 
           return {
             'cpf': userData['cpf']?.toString() ?? cgccpf,
             'max_palpites': maxPalpites,
-            'nome': 'Usuário',
+            'nome': userData['nomcli'] ?? '',
             'isAdmin': false,
           };
         }
@@ -62,7 +65,8 @@ class ApiService {
       final data = jsonDecode(resp);
       if (data['Response'] != null) {
         final List responseList = jsonDecode(data['Response']);
-        return responseList.map<Map<String, dynamic>>((item) {
+
+        final jogos = responseList.map<Map<String, dynamic>>((item) {
           return {
             'idjogo': item['idjogo'],
             'datjog': item['datjog'],
@@ -76,7 +80,26 @@ class ApiService {
             'usuplb': item['usuplb'],
           };
         }).toList();
+
+        jogos.sort((a, b) {
+          final dataA = (a['datjog']);
+          final dataB = (b['datjog']);
+
+          final compareData = dataA.compareTo(dataB);
+
+          if (compareData != 0) {
+            return compareData;
+          }
+
+          final idA = int.tryParse(a['idjogo'].toString()) ?? 0;
+          final idB = int.tryParse(b['idjogo'].toString()) ?? 0;
+
+          return idA.compareTo(idB);
+        });
+
+        return jogos;
       }
+
       return [];
     } catch (e) {
       print('Erro ao buscar jogos: $e');
@@ -114,6 +137,41 @@ class ApiService {
       return true;
     } catch (e) {
       print('Erro ao salvar palpite: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> salvarJogoAdmin({
+    required String idjogo,
+    required String datjog,
+    required String timeaa,
+    required String siglaa,
+    required String timebb,
+    required String siglbb,
+    required String plcraa,
+    required String plcrbb,
+  }) async {
+    try {
+      final resp = await serverPost(
+        "adm_bolao_salva_jogos",
+        myJson: {
+          "idjogo": idjogo,
+          "datjog": datjog,
+          "timeaa": timeaa,
+          "siglaa": siglaa,
+          "timebb": timebb,
+          "siglbb": siglbb,
+          "plcraa": plcraa,
+          "plcrbb": plcrbb,
+        },
+      );
+
+      if (resp == true || resp == null) {
+        return false;
+      }
+      return true;
+    } catch (e) {
+      debugPrint('Erro ao salvar jogo admin: $e');
       return false;
     }
   }

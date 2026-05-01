@@ -17,11 +17,11 @@ class NikosApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "NIKO'S",
+      title: "Lojas Adelino",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: const Color(0xFFCC0000),
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+        scaffoldBackgroundColor: const Color(0xFFECEFF1),
         fontFamily: 'Arial',
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFCC0000),
