@@ -20,229 +20,64 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   bool _loading = false;
   bool _showPassword = false;
 
-  void _showSnack(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF7A0000),
-          margin: const EdgeInsets.all(18),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  message,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-  }
-
-  Future<void> _showLoginErrorDialog() async {
-    if (!mounted) return;
-
-    bool dialogAberto = true;
-    Timer? autoCloseTimer;
-
-    final dialogFuture = showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 320,
-            ),
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(22, 24, 22, 18),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(22),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.18),
-                    blurRadius: 24,
-                    offset: const Offset(0, 12),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 58,
-                    height: 58,
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade50,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.lock_person_rounded,
-                      color: Colors.red.shade700,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Erro de login',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Não foi possível conectar ao servidor.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 1.35,
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      'Essa mensagem fecha em 5 segundos',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFCC0000),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      child: const Text(
-                        'ENTENDI',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.8,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-
-    autoCloseTimer = Timer(const Duration(seconds: 5), () {
-      if (!mounted || !dialogAberto) return;
-      final navigator = Navigator.of(context, rootNavigator: true);
-      if (navigator.canPop()) {
-        navigator.pop();
-      }
-    });
-
-    await dialogFuture.whenComplete(() {
-      dialogAberto = false;
-      autoCloseTimer?.cancel();
-    });
-  }
-
   Future<void> _login() async {
     if (_loading) return;
     setState(() => _loading = true);
 
-    try {
-      final resp = await serverPost(
-        "login_simple",
-        myJson: {
-          "nomusu": _userController.text,
-          "password": _passController.text,
-        },
+    final resp = await serverPost(
+      "login_simple",
+      myJson: {
+        "nomusu": _userController.text,
+        "password": _passController.text,
+      },
+    );
+
+    var decodedResponse = jsonDecode(resp);
+    var responseData = jsonDecode(decodedResponse['Response'])[0];
+    if (responseData["admin"] == "S") {
+      UserSession.setSession(
+        cpf: responseData["cgccpf"],
+        nome: '',
+        dataNascimento: '',
+        maxPalp: 0,
       );
 
       if (!mounted) return;
-
-      if (resp == true || resp == null || resp.toString() == 'Erro de login') {
-        await _showLoginErrorDialog();
-        return;
-      }
-
-      final decodedResponse = jsonDecode(resp.toString()) as Map<String, dynamic>;
-      final responseRaw = decodedResponse['Response'];
-      if (responseRaw == null) {
-        _showSnack('Usuário ou senha inválidos');
-        return;
-      }
-
-      final responseList = jsonDecode(responseRaw.toString()) as List<dynamic>;
-      if (responseList.isEmpty) {
-        _showSnack('Usuário ou senha inválidos');
-        return;
-      }
-
-      final responseData = responseList.first as Map<String, dynamic>;
-      if (responseData["admin"] == "S") {
-        UserSession.setSession(
-          cpf: responseData["cgccpf"],
-          nome: '',
-          dataNascimento: '',
-          maxPalp: 0,
-        );
-
-        if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AdminScreen(
-              user: {"nome": responseData["nomusu"]},
-              onLogout: () {},
-              adminId: "admin",
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AdminScreen(
+            user: {"nome": responseData["nomusu"]},
+            onLogout: () {},
+            adminId: "admin",
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: const Color(0xFF7A0000),
+            margin: const EdgeInsets.all(18),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'UsuÃ¡rio ou senha invÃ¡lidos',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
             ),
           ),
         );
-      } else {
-        _showSnack('Usuário ou senha inválidos');
-      }
-    } catch (_) {
-      if (mounted) {
-        await _showLoginErrorDialog();
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _loading = false);
-      }
     }
   }
 
@@ -692,4 +527,3 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     );
   }
 }
-
