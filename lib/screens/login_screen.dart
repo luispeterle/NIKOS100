@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     if (cpf.length != 11) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'CPF deve ter 11 digitos';
+        _errorMessage = 'CPF deve conter 11 dígitos';
       });
       return;
     }
@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     if (dia.isEmpty || mes.isEmpty || ano.isEmpty || ano.length != 4) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Data invalida';
+        _errorMessage = 'Data inválida';
       });
       return;
     }
@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     } else {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'CPF ou data incorretos';
+        _errorMessage = 'CPF ou data inseridos incorretos.\n\nSe seus dados estão corretos, procure uma de nossas lojas.';
       });
     }
   }
@@ -462,6 +462,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                         Expanded(
                                           child: Text(
                                             _errorMessage!,
+                                            textAlign: TextAlign.center,
                                             style: TextStyle(color: Colors.red.shade700, fontWeight: FontWeight.w500),
                                           ),
                                         ),
