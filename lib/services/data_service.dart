@@ -221,7 +221,6 @@ class DataService {
     return jogos;
   }
 
-  // RESTO DO TEU CÓDIGO (SEM ALTERAÇÃO)
 
   static List<Map<String, dynamic>> getJogos() => _jogos;
 

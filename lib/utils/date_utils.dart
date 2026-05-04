@@ -39,6 +39,18 @@ String normalizarCpf(dynamic value) {
   return value.toString().replaceAll(RegExp(r'[^0-9]'), '').padLeft(11, '0');
 }
 
+String normalizarTexto(String value) {
+  return value
+      .toLowerCase()
+      .trim()
+      .replaceAll(RegExp(r'[áàãâä]'), 'a')
+      .replaceAll(RegExp(r'[éèêë]'), 'e')
+      .replaceAll(RegExp(r'[íìîï]'), 'i')
+      .replaceAll(RegExp(r'[óòõôö]'), 'o')
+      .replaceAll(RegExp(r'[úùûü]'), 'u')
+      .replaceAll('ç', 'c');
+}
+
 String rdz(String ns) {
   // removeDotZero
   if (ns.endsWith('.0')) {

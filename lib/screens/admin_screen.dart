@@ -43,523 +43,981 @@ class _AdminScreenState extends State<AdminScreen> {
 
   void _adicionarJogo() async {
     final messenger = ScaffoldMessenger.of(context);
+
     final idjogoController = TextEditingController();
     final datjogController = TextEditingController();
     final timeaaController = TextEditingController();
     final siglaaController = TextEditingController();
     final timebbController = TextEditingController();
     final siglbbController = TextEditingController();
-
     bool salvando = false;
     String? erro;
 
-    InputDecoration campoDecoration({
-      required String label,
-      required IconData icon,
-      String? hint,
-    }) {
-      return InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: Icon(icon, size: 20, color: const Color(0xFFCC0000)),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        labelStyle: TextStyle(
-          color: Colors.grey.shade700,
-          fontWeight: FontWeight.w600,
-        ),
-        hintStyle: TextStyle(
-          color: Colors.grey.shade400,
-          fontSize: 13,
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 15),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFCC0000), width: 1.6),
-        ),
-      );
+    final selecoes = [
+      {'pais': 'México', 'sigla': 'MEX'},
+      {'pais': 'África do Sul', 'sigla': 'RSA'},
+      {'pais': 'Coreia do Sul', 'sigla': 'KOR'},
+      {'pais': 'Tchéquia', 'sigla': 'CZE'},
+      {'pais': 'Canadá', 'sigla': 'CAN'},
+      {'pais': 'Bósnia-Herzegovina', 'sigla': 'BIH'},
+      {'pais': 'Estados Unidos', 'sigla': 'USA'},
+      {'pais': 'Paraguai', 'sigla': 'PAR'},
+      {'pais': 'Austrália', 'sigla': 'AUS'},
+      {'pais': 'Turquia', 'sigla': 'TUR'},
+      {'pais': 'Catar', 'sigla': 'QAT'},
+      {'pais': 'Suíça', 'sigla': 'SUI'},
+      {'pais': 'Brasil', 'sigla': 'BRA'},
+      {'pais': 'Marrocos', 'sigla': 'MAR'},
+      {'pais': 'Haiti', 'sigla': 'HAI'},
+      {'pais': 'Escócia', 'sigla': 'SCO'},
+      {'pais': 'Alemanha', 'sigla': 'GER'},
+      {'pais': 'Curaçao', 'sigla': 'CUW'},
+      {'pais': 'Holanda', 'sigla': 'NED'},
+      {'pais': 'Japão', 'sigla': 'JPN'},
+      {'pais': 'Costa do Marfim', 'sigla': 'CIV'},
+      {'pais': 'Equador', 'sigla': 'ECU'},
+      {'pais': 'Suécia', 'sigla': 'SWE'},
+      {'pais': 'Tunísia', 'sigla': 'TUN'},
+      {'pais': 'Espanha', 'sigla': 'ESP'},
+      {'pais': 'Cabo Verde', 'sigla': 'CPV'},
+      {'pais': 'Bélgica', 'sigla': 'BEL'},
+      {'pais': 'Egito', 'sigla': 'EGY'},
+      {'pais': 'Arábia Saudita', 'sigla': 'KSA'},
+      {'pais': 'Uruguai', 'sigla': 'URU'},
+      {'pais': 'Irã', 'sigla': 'IRN'},
+      {'pais': 'Nova Zelândia', 'sigla': 'NZL'},
+      {'pais': 'Áustria', 'sigla': 'AUT'},
+      {'pais': 'Jordânia', 'sigla': 'JOR'},
+      {'pais': 'França', 'sigla': 'FRA'},
+      {'pais': 'Senegal', 'sigla': 'SEN'},
+      {'pais': 'Iraque', 'sigla': 'IRQ'},
+      {'pais': 'Noruega', 'sigla': 'NOR'},
+      {'pais': 'Argentina', 'sigla': 'ARG'},
+      {'pais': 'Argélia', 'sigla': 'ALG'},
+      {'pais': 'Portugal', 'sigla': 'POR'},
+      {'pais': 'RD Congo', 'sigla': 'COD'},
+      {'pais': 'Inglaterra', 'sigla': 'ENG'},
+      {'pais': 'Croácia', 'sigla': 'CRO'},
+      {'pais': 'Gana', 'sigla': 'GHA'},
+      {'pais': 'Panamá', 'sigla': 'PAN'},
+      {'pais': 'Uzbequistão', 'sigla': 'UZB'},
+      {'pais': 'Colômbia', 'sigla': 'COL'},
+    ];
+
+    Map<String, String>? selecaoExata(String value) {
+      final texto = normalizarTexto(value);
+
+      for (final item in selecoes) {
+        if (normalizarTexto(item['pais']!) == texto || normalizarTexto(item['sigla']!) == texto) {
+          return item;
+        }
+      }
+
+      return null;
     }
 
-    Widget campo({
-      required TextEditingController controller,
-      required String label,
-      required IconData icon,
-      TextInputType? keyboardType,
-      String? hint,
-      int? maxLength,
-      TextCapitalization textCapitalization = TextCapitalization.none,
-      List<TextInputFormatter>? inputFormatters,
-    }) {
-      return TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        maxLength: maxLength,
-        textCapitalization: textCapitalization,
-        inputFormatters: inputFormatters,
-        decoration: campoDecoration(
-          label: label,
-          icon: icon,
-          hint: hint,
-        ).copyWith(counterText: ''),
-      );
+    Iterable<Map<String, String>> filtrarSelecoes(String value) {
+      final texto = normalizarTexto(value);
+
+      if (texto.isEmpty) {
+        return selecoes.take(8);
+      }
+
+      return selecoes
+          .where((item) {
+            final pais = normalizarTexto(item['pais']!);
+            final sigla = normalizarTexto(item['sigla']!);
+
+            return pais.contains(texto) || sigla.contains(texto);
+          })
+          .take(8);
     }
 
-    await showDialog(
-      context: context,
-      barrierDismissible: !salvando,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (dialogStateContext, setDialogState) {
-            Future<void> salvar() async {
-              final idjogo = idjogoController.text.trim();
-              final datjogRaw = datjogController.text.trim();
-              final timeaa = timeaaController.text.trim();
-              final siglaa = siglaaController.text.trim().toUpperCase();
-              final timebb = timebbController.text.trim();
-              final siglbb = siglbbController.text.trim().toUpperCase();
-              final parsedDatjog = tryParseDatjog(datjogRaw);
 
-              if (idjogo.isEmpty || datjogRaw.isEmpty || timeaa.isEmpty || siglaa.isEmpty || timebb.isEmpty || siglbb.isEmpty) {
+    try {
+      await showDialog(
+        context: context,
+        barrierDismissible: !salvando,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (dialogStateContext, setDialogState) {
+              Future<void> salvar() async {
+                final idjogo = idjogoController.text.trim();
+                final datjogRaw = datjogController.text.trim();
+                final timeaa = timeaaController.text.trim();
+                final siglaa = siglaaController.text.trim().toUpperCase();
+                final timebb = timebbController.text.trim();
+                final siglbb = siglbbController.text.trim().toUpperCase();
+                final parsedDatjog = tryParseDatjog(datjogRaw);
+
+                if (datjogRaw.isEmpty || timeaa.isEmpty || siglaa.isEmpty || timebb.isEmpty || siglbb.isEmpty) {
+                  setDialogState(() {
+                    erro = 'Preencha todos os campos para adicionar o jogo.';
+                  });
+                  return;
+                }
+
+                if (parsedDatjog == null) {
+                  setDialogState(() {
+                    erro = 'Data inválida. Use DD/MM/AAAA HH:MM (ex: 31/12/2026 20:30).';
+                  });
+                  return;
+                }
+
                 setDialogState(() {
-                  erro = 'Preencha todos os campos para adicionar o jogo.';
+                  salvando = true;
+                  erro = null;
                 });
-                return;
-              }
 
-              if (parsedDatjog == null) {
+                final success = await ApiService.salvarJogoAdmin(
+                  idjogo: idjogo,
+                  datjog: formatDateFull(parsedDatjog),
+                  timeaa: timeaa,
+                  siglaa: siglaa,
+                  timebb: timebb,
+                  siglbb: siglbb,
+                  plcraa: '',
+                  plcrbb: '',
+                );
+
+                if (!mounted || !dialogContext.mounted) return;
+
                 setDialogState(() {
-                  erro = 'Data invalida. Use DD/MM/AAAA HH:MM (ex: 31/12/2026 20:30).';
+                  salvando = false;
                 });
-                return;
-              }
 
-              setDialogState(() {
-                salvando = true;
-                erro = null;
-              });
+                if (success) {
+                  Navigator.of(dialogContext).pop();
 
-              final success = await ApiService.salvarJogoAdmin(
-                idjogo: idjogo,
-                datjog: formatDateFull(parsedDatjog),
-                timeaa: timeaa,
-                siglaa: siglaa,
-                timebb: timebb,
-                siglbb: siglbb,
-                plcraa: '',
-                plcrbb: '',
-              );
+                  await _loadJogos();
 
-              if (!mounted || !dialogContext.mounted) return;
+                  if (!mounted) return;
 
-              setDialogState(() {
-                salvando = false;
-              });
-
-              if (success) {
-                if (!dialogContext.mounted) return;
-                Navigator.of(dialogContext).pop();
-
-                await _loadJogos();
-
-                if (!mounted) return;
-
-                messenger.showSnackBar(
-                  SnackBar(
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Colors.green.shade600,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                  messenger.showSnackBar(
+                    SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.green.shade600,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      content: const Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 10),
+                          Text('Jogo salvo com sucesso'),
+                        ],
+                      ),
                     ),
-                    content: const Row(
-                      children: [
-                        Icon(Icons.check_circle_rounded, color: Colors.white),
-                        SizedBox(width: 10),
-                        Text('Jogo salvo com sucesso'),
+                  );
+                } else {
+                  setDialogState(() {
+                    erro = 'Erro ao salvar o jogo. Tente novamente.';
+                  });
+                }
+              }
+
+              return Dialog(
+                insetPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 24,
+                ),
+                backgroundColor: Colors.transparent,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 560),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.22),
+                          blurRadius: 28,
+                          offset: const Offset(0, 14),
+                        ),
                       ],
                     ),
-                  ),
-                );
-              } else {
-                setDialogState(() {
-                  erro = 'Erro ao salvar o jogo. Tente novamente.';
-                });
-              }
-            }
-
-            return Dialog(
-              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              backgroundColor: Colors.transparent,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 560),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.22),
-                        blurRadius: 28,
-                        offset: const Offset(0, 14),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.fromLTRB(22, 22, 18, 20),
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFFCC0000),
-                                Color(0xFF990000),
-                                Color(0xFF650000),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(22, 22, 18, 20),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFFCC0000),
+                                  Color(0xFF990000),
+                                  Color(0xFF650000),
+                                ],
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.16),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(alpha: 0.22),
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.sports_soccer_rounded,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Adicionar jogo',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 21,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                      SizedBox(height: 3),
+                                      Text(
+                                        'Cadastre uma nova partida da Copa',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: salvando ? null : () => Navigator.of(dialogContext).pop(),
+                                  icon: const Icon(Icons.close_rounded),
+                                  color: Colors.white,
+                                  tooltip: 'Fechar',
+                                ),
                               ],
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.16),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.22),
-                                  ),
-                                ),
-                                child: const Icon(
-                                  Icons.sports_soccer_rounded,
-                                  color: Colors.white,
-                                  size: 28,
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              const Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Adicionar jogo',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 21,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
-                                    SizedBox(height: 3),
-                                    Text(
-                                      'Cadastre uma nova partida da Copa',
-                                      style: TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: salvando ? null : () => Navigator.of(dialogContext).pop(),
-                                icon: const Icon(Icons.close_rounded),
-                                color: Colors.white,
-                                tooltip: 'Fechar',
-                              ),
-                            ],
-                          ),
-                        ),
 
-                        Flexible(
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.fromLTRB(22, 22, 22, 18),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 2,
-                                      child: campo(
-                                        controller: idjogoController,
-                                        label: 'ID do jogo',
-                                        icon: Icons.tag_rounded,
-                                        keyboardType: TextInputType.number,
-                                        hint: 'Ex: 1',
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      flex: 4,
-                                      child: campo(
-                                        controller: datjogController,
-                                        label: 'Data e hora',
-                                        icon: Icons.event_rounded,
-                                        keyboardType: TextInputType.number,
-                                        hint: '31/12/2026 20:30',
-                                        maxLength: 16,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter.digitsOnly,
-                                          LengthLimitingTextInputFormatter(12),
-                                          DateTimeBrInputFormatter(),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 18),
-
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(14),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade50,
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(color: Colors.grey.shade200),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                          Flexible(
+                            child: SingleChildScrollView(
+                              padding: const EdgeInsets.fromLTRB(22, 22, 22, 18),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
                                     children: [
-                                      Text(
-                                        'Time A',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.grey.shade800,
+                                      Expanded(
+                                        flex: 4,
+                                        child: TextField(
+                                          controller: datjogController,
+                                          keyboardType: TextInputType.number,
+                                          maxLength: 16,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.digitsOnly,
+                                            LengthLimitingTextInputFormatter(12),
+                                            DateTimeBrInputFormatter(),
+                                          ],
+                                          decoration:
+                                              InputDecoration(
+                                                labelText: 'Data e hora',
+                                                hintText: '31/12/2026 20:30',
+                                                prefixIcon: Icon(
+                                                  Icons.event_rounded,
+                                                  size: 20,
+                                                  color: const Color(0xFFCC0000),
+                                                ),
+                                                filled: true,
+                                                fillColor: Colors.grey.shade50,
+                                                labelStyle: TextStyle(
+                                                  color: Colors.grey.shade700,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                                hintStyle: TextStyle(
+                                                  color: Colors.grey.shade400,
+                                                  fontSize: 13,
+                                                ),
+                                                contentPadding: const EdgeInsets.symmetric(
+                                                  horizontal: 14,
+                                                  vertical: 15,
+                                                ),
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(14),
+                                                  borderSide: BorderSide(color: Colors.grey.shade200),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(14),
+                                                  borderSide: BorderSide(color: Colors.grey.shade200),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(14),
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0xFFCC0000),
+                                                    width: 1.6,
+                                                  ),
+                                                ),
+                                              ).copyWith(
+                                                counterText: '',
+                                                fillColor: Colors.grey.shade50,
+                                              ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 3,
-                                            child: campo(
-                                              controller: timeaaController,
-                                              label: 'Nome do time',
-                                              icon: Icons.flag_rounded,
-                                              hint: 'Brasil',
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: campo(
-                                              controller: siglaaController,
-                                              label: 'Sigla',
-                                              icon: Icons.abc_rounded,
-                                              maxLength: 3,
-                                              textCapitalization: TextCapitalization.characters,
-                                              hint: 'BRA',
-                                            ),
-                                          ),
-                                        ],
                                       ),
                                     ],
                                   ),
-                                ),
 
-                                const SizedBox(height: 14),
+                                  const SizedBox(height: 18),
 
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFCC0000).withValues(alpha: 0.08),
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                  child: const Text(
-                                    'VS',
-                                    style: TextStyle(
-                                      color: Color(0xFFCC0000),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1.5,
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 14),
-
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(14),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade50,
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(color: Colors.grey.shade200),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Time B',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.grey.shade800,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 3,
-                                            child: campo(
-                                              controller: timebbController,
-                                              label: 'Nome do time',
-                                              icon: Icons.flag_outlined,
-                                              hint: 'Argentina',
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: campo(
-                                              controller: siglbbController,
-                                              label: 'Sigla',
-                                              icon: Icons.abc_rounded,
-                                              maxLength: 3,
-                                              textCapitalization: TextCapitalization.characters,
-                                              hint: 'ARG',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                if (erro != null) ...[
-                                  const SizedBox(height: 16),
                                   Container(
                                     width: double.infinity,
-                                    padding: const EdgeInsets.all(13),
+                                    padding: const EdgeInsets.all(14),
                                     decoration: BoxDecoration(
-                                      color: Colors.red.shade50,
-                                      borderRadius: BorderRadius.circular(14),
-                                      border: Border.all(color: Colors.red.shade100),
+                                      color: Colors.grey.shade50,
+                                      borderRadius: BorderRadius.circular(18),
+                                      border: Border.all(
+                                        color: Colors.grey.shade200,
+                                      ),
                                     ),
-                                    child: Row(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Icon(
-                                          Icons.error_outline_rounded,
-                                          color: Colors.red.shade700,
-                                          size: 20,
-                                        ),
-                                        const SizedBox(width: 9),
-                                        Expanded(
-                                          child: Text(
-                                            erro!,
-                                            style: TextStyle(
-                                              color: Colors.red.shade700,
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w700,
-                                            ),
+                                        Text(
+                                          'Time A',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.grey.shade800,
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(22, 14, 22, 22),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border(
-                              top: BorderSide(color: Colors.grey.shade100),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: salvando ? null : () => Navigator.of(dialogContext).pop(),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: Colors.grey.shade800,
-                                    side: BorderSide(color: Colors.grey.shade300),
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'CANCELAR',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: salvando ? null : salvar,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFCC0000),
-                                    foregroundColor: Colors.white,
-                                    disabledBackgroundColor: Colors.grey.shade300,
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                  ),
-                                  child: salvando
-                                      ? const SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2.4,
-                                          ),
-                                        )
-                                      : const Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Icon(Icons.save_rounded, size: 18),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              'SALVAR',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w900,
-                                                fontSize: 13,
-                                                letterSpacing: 0.6,
+                                            Expanded(
+                                              flex: 3,
+                                              child: LayoutBuilder(
+                                                builder: (context, constraints) {
+                                                  return RawAutocomplete<Map<String, String>>(
+                                                    displayStringForOption: (item) => item['pais']!,
+                                                    optionsBuilder: (textEditingValue) {
+                                                      return filtrarSelecoes(textEditingValue.text);
+                                                    },
+                                                    onSelected: (item) {
+                                                      timeaaController.text = item['pais']!;
+                                                      siglaaController.text = item['sigla']!;
+                                                      FocusScope.of(context).unfocus();
+                                                    },
+                                                    fieldViewBuilder: (context, controller, node, onFieldSubmitted) {
+                                                      if (controller.text != timeaaController.text) {
+                                                        controller.text = timeaaController.text;
+                                                      }
+                                                      return TextField(
+                                                        controller: controller,
+                                                        focusNode: node,
+                                                        textCapitalization: TextCapitalization.words,
+                                                        onChanged: (value) {
+                                                          timeaaController.text = value;
+                                                          final item = selecaoExata(value);
+                                                          siglaaController.text = item?['sigla'] ?? '';
+                                                        },
+                                                        decoration: InputDecoration(
+                                                          labelText: 'Nome da seleção',
+                                                          hintText: 'Brasil',
+                                                          prefixIcon: Icon(
+                                                            Icons.flag_rounded,
+                                                            size: 20,
+                                                            color: const Color(0xFFCC0000),
+                                                          ),
+                                                          filled: true,
+                                                          fillColor: Colors.grey.shade50,
+                                                          labelStyle: TextStyle(
+                                                            color: Colors.grey.shade700,
+                                                            fontWeight: FontWeight.w700,
+                                                          ),
+                                                          hintStyle: TextStyle(
+                                                            color: Colors.grey.shade400,
+                                                            fontSize: 13,
+                                                          ),
+                                                          contentPadding: const EdgeInsets.symmetric(
+                                                            horizontal: 14,
+                                                            vertical: 15,
+                                                          ),
+                                                          border: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(14),
+                                                            borderSide: BorderSide(color: Colors.grey.shade200),
+                                                          ),
+                                                          enabledBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(14),
+                                                            borderSide: BorderSide(color: Colors.grey.shade200),
+                                                          ),
+                                                          focusedBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(14),
+                                                            borderSide: const BorderSide(
+                                                              color: Color(0xFFCC0000),
+                                                              width: 1.6,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    optionsViewBuilder: (context, onSelected, options) {
+                                                      return Align(
+                                                        alignment: Alignment.topLeft,
+                                                        child: Material(
+                                                          color: Colors.transparent,
+                                                          child: Container(
+                                                            width: constraints.maxWidth,
+                                                            margin: const EdgeInsets.only(top: 6),
+                                                            constraints: const BoxConstraints(maxHeight: 220),
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.white,
+                                                              borderRadius: BorderRadius.circular(16),
+                                                              border: Border.all(color: Colors.grey.shade200),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: Colors.black.withValues(alpha: 0.16),
+                                                                  blurRadius: 24,
+                                                                  offset: const Offset(0, 12),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            child: ClipRRect(
+                                                              borderRadius: BorderRadius.circular(16),
+                                                              child: ListView.separated(
+                                                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                                                shrinkWrap: true,
+                                                                itemCount: options.length,
+                                                                separatorBuilder: (_, __) => Divider(
+                                                                  height: 1,
+                                                                  color: Colors.grey.shade100,
+                                                                ),
+                                                                itemBuilder: (context, index) {
+                                                                  final item = options.elementAt(index);
+
+                                                                  return InkWell(
+                                                                    onTap: () => onSelected(item),
+                                                                    child: Padding(
+                                                                      padding: const EdgeInsets.symmetric(
+                                                                        horizontal: 12,
+                                                                        vertical: 10,
+                                                                      ),
+                                                                      child: Row(
+                                                                        children: [
+                                                                          Container(
+                                                                            width: 42,
+                                                                            height: 32,
+                                                                            alignment: Alignment.center,
+                                                                            decoration: BoxDecoration(
+                                                                              color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                                              borderRadius: BorderRadius.circular(11),
+                                                                            ),
+                                                                            child: Text(
+                                                                              item['sigla']!,
+                                                                              style: const TextStyle(
+                                                                                color: Color(0xFFCC0000),
+                                                                                fontSize: 12,
+                                                                                fontWeight: FontWeight.w900,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(width: 11),
+                                                                          Expanded(
+                                                                            child: Text(
+                                                                              item['pais']!,
+                                                                              maxLines: 1,
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              style: TextStyle(
+                                                                                color: Colors.grey.shade800,
+                                                                                fontSize: 14,
+                                                                                fontWeight: FontWeight.w800,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: TextField(
+                                                controller: siglaaController,
+                                                readOnly: true,
+                                                maxLength: 3,
+                                                textCapitalization: TextCapitalization.characters,
+                                                decoration:
+                                                    InputDecoration(
+                                                      labelText: 'Sigla',
+                                                      hintText: 'BRA',
+                                                      prefixIcon: Icon(
+                                                        Icons.abc_rounded,
+                                                        size: 20,
+                                                        color: const Color(0xFFCC0000),
+                                                      ),
+                                                      filled: true,
+                                                      fillColor: Colors.grey.shade50,
+                                                      labelStyle: TextStyle(
+                                                        color: Colors.grey.shade700,
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
+                                                      hintStyle: TextStyle(
+                                                        color: Colors.grey.shade400,
+                                                        fontSize: 13,
+                                                      ),
+                                                      contentPadding: const EdgeInsets.symmetric(
+                                                        horizontal: 14,
+                                                        vertical: 15,
+                                                      ),
+                                                      border: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(14),
+                                                        borderSide: BorderSide(color: Colors.grey.shade200),
+                                                      ),
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(14),
+                                                        borderSide: BorderSide(color: Colors.grey.shade200),
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(14),
+                                                        borderSide: const BorderSide(
+                                                          color: Color(0xFFCC0000),
+                                                          width: 1.6,
+                                                        ),
+                                                      ),
+                                                    ).copyWith(
+                                                      counterText: '',
+                                                      fillColor: Colors.grey.shade100,
+                                                    ),
                                               ),
                                             ),
                                           ],
                                         ),
-                                ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 14),
+
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: const Text(
+                                      'VS',
+                                      style: TextStyle(
+                                        color: Color(0xFFCC0000),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 14),
+
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade50,
+                                      borderRadius: BorderRadius.circular(18),
+                                      border: Border.all(
+                                        color: Colors.grey.shade200,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Time B',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.grey.shade800,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              flex: 3,
+                                              child: LayoutBuilder(
+                                                builder: (context, constraints) {
+                                                  return RawAutocomplete<Map<String, String>>(
+                                                    displayStringForOption: (item) => item['pais']!,
+                                                    optionsBuilder: (textEditingValue) {
+                                                      return filtrarSelecoes(textEditingValue.text);
+                                                    },
+                                                    onSelected: (item) {
+                                                      timebbController.text = item['pais']!;
+                                                      siglbbController.text = item['sigla']!;
+                                                      FocusScope.of(context).unfocus();
+                                                    },
+                                                    fieldViewBuilder: (context, controller, node, onFieldSubmitted) {
+                                                      if (controller.text != timebbController.text) {
+                                                        controller.text = timebbController.text;
+                                                      }
+                                                      return TextField(
+                                                        controller: controller,
+                                                        focusNode: node,
+                                                        textCapitalization: TextCapitalization.words,
+                                                        onChanged: (value) {
+                                                          timebbController.text = value;
+                                                          final item = selecaoExata(value);
+                                                          siglbbController.text = item?['sigla'] ?? '';
+                                                        },
+                                                        decoration: InputDecoration(
+                                                          labelText: 'Nome da seleção',
+                                                          hintText: 'Argentina',
+                                                          prefixIcon: Icon(
+                                                            Icons.flag_rounded,
+                                                            size: 20,
+                                                            color: const Color(0xFFCC0000),
+                                                          ),
+                                                          filled: true,
+                                                          fillColor: Colors.grey.shade50,
+                                                          labelStyle: TextStyle(
+                                                            color: Colors.grey.shade700,
+                                                            fontWeight: FontWeight.w700,
+                                                          ),
+                                                          hintStyle: TextStyle(
+                                                            color: Colors.grey.shade400,
+                                                            fontSize: 13,
+                                                          ),
+                                                          contentPadding: const EdgeInsets.symmetric(
+                                                            horizontal: 14,
+                                                            vertical: 15,
+                                                          ),
+                                                          border: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(14),
+                                                            borderSide: BorderSide(color: Colors.grey.shade200),
+                                                          ),
+                                                          enabledBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(14),
+                                                            borderSide: BorderSide(color: Colors.grey.shade200),
+                                                          ),
+                                                          focusedBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(14),
+                                                            borderSide: const BorderSide(
+                                                              color: Color(0xFFCC0000),
+                                                              width: 1.6,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    optionsViewBuilder: (context, onSelected, options) {
+                                                      return Align(
+                                                        alignment: Alignment.topLeft,
+                                                        child: Material(
+                                                          color: Colors.transparent,
+                                                          child: Container(
+                                                            width: constraints.maxWidth,
+                                                            margin: const EdgeInsets.only(top: 6),
+                                                            constraints: const BoxConstraints(maxHeight: 220),
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.white,
+                                                              borderRadius: BorderRadius.circular(16),
+                                                              border: Border.all(color: Colors.grey.shade200),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: Colors.black.withValues(alpha: 0.16),
+                                                                  blurRadius: 24,
+                                                                  offset: const Offset(0, 12),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            child: ClipRRect(
+                                                              borderRadius: BorderRadius.circular(16),
+                                                              child: ListView.separated(
+                                                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                                                shrinkWrap: true,
+                                                                itemCount: options.length,
+                                                                separatorBuilder: (_, __) => Divider(
+                                                                  height: 1,
+                                                                  color: Colors.grey.shade100,
+                                                                ),
+                                                                itemBuilder: (context, index) {
+                                                                  final item = options.elementAt(index);
+
+                                                                  return InkWell(
+                                                                    onTap: () => onSelected(item),
+                                                                    child: Padding(
+                                                                      padding: const EdgeInsets.symmetric(
+                                                                        horizontal: 12,
+                                                                        vertical: 10,
+                                                                      ),
+                                                                      child: Row(
+                                                                        children: [
+                                                                          Container(
+                                                                            width: 42,
+                                                                            height: 32,
+                                                                            alignment: Alignment.center,
+                                                                            decoration: BoxDecoration(
+                                                                              color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                                              borderRadius: BorderRadius.circular(11),
+                                                                            ),
+                                                                            child: Text(
+                                                                              item['sigla']!,
+                                                                              style: const TextStyle(
+                                                                                color: Color(0xFFCC0000),
+                                                                                fontSize: 12,
+                                                                                fontWeight: FontWeight.w900,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(width: 11),
+                                                                          Expanded(
+                                                                            child: Text(
+                                                                              item['pais']!,
+                                                                              maxLines: 1,
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              style: TextStyle(
+                                                                                color: Colors.grey.shade800,
+                                                                                fontSize: 14,
+                                                                                fontWeight: FontWeight.w800,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: TextField(
+                                                controller: siglbbController,
+                                                readOnly: true,
+                                                maxLength: 3,
+                                                textCapitalization: TextCapitalization.characters,
+
+                                                decoration:
+                                                    InputDecoration(
+                                                      labelText: 'Sigla',
+                                                      hintText: 'ARG',
+                                                      prefixIcon: Icon(
+                                                        Icons.abc_rounded,
+                                                        size: 20,
+                                                        color: const Color(0xFFCC0000),
+                                                      ),
+                                                      filled: true,
+                                                      fillColor: Colors.grey.shade50,
+                                                      labelStyle: TextStyle(
+                                                        color: Colors.grey.shade700,
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
+                                                      hintStyle: TextStyle(
+                                                        color: Colors.grey.shade400,
+                                                        fontSize: 13,
+                                                      ),
+                                                      contentPadding: const EdgeInsets.symmetric(
+                                                        horizontal: 14,
+                                                        vertical: 15,
+                                                      ),
+                                                      border: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(14),
+                                                        borderSide: BorderSide(color: Colors.grey.shade200),
+                                                      ),
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(14),
+                                                        borderSide: BorderSide(color: Colors.grey.shade200),
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(14),
+                                                        borderSide: const BorderSide(
+                                                          color: Color(0xFFCC0000),
+                                                          width: 1.6,
+                                                        ),
+                                                      ),
+                                                    ).copyWith(
+                                                      counterText: '',
+                                                      fillColor: Colors.grey.shade100,
+                                                    ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  if (erro != null) ...[
+                                    const SizedBox(height: 16),
+                                    Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(13),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.shade50,
+                                        borderRadius: BorderRadius.circular(14),
+                                        border: Border.all(
+                                          color: Colors.red.shade100,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.error_outline_rounded,
+                                            color: Colors.red.shade700,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 9),
+                                          Expanded(
+                                            child: Text(
+                                              erro!,
+                                              style: TextStyle(
+                                                color: Colors.red.shade700,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ],
+
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(22, 14, 22, 22),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border(
+                                top: BorderSide(color: Colors.grey.shade100),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: salvando ? null : () => Navigator.of(dialogContext).pop(),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: Colors.grey.shade800,
+                                      side: BorderSide(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'CANCELAR',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: salvando ? null : salvar,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFCC0000),
+                                      foregroundColor: Colors.white,
+                                      disabledBackgroundColor: Colors.grey.shade300,
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                    ),
+                                    child: salvando
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2.4,
+                                            ),
+                                          )
+                                        : const Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.save_rounded, size: 18),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                'SALVAR',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 13,
+                                                  letterSpacing: 0.6,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
+              );
+            },
+          );
+        },
+      );
+    } finally {
+      // O RawAutocomplete ainda pode estar finalizando listeners no frame de fechamento.
+      // Dispor no próximo frame evita "used after being disposed".
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        idjogoController.dispose();
+        datjogController.dispose();
+        timeaaController.dispose();
+        siglaaController.dispose();
+        timebbController.dispose();
+        siglbbController.dispose();
+      });
+    }
   }
 
   void _editarResultado(Map<String, dynamic> jogo) {
@@ -1176,7 +1634,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ),
             ),
-          ), // Título e botão adicionar
+          ),
           Container(
             margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             padding: const EdgeInsets.all(16),

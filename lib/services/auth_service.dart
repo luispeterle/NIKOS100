@@ -96,24 +96,16 @@ class AuthService {
 
   static Map<String, dynamic>? login(String cpf, String dataNascimento) {
     try {
-      // 🔍 DEBUG (pode apagar depois)
-      print('Tentando login...');
-      print('CPF: $cpf');
-      print('Data: $dataNascimento');
-
       final cpfLimpo = cpf.replaceAll(RegExp(r'[^0-9]'), '');
 
       for (var user in _users) {
         if (user['cpf'] == cpfLimpo && user['dataNascimento'] == dataNascimento) {
           _currentUser = user;
 
-          print('✅ Login OK: ${user['nome']}');
-
           return user;
         }
       }
 
-      print('❌ Login falhou');
 
       return null;
     } catch (e) {

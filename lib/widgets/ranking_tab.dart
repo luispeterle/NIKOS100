@@ -425,188 +425,189 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
             ),
           ),
 
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 14, 12, 8),
-              child: Builder(
-                builder: (context) {
-                  final temRanking = meuRanking != null;
+          if (meuRanking != null)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 14, 12, 8),
+                child: Builder(
+                  builder: (context) {
+                    final temRanking = meuRanking != null;
 
-                  return Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(
-                        color: temRanking ? const Color(0xFFCC0000).withValues(alpha: 0.12) : Colors.grey.shade200,
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(
+                          color: temRanking ? const Color(0xFFCC0000).withValues(alpha: 0.12) : Colors.grey.shade200,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.055),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.055),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFFCC0000),
-                                Color(0xFF8F0000),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFFCC0000).withValues(alpha: 0.25),
-                                blurRadius: 12,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.star_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-
-                        const SizedBox(width: 13),
-
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Expanded(
-                                    child: Text(
-                                      'Meu Ranking',
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w900,
-                                        letterSpacing: 0.5,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  if (temRanking)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 9,
-                                        vertical: 5,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFCC0000).withValues(alpha: 0.08),
-                                        borderRadius: BorderRadius.circular(999),
-                                      ),
-                                      child: Text(
-                                        '#${meuRanking?['posicao']}',
-                                        style: const TextStyle(
-                                          color: Color(0xFFB00000),
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                    ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFFCC0000),
+                                  Color(0xFF8F0000),
                                 ],
                               ),
-
-                              const SizedBox(height: 4),
-
-                              Text(
-                                meuRanking?['nomcli'],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 12.5,
-                                  height: 1.2,
-                                  fontWeight: FontWeight.w700,
-                                  color: temRanking ? Colors.black87 : Colors.grey.shade600,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.25),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 5),
                                 ),
-                              ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.star_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
 
-                              const SizedBox(height: 9),
+                          const SizedBox(width: 13),
 
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.amber.shade50,
-                                      borderRadius: BorderRadius.circular(999),
-                                      border: Border.all(
-                                        color: Colors.amber.shade200,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Expanded(
+                                      child: Text(
+                                        'Meu Ranking',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 0.5,
+                                          color: Colors.black87,
+                                        ),
                                       ),
                                     ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.star_rounded,
-                                          size: 15,
-                                          color: Colors.amber.shade800,
+                                    if (temRanking)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 9,
+                                          vertical: 5,
                                         ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${rdz(meuRanking!['pontos']!.toString())} pts',
-                                          style: TextStyle(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                          borderRadius: BorderRadius.circular(999),
+                                        ),
+                                        child: Text(
+                                          '#${meuRanking?['posicao']}',
+                                          style: const TextStyle(
+                                            color: Color(0xFFB00000),
                                             fontSize: 12,
                                             fontWeight: FontWeight.w900,
-                                            color: Colors.amber.shade900,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 4),
+
+                                Text(
+                                  meuRanking?['nomcli'],
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    height: 1.2,
+                                    fontWeight: FontWeight.w700,
+                                    color: temRanking ? Colors.black87 : Colors.grey.shade600,
                                   ),
+                                ),
 
-                                  const SizedBox(width: 8),
+                                const SizedBox(height: 9),
 
-                                  if (temRanking)
+                                Row(
+                                  children: [
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 10,
                                         vertical: 6,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
+                                        color: Colors.amber.shade50,
                                         borderRadius: BorderRadius.circular(999),
                                         border: Border.all(
-                                          color: Colors.grey.shade200,
+                                          color: Colors.amber.shade200,
                                         ),
                                       ),
-                                      child: Text(
-                                        '${meuRanking?['posicao']}º colocado',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w800,
-                                          color: Colors.grey.shade800,
-                                        ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.star_rounded,
+                                            size: 15,
+                                            color: Colors.amber.shade800,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${rdz(meuRanking!['pontos']!.toString())} pts',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.amber.shade900,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                ],
-                              ),
-                            ],
+
+                                    const SizedBox(width: 8),
+
+                                    if (temRanking)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade100,
+                                          borderRadius: BorderRadius.circular(999),
+                                          border: Border.all(
+                                            color: Colors.grey.shade200,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          '${meuRanking?['posicao']}º colocado',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.grey.shade800,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 10),
@@ -680,17 +681,71 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
           else if (_ranking.isEmpty)
             SliverFillRemaining(
               hasScrollBody: false,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.leaderboard, size: 60, color: Colors.grey.shade300),
-                    SizedBox(height: 16),
-                    Text(
-                      'Nenhum ranking disponivel',
-                      style: TextStyle(color: Colors.grey),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 26),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 18,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
                     ),
-                  ],
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(22),
+                          ),
+                          child: const Icon(
+                            Icons.leaderboard_rounded,
+                            size: 38,
+                            color: Color(0xFFCC0000),
+                          ),
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        Text(
+                          'Nenhum ranking disponível',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.grey.shade900,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        Text(
+                          'O ranking será exibido assim que houver palpites calculados em jogos com resultado final.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w500,
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             )
