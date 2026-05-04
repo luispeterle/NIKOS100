@@ -189,7 +189,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final bottomNavSpace = 92.0 + MediaQuery.of(context).padding.bottom;
 
-  
     return Stack(
       children: [
         Column(
@@ -480,7 +479,9 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
             'palpbb': usuplb,
           }
         : null;
-    final palpiteAtual = palpiteServidor ?? palpiteLocal;
+
+    // Prioriza o palpite local recem-salvo para evitar "voltar" ao valor antigo do servidor antes da proxima atualizacao da lista.
+    final palpiteAtual = palpiteLocal ?? palpiteServidor;
 
     final temPlacarOficial = plcraa != null && plcrbb != null && (plcraa != 0 || plcrbb != 0);
     final jogoFinalizado = !podeEditar && temPlacarOficial;
@@ -702,7 +703,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                 ),
                               ),
 
-                            if (!jogoFinalizado && !podeEditar && palpiteLocal != null)
+                            if (!jogoFinalizado && !podeEditar && palpiteAtual != null)
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
                                 decoration: BoxDecoration(
@@ -717,7 +718,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: Text(
-                                  '${palpiteLocal['palpaa']} X ${palpiteLocal['palpbb']}',
+                                  '${palpiteAtual['palpaa']} X ${palpiteAtual['palpbb']}',
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w900,
@@ -726,7 +727,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                 ),
                               ),
 
-                            if (!jogoFinalizado && !podeEditar && palpiteLocal == null)
+                            if (!jogoFinalizado && !podeEditar && palpiteAtual == null)
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
                                 decoration: BoxDecoration(
@@ -792,10 +793,10 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                       text: 'Palpites bloqueados',
                       color: Colors.orange,
                     )
-                  else if (!UserSession.canMakePalpite() && palpiteLocal == null)
+                  else if (!UserSession.canMakePalpite() && palpiteAtual == null)
                     _buildStatusContainer(
                       icon: Icons.block,
-                      text: 'Limite de palpites atingido',
+                      text: 'Limite de palpites atingido ',
                       color: Colors.red,
                     )
                   else
@@ -884,12 +885,12 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              palpiteLocal != null ? Icons.edit_rounded : Icons.save_rounded,
+                              palpiteAtual != null ? Icons.edit_rounded : Icons.save_rounded,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              palpiteLocal != null ? 'EDITAR PALPITE' : 'SALVAR PALPITE',
+                              palpiteAtual != null ? 'EDITAR PALPITE' : 'SALVAR PALPITE',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 0.8,

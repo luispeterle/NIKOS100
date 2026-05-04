@@ -152,6 +152,9 @@ class ApiService {
     required String plcrbb,
   }) async {
     try {
+      final placarA = plcraa.trim().isEmpty ? '0' : plcraa.trim();
+      final placarB = plcrbb.trim().isEmpty ? '0' : plcrbb.trim();
+
       final resp = await serverPost(
         "adm_bolao_salva_jogos",
         myJson: {
@@ -161,8 +164,8 @@ class ApiService {
           "siglaa": siglaa,
           "timebb": timebb,
           "siglbb": siglbb,
-          "plcraa": plcraa,
-          "plcrbb": plcrbb,
+          "plcraa": placarA,
+          "plcrbb": placarB,
         },
       );
 
