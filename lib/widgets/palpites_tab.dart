@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nikos/utils/date_utils.dart';
 import '../services/api_service.dart';
 import '../services/user_session.dart';
 
@@ -134,14 +135,20 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   }
 
   bool _podeEditarPalpite(String datjog) {
-    final dataJogo = _parseDataJogo(datjog);
+    final dataJogo = tryParseDatjog(datjog);
     if (dataJogo == null) return false;
 
-    final hoje = DateTime.now();
-    final hojeSemHora = DateTime(hoje.year, hoje.month, hoje.day);
-    final dataJogoSemHora = DateTime(dataJogo.year, dataJogo.month, dataJogo.day);
+    final agora = DateTime.now();
+    final limiteEdicao = dataJogo.subtract(const Duration(hours: 1));
 
-    return dataJogoSemHora.isAfter(hojeSemHora);
+    return !agora.isAfter(limiteEdicao);
+  }
+
+  bool _placarDefinido(dynamic value) {
+    if (value == null) return false;
+    final texto = value.toString().trim();
+    if (texto.isEmpty || texto.toLowerCase() == 'null') return false;
+    return int.tryParse(texto) != null;
   }
 
   // Formata data para exibição
@@ -153,28 +160,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
       return '${dataPartes[2]}/${dataPartes[1]} $hora';
     } catch (e) {
       return datjog;
-    }
-  }
-
-  DateTime? _parseDataJogo(String datjog) {
-    try {
-      final normalizada = datjog.trim().replaceFirst('T', ' ');
-      final partes = normalizada.split(' ');
-      if (partes.length < 2) return null;
-
-      final dataPartes = partes[0].split('-');
-      final horaPartes = partes[1].split(':');
-      if (dataPartes.length != 3 || horaPartes.length < 2) return null;
-
-      return DateTime(
-        int.parse(dataPartes[0]),
-        int.parse(dataPartes[1]),
-        int.parse(dataPartes[2]),
-        int.parse(horaPartes[0]),
-        int.parse(horaPartes[1]),
-      );
-    } catch (e) {
-      return null;
     }
   }
 
@@ -483,7 +468,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     // Prioriza o palpite local recem-salvo para evitar "voltar" ao valor antigo do servidor antes da proxima atualizacao da lista.
     final palpiteAtual = palpiteLocal ?? palpiteServidor;
 
-    final temPlacarOficial = plcraa != null && plcrbb != null && (plcraa != 0 || plcrbb != 0);
+    final temPlacarOficial = _placarDefinido(plcraa) && _placarDefinido(plcrbb);
     final jogoFinalizado = !podeEditar && temPlacarOficial;
 
     final gol1Controller = TextEditingController(text: palpiteAtual == null ? '' : '${palpiteAtual['palpaa']}');
@@ -790,7 +775,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                   else if (!podeEditar)
                     _buildStatusContainer(
                       icon: Icons.timer_off,
-                      text: 'Palpites bloqueados',
+                      text: 'Palpites bloqueados, aguarde \naté ser cadastro o placar final',
                       color: Colors.orange,
                     )
                   else if (!UserSession.canMakePalpite() && palpiteAtual == null)
@@ -967,15 +952,19 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(icon, color: color, size: 18),
           const SizedBox(width: 8),
-          Text(
-            text,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w600,
-              fontSize: 12,
+          Center(
+            child: Text(
+              text,
+
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
             ),
           ),
         ],
