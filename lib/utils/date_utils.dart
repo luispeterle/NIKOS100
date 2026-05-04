@@ -35,6 +35,19 @@ DateTime? tryParseDatjog(String raw) {
   return DateTime.tryParse(value.replaceFirst(' ', 'T'));
 }
 
+String normalizarCpf(dynamic value) {
+  return value.toString().replaceAll(RegExp(r'[^0-9]'), '').padLeft(11, '0');
+}
+
+String rdz(String ns) {
+  // removeDotZero
+  if (ns.endsWith('.0')) {
+    ns = ns.substring(0, ns.length - 2);
+  }
+
+  return ns;
+}
+
 class DateTimeBrInputFormatter extends TextInputFormatter {
   static final _notDigit = RegExp(r'\D');
   static const _sep = {2: '/', 4: '/', 8: ' ', 10: ':'};
@@ -77,4 +90,3 @@ class DateTimeBrInputFormatter extends TextInputFormatter {
     );
   }
 }
-

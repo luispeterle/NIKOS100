@@ -194,6 +194,7 @@ class ApiService {
         final List responseList = jsonDecode(data['Response']);
         return responseList.map<Map<String, dynamic>>((item) {
           return {
+            'cpfcli': item['cpfcli'] ?? '',
             'nomcli': item['nomcli'],
             'pontos': (item['pontos'] ?? 0).toDouble(),
             'posicao': (item['posicao'] ?? 0).toInt(),
