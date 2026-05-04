@@ -442,6 +442,27 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     );
   }
 
+  int calcularPontosGanhos(Map<String, dynamic> jogo) {
+    final plcraa = int.tryParse(jogo['plcraa']?.toString() ?? '');
+    final plcrbb = int.tryParse(jogo['plcrbb']?.toString() ?? '');
+    final usupla = int.tryParse(jogo['usupla']?.toString() ?? '');
+    final usuplb = int.tryParse(jogo['usuplb']?.toString() ?? '');
+
+    if (plcraa == null || plcrbb == null || usupla == null || usuplb == null) {
+      return 0;
+    }
+
+    if (plcraa == usupla && plcrbb == usuplb) {
+      return 20;
+    }
+
+    if ((plcraa < plcrbb && usupla < usuplb) || (plcraa > plcrbb && usupla > usuplb) || (plcraa == plcrbb && usupla == usuplb)) {
+      return 10;
+    }
+
+    return 0;
+  }
+
   Widget _buildJogoCard(Map<String, dynamic> jogo) {
     final idjogo = jogo['idjogo'];
     final datjog = jogo['datjog'] ?? '';
@@ -465,11 +486,12 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
           }
         : null;
 
-    // Prioriza o palpite local recem-salvo para evitar "voltar" ao valor antigo do servidor antes da proxima atualizacao da lista.
     final palpiteAtual = palpiteLocal ?? palpiteServidor;
 
     final temPlacarOficial = _placarDefinido(plcraa) && _placarDefinido(plcrbb);
     final jogoFinalizado = !podeEditar && temPlacarOficial;
+
+    final pontosGanhos = calcularPontosGanhos(jogo);
 
     final gol1Controller = TextEditingController(text: palpiteAtual == null ? '' : '${palpiteAtual['palpaa']}');
     final gol2Controller = TextEditingController(text: palpiteAtual == null ? '' : '${palpiteAtual['palpbb']}');
@@ -636,7 +658,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Column(
                           children: [
-                            if (jogoFinalizado)
+                            if (jogoFinalizado) ...[
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
                                 decoration: BoxDecoration(
@@ -660,6 +682,64 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                 ),
                               ),
 
+                              const SizedBox(height: 6),
+
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade100,
+                                      borderRadius: BorderRadius.circular(999),
+                                      border: Border.all(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Meu palpite: ${gol1Controller.text} X ${gol2Controller.text}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.grey.shade800,
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 8),
+
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.amber.shade50,
+                                      borderRadius: BorderRadius.circular(999),
+                                      border: Border.all(
+                                        color: Colors.amber.shade200,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.star_rounded,
+                                          size: 14,
+                                          color: Colors.amber.shade800,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '$pontosGanhos pts ganhos',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.amber.shade900,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                             if (!jogoFinalizado && podeEditar)
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
