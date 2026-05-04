@@ -1,4 +1,6 @@
 // SERVICO DE AUTENTICACAO - gerencia login, logout e usuarios
+import 'package:flutter/material.dart';
+
 class AuthService {
   // Usuario logado no momento (null se ninguem ta logado)
   static Map<String, dynamic>? _currentUser;
@@ -106,11 +108,10 @@ class AuthService {
         }
       }
 
-
       return null;
     } catch (e) {
       // 🔥 NUNCA DEIXA QUEBRAR O APP
-      print('ERRO NO LOGIN: $e');
+      debugPrint('ERRO NO LOGIN: $e');
       return null;
     }
   }

@@ -54,6 +54,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         ),
       );
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(

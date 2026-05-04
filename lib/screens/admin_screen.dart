@@ -498,7 +498,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                                                 padding: const EdgeInsets.symmetric(vertical: 6),
                                                                 shrinkWrap: true,
                                                                 itemCount: options.length,
-                                                                separatorBuilder: (_, __) => Divider(
+                                                                separatorBuilder: (_, _) => Divider(
                                                                   height: 1,
                                                                   color: Colors.grey.shade100,
                                                                 ),
@@ -759,7 +759,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                                                 padding: const EdgeInsets.symmetric(vertical: 6),
                                                                 shrinkWrap: true,
                                                                 itemCount: options.length,
-                                                                separatorBuilder: (_, __) => Divider(
+                                                                separatorBuilder: (_, _) => Divider(
                                                                   height: 1,
                                                                   color: Colors.grey.shade100,
                                                                 ),

@@ -46,7 +46,7 @@ class ApiService {
       }
       return null;
     } catch (e) {
-      print('Erro no login: $e');
+      debugPrint('Erro no login: $e');
       return null;
     }
   }
@@ -130,7 +130,7 @@ class ApiService {
 
       return [];
     } catch (e) {
-      print('Erro ao buscar jogos: $e');
+      debugPrint('Erro ao buscar jogos: $e');
       return [];
     }
   }
@@ -164,7 +164,7 @@ class ApiService {
       UserSession.palpitesFeitos++;
       return true;
     } catch (e) {
-      print('Erro ao salvar palpite: $e');
+      debugPrint('Erro ao salvar palpite: $e');
       return false;
     }
   }
@@ -234,7 +234,7 @@ class ApiService {
       }
       return [];
     } catch (e) {
-      print('Erro ao buscar ranking: $e');
+      debugPrint('Erro ao buscar ranking: $e');
       return [];
     }
   }
