@@ -177,55 +177,366 @@ class _HomeScreenState extends State<HomeScreen> {
                           widget.onLogout();
                         },
                       ),
-
-                      if (kDebugMode) ...[
-                        const SizedBox(height: 8),
-                        ListTile(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          leading: Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: Colors.blue.withValues(alpha: 0.08),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.telegram_rounded,
-                              color: Colors.blue,
-                              size: 20,
-                            ),
-                          ),
-                          title: const Text(
-                            'Debug Telegram',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 14,
-                            ),
-                          ),
-                          subtitle: Text(
-                            'Executar teste de login',
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 12,
-                            ),
-                          ),
-                          onTap: () async {
-                            Navigator.of(context).pop();
-
-                            final resp = await serverPost(
-                              "login_simple",
-                              myJson: {
-                                "nomusu": "??",
-                                "password": "??",
-                              },
-                            );
-
-                            debugPrint(resp.toString());
-                          },
+                      const SizedBox(height: 8),
+                      ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                      ],
+                        leading: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.question_mark_outlined,
+                            color: Colors.blue,
+                            size: 20,
+                          ),
+                        ),
+                        title: const Text(
+                          'Informações do Bolão',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 14,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Regras dos palpites e ranking.',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 12,
+                          ),
+                        ),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (dialogContext) {
+                              return Dialog(
+                                backgroundColor: Colors.transparent,
+                                insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 560,
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.fromLTRB(22, 22, 22, 18),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(24),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.18),
+                                          blurRadius: 28,
+                                          offset: const Offset(0, 14),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 58,
+                                          height: 58,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.shade50,
+                                            borderRadius: BorderRadius.circular(18),
+                                          ),
+                                          child: Icon(
+                                            Icons.info_outline_rounded,
+                                            color: Colors.red.shade600,
+                                            size: 32,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 16),
+
+                                        Text(
+                                          'Informações do Bolão',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.grey.shade900,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 20),
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.amber.withValues(alpha: 0.08),
+                                            borderRadius: BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color: Colors.amber.withValues(alpha: 0.18),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.amber.withValues(alpha: 0.14),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Icon(
+                                                  Icons.emoji_events_rounded,
+                                                  color: Colors.amber,
+                                                  size: 21,
+                                                ),
+                                              ),
+
+                                              const SizedBox(width: 12),
+
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Placar exato',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w900,
+                                                        color: Colors.grey.shade900,
+                                                      ),
+                                                    ),
+
+                                                    const SizedBox(height: 3),
+
+                                                    Text(
+                                                      'Ao acertar o resultado exato da partida, você ganha 20 pontos.',
+                                                      style: TextStyle(
+                                                        fontSize: 12.5,
+                                                        height: 1.35,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: Colors.grey.shade600,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 10),
+
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green.withValues(alpha: 0.08),
+                                            borderRadius: BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color: Colors.green.withValues(alpha: 0.18),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green.withValues(alpha: 0.14),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Icon(
+                                                  Icons.trending_up_rounded,
+                                                  color: Colors.green,
+                                                  size: 21,
+                                                ),
+                                              ),
+
+                                              const SizedBox(width: 12),
+
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Resultado correto',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w900,
+                                                        color: Colors.grey.shade900,
+                                                      ),
+                                                    ),
+
+                                                    const SizedBox(height: 3),
+
+                                                    Text(
+                                                      'Ao acertar apenas o vencedor ou empate, você ganha 10 pontos.',
+                                                      style: TextStyle(
+                                                        fontSize: 12.5,
+                                                        height: 1.35,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: Colors.grey.shade600,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 10),
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.withValues(alpha: 0.08),
+                                            borderRadius: BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color: Colors.blue.withValues(alpha: 0.18),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue.withValues(alpha: 0.14),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Icon(
+                                                  Icons.flag_rounded,
+                                                  color: Colors.blue,
+                                                  size: 21,
+                                                ),
+                                              ),
+
+                                              const SizedBox(width: 12),
+
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Bônus Brasil',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w900,
+                                                        color: Colors.grey.shade900,
+                                                      ),
+                                                    ),
+
+                                                    const SizedBox(height: 3),
+
+                                                    Text(
+                                                      'Se o Brasil estiver no jogo, a pontuação pode ser dobrada.',
+                                                      style: TextStyle(
+                                                        fontSize: 12.5,
+                                                        height: 1.35,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: Colors.grey.shade600,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.deepOrange.withValues(alpha: 0.08),
+                                            borderRadius: BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color: Colors.deepOrange.withValues(alpha: 0.18),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.deepOrange.withValues(alpha: 0.14),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: const Icon(
+                                                  Icons.lock_clock_rounded,
+                                                  color: Colors.deepOrange,
+                                                  size: 21,
+                                                ),
+                                              ),
+
+                                              const SizedBox(width: 12),
+
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Prazo para palpitar',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w900,
+                                                        color: Colors.grey.shade900,
+                                                      ),
+                                                    ),
+
+                                                    const SizedBox(height: 3),
+
+                                                    Text(
+                                                      'Os palpites ficam disponíveis até 1 hora antes do início da partida. Após esse prazo, o jogo é bloqueado para novos palpites ou alterações.',
+                                                      style: TextStyle(
+                                                        fontSize: 12.5,
+                                                        height: 1.35,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: Colors.grey.shade600,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 22),
+
+                                        SizedBox(
+                                          width: double.infinity,
+                                          height: 46,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.of(dialogContext).pop();
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.grey.shade900,
+                                              foregroundColor: Colors.white,
+                                              elevation: 0,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(16),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              'Entendi',
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -335,7 +646,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Row(
                                   children: [
                                     Container(
-                                      constraints: const BoxConstraints(maxWidth: 150),
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                       decoration: BoxDecoration(
                                         color: Colors.white.withValues(alpha: 0.12),
@@ -363,9 +673,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           const SizedBox(width: 8),
                                           Flexible(
                                             child: Text(
-                                              (widget.user['nome'] ?? 'Usuário').split(' ').first.toUpperCase(),
+                                              (widget.user['nome'] ?? 'Usuário').toString().toUpperCase(),
                                               maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w800,
@@ -378,6 +687,355 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
 
                                     const Spacer(),
+
+                                    Container(
+                                      width: 42,
+                                      height: 42,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.12),
+                                        borderRadius: BorderRadius.circular(14),
+                                        border: Border.all(
+                                          color: Colors.white.withValues(alpha: 0.14),
+                                        ),
+                                      ),
+                                      child: IconButton(
+                                        padding: EdgeInsets.zero,
+                                        icon: const Icon(
+                                          Icons.question_mark_rounded,
+                                          color: Colors.white,
+                                          size: 21,
+                                        ),
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: true,
+                                            builder: (dialogContext) {
+                                              return Dialog(
+                                                backgroundColor: Colors.transparent,
+                                                insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+                                                child: ConstrainedBox(
+                                                  constraints: const BoxConstraints(
+                                                    maxWidth: 560,
+                                                  ),
+                                                  child: Container(
+                                                    padding: const EdgeInsets.fromLTRB(22, 22, 22, 18),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius: BorderRadius.circular(24),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black.withValues(alpha: 0.18),
+                                                          blurRadius: 28,
+                                                          offset: const Offset(0, 14),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Container(
+                                                          width: 58,
+                                                          height: 58,
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.red.shade50,
+                                                            borderRadius: BorderRadius.circular(18),
+                                                          ),
+                                                          child: Icon(
+                                                            Icons.info_outline_rounded,
+                                                            color: Colors.red.shade600,
+                                                            size: 32,
+                                                          ),
+                                                        ),
+
+                                                        const SizedBox(height: 16),
+
+                                                        Text(
+                                                          'Informações do Bolão',
+                                                          textAlign: TextAlign.center,
+                                                          style: TextStyle(
+                                                            fontSize: 20,
+                                                            fontWeight: FontWeight.w900,
+                                                            color: Colors.grey.shade900,
+                                                          ),
+                                                        ),
+
+                                                        const SizedBox(height: 20),
+                                                        Container(
+                                                          padding: const EdgeInsets.all(12),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.amber.withValues(alpha: 0.08),
+                                                            borderRadius: BorderRadius.circular(16),
+                                                            border: Border.all(
+                                                              color: Colors.amber.withValues(alpha: 0.18),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Container(
+                                                                width: 36,
+                                                                height: 36,
+                                                                decoration: BoxDecoration(
+                                                                  color: Colors.amber.withValues(alpha: 0.14),
+                                                                  borderRadius: BorderRadius.circular(12),
+                                                                ),
+                                                                child: Icon(
+                                                                  Icons.emoji_events_rounded,
+                                                                  color: Colors.amber,
+                                                                  size: 21,
+                                                                ),
+                                                              ),
+
+                                                              const SizedBox(width: 12),
+
+                                                              Expanded(
+                                                                child: Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    Text(
+                                                                      'Placar exato',
+                                                                      style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w900,
+                                                                        color: Colors.grey.shade900,
+                                                                      ),
+                                                                    ),
+
+                                                                    const SizedBox(height: 3),
+
+                                                                    Text(
+                                                                      'Ao acertar o resultado exato da partida, você ganha 20 pontos.',
+                                                                      style: TextStyle(
+                                                                        fontSize: 12.5,
+                                                                        height: 1.35,
+                                                                        fontWeight: FontWeight.w500,
+                                                                        color: Colors.grey.shade600,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+
+                                                        const SizedBox(height: 10),
+
+                                                        Container(
+                                                          padding: const EdgeInsets.all(12),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.green.withValues(alpha: 0.08),
+                                                            borderRadius: BorderRadius.circular(16),
+                                                            border: Border.all(
+                                                              color: Colors.green.withValues(alpha: 0.18),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Container(
+                                                                width: 36,
+                                                                height: 36,
+                                                                decoration: BoxDecoration(
+                                                                  color: Colors.green.withValues(alpha: 0.14),
+                                                                  borderRadius: BorderRadius.circular(12),
+                                                                ),
+                                                                child: Icon(
+                                                                  Icons.trending_up_rounded,
+                                                                  color: Colors.green,
+                                                                  size: 21,
+                                                                ),
+                                                              ),
+
+                                                              const SizedBox(width: 12),
+
+                                                              Expanded(
+                                                                child: Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    Text(
+                                                                      'Resultado correto',
+                                                                      style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w900,
+                                                                        color: Colors.grey.shade900,
+                                                                      ),
+                                                                    ),
+
+                                                                    const SizedBox(height: 3),
+
+                                                                    Text(
+                                                                      'Ao acertar apenas o vencedor ou empate, você ganha 10 pontos.',
+                                                                      style: TextStyle(
+                                                                        fontSize: 12.5,
+                                                                        height: 1.35,
+                                                                        fontWeight: FontWeight.w500,
+                                                                        color: Colors.grey.shade600,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+
+                                                        const SizedBox(height: 10),
+                                                        Container(
+                                                          padding: const EdgeInsets.all(12),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.blue.withValues(alpha: 0.08),
+                                                            borderRadius: BorderRadius.circular(16),
+                                                            border: Border.all(
+                                                              color: Colors.blue.withValues(alpha: 0.18),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Container(
+                                                                width: 36,
+                                                                height: 36,
+                                                                decoration: BoxDecoration(
+                                                                  color: Colors.blue.withValues(alpha: 0.14),
+                                                                  borderRadius: BorderRadius.circular(12),
+                                                                ),
+                                                                child: Icon(
+                                                                  Icons.flag_rounded,
+                                                                  color: Colors.blue,
+                                                                  size: 21,
+                                                                ),
+                                                              ),
+
+                                                              const SizedBox(width: 12),
+
+                                                              Expanded(
+                                                                child: Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    Text(
+                                                                      'Bônus Brasil',
+                                                                      style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w900,
+                                                                        color: Colors.grey.shade900,
+                                                                      ),
+                                                                    ),
+
+                                                                    const SizedBox(height: 3),
+
+                                                                    Text(
+                                                                      'Se o Brasil estiver no jogo, a pontuação pode ser dobrada.',
+                                                                      style: TextStyle(
+                                                                        fontSize: 12.5,
+                                                                        height: 1.35,
+                                                                        fontWeight: FontWeight.w500,
+                                                                        color: Colors.grey.shade600,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const SizedBox(height: 10),
+                                                        Container(
+                                                          padding: const EdgeInsets.all(12),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.deepOrange.withValues(alpha: 0.08),
+                                                            borderRadius: BorderRadius.circular(16),
+                                                            border: Border.all(
+                                                              color: Colors.deepOrange.withValues(alpha: 0.18),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Container(
+                                                                width: 36,
+                                                                height: 36,
+                                                                decoration: BoxDecoration(
+                                                                  color: Colors.deepOrange.withValues(alpha: 0.14),
+                                                                  borderRadius: BorderRadius.circular(12),
+                                                                ),
+                                                                child: const Icon(
+                                                                  Icons.lock_clock_rounded,
+                                                                  color: Colors.deepOrange,
+                                                                  size: 21,
+                                                                ),
+                                                              ),
+
+                                                              const SizedBox(width: 12),
+
+                                                              Expanded(
+                                                                child: Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    Text(
+                                                                      'Prazo para palpitar',
+                                                                      style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w900,
+                                                                        color: Colors.grey.shade900,
+                                                                      ),
+                                                                    ),
+
+                                                                    const SizedBox(height: 3),
+
+                                                                    Text(
+                                                                      'Os palpites ficam disponíveis até 1 hora antes do início da partida. Após esse prazo, o jogo é bloqueado para novos palpites ou alterações.',
+                                                                      style: TextStyle(
+                                                                        fontSize: 12.5,
+                                                                        height: 1.35,
+                                                                        fontWeight: FontWeight.w500,
+                                                                        color: Colors.grey.shade600,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const SizedBox(height: 22),
+
+                                                        SizedBox(
+                                                          width: double.infinity,
+                                                          height: 46,
+                                                          child: ElevatedButton(
+                                                            onPressed: () {
+                                                              Navigator.of(dialogContext).pop();
+                                                            },
+                                                            style: ElevatedButton.styleFrom(
+                                                              backgroundColor: Colors.grey.shade900,
+                                                              foregroundColor: Colors.white,
+                                                              elevation: 0,
+                                                              shape: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius.circular(16),
+                                                              ),
+                                                            ),
+                                                            child: const Text(
+                                                              'Entendi',
+                                                              style: TextStyle(
+                                                                fontSize: 15,
+                                                                fontWeight: FontWeight.w800,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        tooltip: 'Informações',
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
 
                                     Container(
                                       width: 42,
