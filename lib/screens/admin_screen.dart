@@ -31,8 +31,10 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   Future<void> _loadJogos() async {
+    if (!mounted) return;
     setState(() => _loading = true);
     final jogos = await ApiService.getJogos();
+    if (!mounted) return;
     setState(() {
       _jogos = jogos;
       _loading = false;
@@ -40,6 +42,7 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   void _adicionarJogo() async {
+    final messenger = ScaffoldMessenger.of(context);
     final idjogoController = TextEditingController();
     final datjogController = TextEditingController();
     final timeaaController = TextEditingController();
@@ -93,12 +96,14 @@ class _AdminScreenState extends State<AdminScreen> {
       String? hint,
       int? maxLength,
       TextCapitalization textCapitalization = TextCapitalization.none,
+      List<TextInputFormatter>? inputFormatters,
     }) {
       return TextField(
         controller: controller,
         keyboardType: keyboardType,
         maxLength: maxLength,
         textCapitalization: textCapitalization,
+        inputFormatters: inputFormatters,
         decoration: campoDecoration(
           label: label,
           icon: icon,
@@ -112,18 +117,26 @@ class _AdminScreenState extends State<AdminScreen> {
       barrierDismissible: !salvando,
       builder: (dialogContext) {
         return StatefulBuilder(
-          builder: (context, setDialogState) {
+          builder: (dialogStateContext, setDialogState) {
             Future<void> salvar() async {
               final idjogo = idjogoController.text.trim();
-              final datjog = datjogController.text.trim();
+              final datjogRaw = datjogController.text.trim();
               final timeaa = timeaaController.text.trim();
               final siglaa = siglaaController.text.trim().toUpperCase();
               final timebb = timebbController.text.trim();
               final siglbb = siglbbController.text.trim().toUpperCase();
+              final parsedDatjog = tryParseDatjog(datjogRaw);
 
-              if (idjogo.isEmpty || datjog.isEmpty || timeaa.isEmpty || siglaa.isEmpty || timebb.isEmpty || siglbb.isEmpty) {
+              if (idjogo.isEmpty || datjogRaw.isEmpty || timeaa.isEmpty || siglaa.isEmpty || timebb.isEmpty || siglbb.isEmpty) {
                 setDialogState(() {
                   erro = 'Preencha todos os campos para adicionar o jogo.';
+                });
+                return;
+              }
+
+              if (parsedDatjog == null) {
+                setDialogState(() {
+                  erro = 'Data invalida. Use DD/MM/AAAA HH:MM (ex: 31/12/2026 20:30).';
                 });
                 return;
               }
@@ -135,29 +148,30 @@ class _AdminScreenState extends State<AdminScreen> {
 
               final success = await ApiService.salvarJogoAdmin(
                 idjogo: idjogo,
-                datjog: datjog,
+                datjog: formatDateFull(parsedDatjog),
                 timeaa: timeaa,
                 siglaa: siglaa,
                 timebb: timebb,
                 siglbb: siglbb,
-                plcraa: '',
-                plcrbb: '',
+                plcraa: '0',
+                plcrbb: '0',
               );
 
-              if (!mounted) return;
+              if (!mounted || !dialogContext.mounted) return;
 
               setDialogState(() {
                 salvando = false;
               });
 
               if (success) {
+                if (!dialogContext.mounted) return;
                 Navigator.of(dialogContext).pop();
 
                 await _loadJogos();
 
                 if (!mounted) return;
 
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   SnackBar(
                     behavior: SnackBarBehavior.floating,
                     backgroundColor: Colors.green.shade600,
@@ -294,8 +308,14 @@ class _AdminScreenState extends State<AdminScreen> {
                                         controller: datjogController,
                                         label: 'Data e hora',
                                         icon: Icons.event_rounded,
-                                        keyboardType: TextInputType.datetime,
+                                        keyboardType: TextInputType.number,
                                         hint: '31/12/2026 20:30',
+                                        maxLength: 16,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(12),
+                                          DateTimeBrInputFormatter(),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -540,13 +560,6 @@ class _AdminScreenState extends State<AdminScreen> {
         );
       },
     );
-
-    idjogoController.dispose();
-    datjogController.dispose();
-    timeaaController.dispose();
-    siglaaController.dispose();
-    timebbController.dispose();
-    siglbbController.dispose();
   }
 
   void _editarResultado(Map<String, dynamic> jogo) {
@@ -610,15 +623,21 @@ class _AdminScreenState extends State<AdminScreen> {
               final gol1 = int.tryParse(plcraaController.text);
               final gol2 = int.tryParse(plcrbbController.text);
 
-              final idjogo = jogo['idjogo']?.toString() ?? jogo['id']?.toString() ?? '';
-              final datjog = jogo['datjog']?.toString() ?? jogo['dataHora']?.toString() ?? '';
-              final timeaa = jogo['timeaa']?.toString() ?? jogo['time1']?.toString() ?? '';
-              final siglaa = jogo['siglaa']?.toString() ?? jogo['sigla1']?.toString() ?? '';
-              final timebb = jogo['timebb']?.toString() ?? jogo['time2']?.toString() ?? '';
-              final siglbb = jogo['siglbb']?.toString() ?? jogo['sigla2']?.toString() ?? '';
+              final idjogo = jogo['idjogo']?.toString() ?? '';
+              final datjogRaw = jogo['datjog']?.toString() ?? '';
+              final timeaa = jogo['timeaa']?.toString() ?? '';
+              final siglaa = jogo['siglaa']?.toString() ?? '';
+              final timebb = jogo['timebb']?.toString() ?? '';
+              final siglbb = jogo['siglbb']?.toString() ?? '';
+              final parsedDatjog = tryParseDatjog(datjogRaw);
 
-              if (gol1 == null || gol2 == null || idjogo.isEmpty || datjog.isEmpty || timeaa.isEmpty || siglaa.isEmpty || timebb.isEmpty || siglbb.isEmpty) {
-                showFeedback('Preencha um placar válido', error: true);
+              if (gol1 == null || gol2 == null || idjogo.isEmpty || datjogRaw.isEmpty || timeaa.isEmpty || siglaa.isEmpty || timebb.isEmpty || siglbb.isEmpty) {
+                showFeedback('Preencha um placar valido', error: true);
+                return;
+              }
+
+              if (parsedDatjog == null) {
+                showFeedback('Data do jogo invalida para salvar resultado', error: true);
                 return;
               }
 
@@ -626,7 +645,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
               final success = await ApiService.salvarJogoAdmin(
                 idjogo: idjogo,
-                datjog: datjog,
+                datjog: formatDateFull(parsedDatjog),
                 timeaa: timeaa,
                 siglaa: siglaa,
                 timebb: timebb,
@@ -635,11 +654,12 @@ class _AdminScreenState extends State<AdminScreen> {
                 plcrbb: gol2.toString(),
               );
 
-              if (!mounted) return;
+              if (!mounted || !dialogContext.mounted) return;
 
               setModalState(() => salvando = false);
 
               if (success) {
+                if (!dialogContext.mounted) return;
                 Navigator.of(dialogContext).pop();
                 await _loadJogos();
                 showFeedback('Resultado salvo com sucesso');
