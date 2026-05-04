@@ -223,8 +223,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final bottomNavSpace = 92.0 + MediaQuery.of(context).padding.bottom;
-
     return Stack(
       children: [
         Column(
@@ -301,7 +299,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                 onRefresh: _loadData,
                 child: _jogos.isEmpty && !_loading
                     ? ListView(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomNavSpace),
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + 92),
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: [
                           const SizedBox(height: 80),
@@ -402,7 +400,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                         ],
                       )
                     : ListView.builder(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomNavSpace),
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 0 + 92),
                         itemCount: _jogos.length,
                         itemBuilder: (ctx, i) => _buildJogoCard(_jogos[i]),
                       ),
