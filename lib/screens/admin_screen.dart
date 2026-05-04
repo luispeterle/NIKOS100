@@ -153,8 +153,8 @@ class _AdminScreenState extends State<AdminScreen> {
                 siglaa: siglaa,
                 timebb: timebb,
                 siglbb: siglbb,
-                plcraa: '0',
-                plcrbb: '0',
+                plcraa: '',
+                plcrbb: '',
               );
 
               if (!mounted || !dialogContext.mounted) return;
@@ -563,12 +563,8 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   void _editarResultado(Map<String, dynamic> jogo) {
-    final plcraaController = TextEditingController(
-      text: jogo['plcraa']?.toString() ?? '',
-    );
-    final plcrbbController = TextEditingController(
-      text: jogo['plcrbb']?.toString() ?? '',
-    );
+    String placarA = jogo['plcraa']?.toString() ?? '';
+    String placarB = jogo['plcrbb']?.toString() ?? '';
 
     final timeA = jogo['timeaa']?.toString() ?? jogo['time1']?.toString() ?? '';
     final timeB = jogo['timebb']?.toString() ?? jogo['time2']?.toString() ?? '';
@@ -620,8 +616,8 @@ class _AdminScreenState extends State<AdminScreen> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             Future<void> salvarResultado() async {
-              final gol1 = int.tryParse(plcraaController.text);
-              final gol2 = int.tryParse(plcrbbController.text);
+              final gol1 = int.tryParse(placarA);
+              final gol2 = int.tryParse(placarB);
 
               final idjogo = jogo['idjogo']?.toString() ?? '';
               final datjogRaw = jogo['datjog']?.toString() ?? '';
@@ -669,11 +665,13 @@ class _AdminScreenState extends State<AdminScreen> {
             }
 
             Widget buildScoreField({
-              required TextEditingController controller,
+              required String initialValue,
               required String label,
+              required ValueChanged<String> onChanged,
             }) {
-              return TextField(
-                controller: controller,
+              return TextFormField(
+                initialValue: initialValue,
+                onChanged: onChanged,
                 enabled: !salvando,
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -727,288 +725,292 @@ class _AdminScreenState extends State<AdminScreen> {
                   borderRadius: BorderRadius.circular(28),
                   child: Material(
                     color: Colors.white,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.fromLTRB(22, 22, 22, 24),
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFFCC0000),
-                                Color(0xFF960000),
-                                Color(0xFF650000),
-                              ],
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(22, 22, 22, 24),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFFCC0000),
+                                  Color(0xFF960000),
+                                  Color(0xFF650000),
+                                ],
+                              ),
                             ),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.16),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                        color: Colors.white.withValues(alpha: 0.24),
-                                      ),
-                                    ),
-                                    child: const Icon(
-                                      Icons.sports_soccer_rounded,
-                                      color: Colors.white,
-                                      size: 27,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Editar resultado',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 3),
-                                        Text(
-                                          fase.isEmpty ? 'Informe o placar final' : fase,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: Colors.white.withValues(alpha: 0.72),
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: salvando ? null : () => Navigator.of(dialogContext).pop(),
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.white.withValues(alpha: 0.14),
-                                      foregroundColor: Colors.white,
-                                    ),
-                                    icon: const Icon(Icons.close_rounded),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 22),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.18),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        timeA.isEmpty ? 'Time A' : timeA,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(999),
-                                      ),
-                                      child: const Text(
-                                        'X',
-                                        style: TextStyle(
-                                          color: Color(0xFFCC0000),
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        timeB.isEmpty ? 'Time B' : timeB,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: buildScoreField(
-                                      controller: plcraaController,
-                                      label: siglaA,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                                    child: Container(
-                                      width: 42,
-                                      height: 42,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFCC0000).withValues(alpha: 0.08),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Center(
-                                        child: Text(
-                                          'X',
-                                          style: TextStyle(
-                                            color: Color(0xFFCC0000),
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: buildScoreField(
-                                      controller: plcrbbController,
-                                      label: siglaB,
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 18),
-
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF8F8F8),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: Colors.black.withValues(alpha: 0.05),
-                                  ),
-                                ),
-                                child: Row(
+                            child: Column(
+                              children: [
+                                Row(
                                   children: [
                                     Container(
-                                      width: 34,
-                                      height: 34,
+                                      width: 48,
+                                      height: 48,
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFFCC0000).withValues(alpha: 0.08),
-                                        shape: BoxShape.circle,
+                                        color: Colors.white.withValues(alpha: 0.16),
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                          color: Colors.white.withValues(alpha: 0.24),
+                                        ),
                                       ),
                                       child: const Icon(
-                                        Icons.info_outline_rounded,
-                                        color: Color(0xFFCC0000),
-                                        size: 18,
+                                        Icons.sports_soccer_rounded,
+                                        color: Colors.white,
+                                        size: 27,
                                       ),
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
-                                      child: Text(
-                                        'Digite o placar final da partida para atualizar o resultado do jogo.',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade700,
-                                          fontSize: 12.5,
-                                          height: 1.35,
-                                          fontWeight: FontWeight.w600,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Editar resultado',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 3),
+                                          Text(
+                                            fase.isEmpty ? 'Informe o placar final' : fase,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: Colors.white.withValues(alpha: 0.72),
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: salvando ? null : () => Navigator.of(dialogContext).pop(),
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: Colors.white.withValues(alpha: 0.14),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      icon: const Icon(Icons.close_rounded),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 22),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(alpha: 0.18),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          timeA.isEmpty ? 'Time A' : timeA,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w900,
+                                          ),
                                         ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(999),
+                                        ),
+                                        child: const Text(
+                                          'X',
+                                          style: TextStyle(
+                                            color: Color(0xFFCC0000),
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          timeB.isEmpty ? 'Time B' : timeB,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: buildScoreField(
+                                        initialValue: placarA,
+                                        label: siglaA,
+                                        onChanged: (value) => placarA = value,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                                      child: Container(
+                                        width: 42,
+                                        height: 42,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            'X',
+                                            style: TextStyle(
+                                              color: Color(0xFFCC0000),
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: buildScoreField(
+                                        initialValue: placarB,
+                                        label: siglaB,
+                                        onChanged: (value) => placarB = value,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
 
-                              const SizedBox(height: 24),
+                                const SizedBox(height: 18),
 
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: OutlinedButton(
-                                      onPressed: salvando ? null : () => Navigator.of(dialogContext).pop(),
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: Colors.grey.shade800,
-                                        side: BorderSide(color: Colors.grey.shade300),
-                                        padding: const EdgeInsets.symmetric(vertical: 15),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF8F8F8),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: Colors.black.withValues(alpha: 0.05),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 34,
+                                        height: 34,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.info_outline_rounded,
+                                          color: Color(0xFFCC0000),
+                                          size: 18,
                                         ),
                                       ),
-                                      child: const Text(
-                                        'Cancelar',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w900,
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          'Digite o placar final da partida para atualizar o resultado do jogo.',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade700,
+                                            fontSize: 12.5,
+                                            height: 1.35,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 24),
+
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: OutlinedButton(
+                                        onPressed: salvando ? null : () => Navigator.of(dialogContext).pop(),
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: Colors.grey.shade800,
+                                          side: BorderSide(color: Colors.grey.shade300),
+                                          padding: const EdgeInsets.symmetric(vertical: 15),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(15),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Cancelar',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w900,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: salvando ? null : salvarResultado,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFFCC0000),
-                                        foregroundColor: Colors.white,
-                                        disabledBackgroundColor: Colors.red.shade200,
-                                        elevation: 0,
-                                        padding: const EdgeInsets.symmetric(vertical: 15),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: salvando ? null : salvarResultado,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(0xFFCC0000),
+                                          foregroundColor: Colors.white,
+                                          disabledBackgroundColor: Colors.red.shade200,
+                                          elevation: 0,
+                                          padding: const EdgeInsets.symmetric(vertical: 15),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(15),
+                                          ),
                                         ),
+                                        child: salvando
+                                            ? const SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child: CircularProgressIndicator(
+                                                  color: Colors.white,
+                                                  strokeWidth: 2.4,
+                                                ),
+                                              )
+                                            : const Text(
+                                                'Salvar',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w900,
+                                                ),
+                                              ),
                                       ),
-                                      child: salvando
-                                          ? const SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child: CircularProgressIndicator(
-                                                color: Colors.white,
-                                                strokeWidth: 2.4,
-                                              ),
-                                            )
-                                          : const Text(
-                                              'Salvar',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w900,
-                                              ),
-                                            ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1017,10 +1019,7 @@ class _AdminScreenState extends State<AdminScreen> {
           },
         );
       },
-    ).whenComplete(() {
-      plcraaController.dispose();
-      plcrbbController.dispose();
-    });
+    );
   }
 
   @override

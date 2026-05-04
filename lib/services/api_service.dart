@@ -81,22 +81,19 @@ class ApiService {
           };
         }).toList();
 
+        bool semPlacar(v) => v == null || ['', 'null'].contains(v.toString().trim().toLowerCase());
+
+        int aberto(j) => semPlacar(j['plcraa']) && semPlacar(j['plcrbb']) ? 0 : 1;
+
         jogos.sort((a, b) {
-          final dataA = (a['datjog']);
-          final dataB = (b['datjog']);
+          final c1 = aberto(a).compareTo(aberto(b));
+          if (c1 != 0) return c1;
 
-          final compareData = dataA.compareTo(dataB);
+          final c2 = '${a['datjog'] ?? ''}'.compareTo('${b['datjog'] ?? ''}');
+          if (c2 != 0) return c2;
 
-          if (compareData != 0) {
-            return compareData;
-          }
-
-          final idA = int.tryParse(a['idjogo'].toString()) ?? 0;
-          final idB = int.tryParse(b['idjogo'].toString()) ?? 0;
-
-          return idA.compareTo(idB);
+          return (int.tryParse('${a['idjogo']}') ?? 0).compareTo(int.tryParse('${b['idjogo']}') ?? 0);
         });
-
         return jogos;
       }
 
@@ -152,9 +149,6 @@ class ApiService {
     required String plcrbb,
   }) async {
     try {
-      final placarA = plcraa.trim().isEmpty ? '0' : plcraa.trim();
-      final placarB = plcrbb.trim().isEmpty ? '0' : plcrbb.trim();
-
       final resp = await serverPost(
         "adm_bolao_salva_jogos",
         myJson: {
@@ -164,8 +158,8 @@ class ApiService {
           "siglaa": siglaa,
           "timebb": timebb,
           "siglbb": siglbb,
-          "plcraa": placarA,
-          "plcrbb": placarB,
+          "plcraa": plcraa,
+          "plcrbb": plcrbb,
         },
       );
 
