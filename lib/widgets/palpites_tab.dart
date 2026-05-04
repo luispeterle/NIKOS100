@@ -464,6 +464,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   }
 
   Widget _buildJogoCard(Map<String, dynamic> jogo) {
+    final fase = jogo['fase'];
     final idjogo = jogo['idjogo'];
     final datjog = jogo['datjog'] ?? '';
     final timeaa = jogo['timeaa'] ?? '';
@@ -556,7 +557,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
 
                   Expanded(
                     child: Text(
-                      'Jogo #$idjogo',
+                      '#$idjogo - $fase',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
@@ -681,64 +682,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                   ),
                                 ),
                               ),
-
-                              const SizedBox(height: 6),
-
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade100,
-                                      borderRadius: BorderRadius.circular(999),
-                                      border: Border.all(
-                                        color: Colors.grey.shade300,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'Meu palpite: ${gol1Controller.text} X ${gol2Controller.text}',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.grey.shade800,
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 8),
-
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.amber.shade50,
-                                      borderRadius: BorderRadius.circular(999),
-                                      border: Border.all(
-                                        color: Colors.amber.shade200,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.star_rounded,
-                                          size: 14,
-                                          color: Colors.amber.shade800,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '$pontosGanhos pts ganhos',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w900,
-                                            color: Colors.amber.shade900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ],
                             if (!jogoFinalizado && podeEditar)
                               Container(
@@ -846,13 +789,110 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
 
                   const SizedBox(height: 16),
 
-                  if (jogoFinalizado)
+                  if (jogoFinalizado) ...[
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 10,
+                      runSpacing: 8,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF7F7F8),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(
+                              color: const Color(0xFFE3E4E8),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.04),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.edit_note_rounded,
+                                size: 16,
+                                color: Colors.grey.shade700,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Meu palpite: ${gol1Controller.text} X ${gol2Controller.text}',
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.grey.shade800,
+                                  letterSpacing: 0.1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.amber.shade50,
+                                Colors.orange.shade50,
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(
+                              color: Colors.amber.shade200,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.orange.withValues(alpha: 0.08),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.shade100,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.emoji_events_rounded,
+                                  size: 13,
+                                  color: Colors.amber.shade800,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '$pontosGanhos pts ganhos',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.orange.shade900,
+                                  letterSpacing: 0.1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
                     _buildStatusContainer(
                       icon: Icons.check_circle,
-                      text: 'Jogo finalizado',
+                      text: 'Jogo finalizado ',
                       color: Colors.grey,
-                    )
-                  else if (!podeEditar)
+                    ),
+                  ] else if (!podeEditar)
                     _buildStatusContainer(
                       icon: Icons.timer_off,
                       text: 'Palpites bloqueados, aguarde \naté ser cadastro o placar final',
@@ -1030,22 +1070,26 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withAlpha(77)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
         children: [
-          Icon(icon, color: color, size: 18),
-          const SizedBox(width: 8),
-          Center(
-            child: Text(
-              text,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 18),
+              const SizedBox(width: 8),
+              Center(
+                child: Text(
+                  text,
 
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),

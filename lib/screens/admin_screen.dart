@@ -1590,7 +1590,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            fase,
+                                            '#${jogo['idjogo']} - $fase',
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(

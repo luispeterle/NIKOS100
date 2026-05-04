@@ -54,21 +54,46 @@ class ApiService {
   // ============================================
   // BUSCAR JOGOS
   // ============================================
+
   static Future<List<Map<String, dynamic>>> getJogos() async {
     try {
-      final resp = await serverPost("bolao_get_jogos", myJson: {"cgccpf": UserSession.cgccpf});
+      final resp = await serverPost(
+        "bolao_get_jogos",
+        myJson: {"cgccpf": UserSession.cgccpf},
+      );
 
       if (resp == true || resp == null) {
         return [];
       }
 
       final data = jsonDecode(resp);
+
       if (data['Response'] != null) {
         final List responseList = jsonDecode(data['Response']);
 
         final jogos = responseList.map<Map<String, dynamic>>((item) {
+          final id = int.tryParse('${item['idjogo']}') ?? 0;
+
+          final fase = id >= 1 && id <= 72
+              ? 'Fase de grupos'
+              : id >= 73 && id <= 88
+              ? 'Fase de 32'
+              : id >= 89 && id <= 96
+              ? 'Oitavas de final'
+              : id >= 97 && id <= 100
+              ? 'Quartas de final'
+              : id >= 101 && id <= 102
+              ? 'Semifinal'
+              : id == 103
+              ? 'Disputa de 3º lugar'
+              : id == 104
+              ? 'Final'
+              : 'Fase não definida';
+
           return {
             'idjogo': item['idjogo'],
+            'fase': fase,
+
             'datjog': item['datjog'],
             'timeaa': item['timeaa'],
             'siglaa': item['siglaa'],
@@ -81,9 +106,14 @@ class ApiService {
           };
         }).toList();
 
-        bool semPlacar(v) => v == null || ['', 'null'].contains(v.toString().trim().toLowerCase());
+        bool semPlacar(v) {
+          final texto = v?.toString().trim().toLowerCase() ?? '';
+          return texto.isEmpty || texto == 'null';
+        }
 
-        int aberto(j) => semPlacar(j['plcraa']) && semPlacar(j['plcrbb']) ? 0 : 1;
+        int aberto(j) {
+          return semPlacar(j['plcraa']) && semPlacar(j['plcrbb']) ? 0 : 1;
+        }
 
         jogos.sort((a, b) {
           final c1 = aberto(a).compareTo(aberto(b));
@@ -94,6 +124,7 @@ class ApiService {
 
           return (int.tryParse('${a['idjogo']}') ?? 0).compareTo(int.tryParse('${b['idjogo']}') ?? 0);
         });
+
         return jogos;
       }
 
