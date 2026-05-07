@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nikos/utils/date_utils.dart';
@@ -17,12 +19,35 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   List<Map<String, dynamic>> _jogos = [];
   final Map<int, Map<String, dynamic>> _palpitesLocais = {}; // Armazena palpites já feitos localmente
 
+  final Map<int, Timer> _autoSaveTimers = {};
+  final Map<int, Timer> _salvoAgoraTimers = {};
+  final Map<int, DateTime> _salvoAgoraPorJogo = {};
+  final Map<int, TextEditingController> _gol1Controllers = {};
+  final Map<int, TextEditingController> _gol2Controllers = {};
+  final Map<int, bool> _salvandoPalpite = {};
   bool _loading = true;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    for (final timer in _autoSaveTimers.values) {
+      timer.cancel();
+    }
+    for (final timer in _salvoAgoraTimers.values) {
+      timer.cancel();
+    }
+    for (final controller in _gol1Controllers.values) {
+      controller.dispose();
+    }
+    for (final controller in _gol2Controllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -219,6 +244,174 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     final siglaa = (jogo['siglaa'] ?? '').toString().toUpperCase();
     final siglbb = (jogo['siglbb'] ?? '').toString().toUpperCase();
     return siglaa == 'BRA' || siglbb == 'BRA';
+  }
+
+  TextEditingController _obterControllerGol({
+    required int idjogo,
+    required bool primeiroGol,
+    required String valorInicial,
+  }) {
+    final mapa = primeiroGol ? _gol1Controllers : _gol2Controllers;
+    final controller = mapa.putIfAbsent(idjogo, () => TextEditingController(text: valorInicial));
+
+    // Se o controller foi criado vazio e agora temos um valor salvo do servidor/local,
+    // aplica apenas quando ainda está vazio para não sobrescrever edição em andamento.
+    if (controller.text.trim().isEmpty && valorInicial.trim().isNotEmpty) {
+      controller.text = valorInicial;
+    }
+
+    return controller;
+  }
+
+  void _marcarPalpiteSalvoAgora(int idjogo) {
+    _salvoAgoraTimers[idjogo]?.cancel();
+
+    setState(() {
+      _salvoAgoraPorJogo[idjogo] = DateTime.now();
+    });
+
+    _salvoAgoraTimers[idjogo] = Timer(const Duration(seconds: 2), () {
+      if (!mounted) return;
+      setState(() {
+        _salvoAgoraPorJogo.remove(idjogo);
+      });
+    });
+  }
+
+  Future<void> _salvarPalpiteDoJogo({
+    required int idjogo,
+    required String palpaa,
+    required String palpbb,
+    required Map<String, dynamic>? palpiteAtual,
+    required bool mostrarFeedback,
+  }) async {
+    final palpaaLimpo = palpaa.trim();
+    final palpbbLimpo = palpbb.trim();
+
+    if (palpaaLimpo.isEmpty || palpbbLimpo.isEmpty) return;
+    if (_salvandoPalpite[idjogo] == true) return;
+
+    final palpiteAtualA = palpiteAtual?['palpaa']?.toString();
+    final palpiteAtualB = palpiteAtual?['palpbb']?.toString();
+    if (palpiteAtualA == palpaaLimpo && palpiteAtualB == palpbbLimpo) return;
+
+    if (!UserSession.canMakePalpite() && palpiteAtual == null) {
+      if (mostrarFeedback && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Limite de palpites atingido'),
+            backgroundColor: Colors.red.shade600,
+          ),
+        );
+      }
+      return;
+    }
+
+    final jaTinhaPalpite = palpiteAtual != null;
+    setState(() => _salvandoPalpite[idjogo] = true);
+
+    final sucesso = await ApiService.salvarPalpite(
+      idjogo: idjogo.toString(),
+      palpaa: palpaaLimpo,
+      palpbb: palpbbLimpo,
+    );
+
+    if (!mounted) return;
+    setState(() => _salvandoPalpite[idjogo] = false);
+
+    if (sucesso) {
+      setState(() {
+        _palpitesLocais[idjogo] = {
+          'palpaa': palpaaLimpo,
+          'palpbb': palpbbLimpo,
+        };
+        if (!jaTinhaPalpite) {
+          UserSession.palpitesFeitos++;
+        }
+      });
+
+      _marcarPalpiteSalvoAgora(idjogo);
+
+      if (mostrarFeedback) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 10),
+                Text('Palpite salvo!'),
+              ],
+            ),
+            backgroundColor: Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.error, color: Colors.white),
+              SizedBox(width: 10),
+              Text('Erro ao salvar palpite'),
+            ],
+          ),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _agendarAutoSave({
+    required int idjogo,
+    required Map<String, dynamic> jogo,
+    required TextEditingController gol1Controller,
+    required TextEditingController gol2Controller,
+  }) {
+    _autoSaveTimers[idjogo]?.cancel();
+
+    _autoSaveTimers[idjogo] = Timer(const Duration(milliseconds: 500), () async {
+      if (!mounted) return;
+
+      if (_salvandoPalpite[idjogo] == true) {
+        _agendarAutoSave(
+          idjogo: idjogo,
+          jogo: jogo,
+          gol1Controller: gol1Controller,
+          gol2Controller: gol2Controller,
+        );
+        return;
+      }
+
+      final palpaa = gol1Controller.text;
+      final palpbb = gol2Controller.text;
+      if (palpaa.trim().isEmpty || palpbb.trim().isEmpty) return;
+
+      final palpiteServidor = jogo['usupla'] != null && jogo['usuplb'] != null
+          ? {
+              'palpaa': jogo['usupla'],
+              'palpbb': jogo['usuplb'],
+            }
+          : null;
+
+      final palpiteAtual = _palpitesLocais[idjogo] ?? palpiteServidor;
+
+      await _salvarPalpiteDoJogo(
+        idjogo: idjogo,
+        palpaa: palpaa,
+        palpbb: palpbb,
+        palpiteAtual: palpiteAtual,
+        mostrarFeedback: false,
+      );
+    });
   }
 
   @override
@@ -514,7 +707,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
 
   Widget _buildJogoCard(Map<String, dynamic> jogo) {
     final fase = jogo['fase'];
-    final idjogo = jogo['idjogo'];
+    final idjogo = int.tryParse('${jogo['idjogo']}') ?? 0;
     final datjog = jogo['datjog'] ?? '';
     final timeaa = jogo['timeaa'] ?? '';
     final siglaa = jogo['siglaa'] ?? '';
@@ -540,11 +733,22 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
 
     final temPlacarOficial = _placarDefinido(plcraa) && _placarDefinido(plcrbb);
     final jogoFinalizado = !podeEditar && temPlacarOficial;
+    final salvandoEsteJogo = _salvandoPalpite[idjogo] == true;
+    final salvoRecentemente = _salvoAgoraPorJogo.containsKey(idjogo);
+    final podeSalvarOuEditar = UserSession.canMakePalpite() || palpiteAtual != null;
 
     final pontosGanhos = calcularPontosGanhos(jogo);
 
-    final gol1Controller = TextEditingController(text: palpiteAtual == null ? '' : '${palpiteAtual['palpaa']}');
-    final gol2Controller = TextEditingController(text: palpiteAtual == null ? '' : '${palpiteAtual['palpbb']}');
+    final gol1Controller = _obterControllerGol(
+      idjogo: idjogo,
+      primeiroGol: true,
+      valorInicial: palpiteAtual == null ? '' : '${palpiteAtual['palpaa']}',
+    );
+    final gol2Controller = _obterControllerGol(
+      idjogo: idjogo,
+      primeiroGol: false,
+      valorInicial: palpiteAtual == null ? '' : '${palpiteAtual['palpbb']}',
+    );
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -732,7 +936,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                 ),
                               ),
                             ],
-                            if (!jogoFinalizado && podeEditar)
+                            if (!jogoFinalizado && podeEditar && podeSalvarOuEditar)
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                                 decoration: BoxDecoration(
@@ -743,7 +947,15 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    _buildScoreInput(gol1Controller),
+                                    _buildScoreInput(
+                                      gol1Controller,
+                                      onChanged: (_) => _agendarAutoSave(
+                                        idjogo: idjogo,
+                                        jogo: jogo,
+                                        gol1Controller: gol1Controller,
+                                        gol2Controller: gol2Controller,
+                                      ),
+                                    ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8),
                                       child: Text(
@@ -755,8 +967,34 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                         ),
                                       ),
                                     ),
-                                    _buildScoreInput(gol2Controller),
+                                    _buildScoreInput(
+                                      gol2Controller,
+                                      onChanged: (_) => _agendarAutoSave(
+                                        idjogo: idjogo,
+                                        jogo: jogo,
+                                        gol1Controller: gol1Controller,
+                                        gol2Controller: gol2Controller,
+                                      ),
+                                    ),
                                   ],
+                                ),
+                              ),
+
+                            if (!jogoFinalizado && podeEditar && !podeSalvarOuEditar)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(color: Colors.grey.shade300),
+                                ),
+                                child: Text(
+                                  '- X -',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.grey.shade500,
+                                  ),
                                 ),
                               ),
 
@@ -955,104 +1193,40 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                     )
                   else
                     SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final palpaa = gol1Controller.text;
-                          final palpbb = gol2Controller.text;
-
-                          if (palpaa.isEmpty || palpbb.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('Preencha o placar dos dois times'),
-                                backgroundColor: Colors.orange.shade600,
-                              ),
-                            );
-                            return;
-                          }
-
-                          setState(() => _loading = true);
-
-                          final sucesso = await ApiService.salvarPalpite(
-                            idjogo: idjogo.toString(),
-                            palpaa: palpaa,
-                            palpbb: palpbb,
-                          );
-
-                          setState(() => _loading = false);
-                          if (!mounted) return;
-
-                          if (sucesso) {
-                            setState(() {
-                              _palpitesLocais[idjogo] = {
-                                'palpaa': palpaa,
-                                'palpbb': palpbb,
-                              };
-                            });
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Row(
-                                  children: [
-                                    Icon(Icons.check_circle, color: Colors.white),
-                                    SizedBox(width: 10),
-                                    Text('Palpite salvo!'),
-                                  ],
+                      height: 44,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        switchInCurve: Curves.easeOut,
+                        switchOutCurve: Curves.easeIn,
+                        child: salvandoEsteJogo
+                            ? KeyedSubtree(
+                                key: ValueKey('salvando-$idjogo'),
+                                child: _buildStatusContainer(
+                                  icon: Icons.sync_rounded,
+                                  text: 'Salvando...',
+                                  color: Colors.blue,
+                                  compact: true,
                                 ),
-                                backgroundColor: Colors.green.shade600,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                              )
+                            : salvoRecentemente
+                            ? KeyedSubtree(
+                                key: ValueKey('salvo-$idjogo'),
+                                child: _buildStatusContainer(
+                                  icon: Icons.check_circle,
+                                  text: 'Palpite salvo automaticamente',
+                                  color: Colors.green,
+                                  compact: true,
+                                ),
+                              )
+                            : KeyedSubtree(
+                                key: ValueKey('pronto-$idjogo'),
+                                child: _buildStatusContainer(
+                                  icon: Icons.auto_awesome_rounded,
+                                  text: 'Preencha os dois placares para salvar.',
+                                  color: Colors.blue,
+                                  compact: true,
                                 ),
                               ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Row(
-                                  children: [
-                                    Icon(Icons.error, color: Colors.white),
-                                    SizedBox(width: 10),
-                                    Text('Erro ao salvar palpite'),
-                                  ],
-                                ),
-                                backgroundColor: Colors.red.shade600,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFCC0000),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              palpiteAtual != null ? Icons.edit_rounded : Icons.save_rounded,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              palpiteAtual != null ? 'EDITAR PALPITE' : 'SALVAR PALPITE',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.8,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                 ],
@@ -1064,7 +1238,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildScoreInput(TextEditingController controller) {
+  Widget _buildScoreInput(TextEditingController controller, {ValueChanged<String>? onChanged}) {
     return Container(
       width: 50,
       decoration: BoxDecoration(
@@ -1079,6 +1253,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
       ),
       child: TextField(
         controller: controller,
+        onChanged: onChanged,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         inputFormatters: [
@@ -1111,34 +1286,31 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     required IconData icon,
     required String text,
     required Color color,
+    bool compact = false,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: compact ? const EdgeInsets.symmetric(horizontal: 12, vertical: 9) : const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color.withAlpha(26),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withAlpha(77)),
       ),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 18),
-              const SizedBox(width: 8),
-              Center(
-                child: Text(
-                  text,
-
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ),
+          Icon(icon, color: color, size: compact ? 16 : 18),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontSize: compact ? 11.5 : 12,
               ),
-            ],
+            ),
           ),
         ],
       ),

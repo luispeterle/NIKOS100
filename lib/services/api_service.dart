@@ -159,7 +159,6 @@ class ApiService {
         return false; // Erro
       }
 
-      UserSession.palpitesFeitos++;
       return true;
     } catch (e) {
       debugPrint('Erro ao salvar palpite: $e');
