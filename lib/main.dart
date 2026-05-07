@@ -17,7 +17,7 @@ class NikosApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Lojas Adelino",
+      title: "Lojas adelino - Copa do Mundo 2026",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: const Color(0xFFCC0000),

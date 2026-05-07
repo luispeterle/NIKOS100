@@ -19,12 +19,16 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   List<Map<String, dynamic>> _jogos = [];
   final Map<int, Map<String, dynamic>> _palpitesLocais = {}; // Armazena palpites já feitos localmente
 
+  final ScrollController _scrollController = ScrollController();
   final Map<int, Timer> _autoSaveTimers = {};
   final Map<int, Timer> _salvoAgoraTimers = {};
   final Map<int, DateTime> _salvoAgoraPorJogo = {};
   final Map<int, TextEditingController> _gol1Controllers = {};
   final Map<int, TextEditingController> _gol2Controllers = {};
+  final Map<int, FocusNode> _gol1FocusNodes = {};
+  final Map<int, FocusNode> _gol2FocusNodes = {};
   final Map<int, bool> _salvandoPalpite = {};
+  final Map<int, GlobalKey> _jogoCardKeys = {};
   bool _loading = true;
 
   @override
@@ -47,6 +51,13 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     for (final controller in _gol2Controllers.values) {
       controller.dispose();
     }
+    for (final focusNode in _gol1FocusNodes.values) {
+      focusNode.dispose();
+    }
+    for (final focusNode in _gol2FocusNodes.values) {
+      focusNode.dispose();
+    }
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -263,6 +274,17 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     return controller;
   }
 
+  FocusNode _obterFocusNodeGol({
+    required int idjogo,
+    required bool primeiroGol,
+  }) {
+    final mapa = primeiroGol ? _gol1FocusNodes : _gol2FocusNodes;
+    return mapa.putIfAbsent(
+      idjogo,
+      () => FocusNode(debugLabel: primeiroGol ? 'gol1-$idjogo' : 'gol2-$idjogo'),
+    );
+  }
+
   void _marcarPalpiteSalvoAgora(int idjogo) {
     _salvoAgoraTimers[idjogo]?.cancel();
 
@@ -276,6 +298,123 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
         _salvoAgoraPorJogo.remove(idjogo);
       });
     });
+  }
+
+  GlobalKey _obterCardKey(int idjogo) {
+    return _jogoCardKeys.putIfAbsent(
+      idjogo,
+      () => GlobalKey(debugLabel: 'jogo-card-$idjogo'),
+    );
+  }
+
+  bool _jogoPodeReceberPalpite(Map<String, dynamic> jogo) {
+    final datjog = (jogo['datjog'] ?? '').toString();
+    final podeEditar = _podeEditarPalpite(datjog);
+    if (!podeEditar) return false;
+
+    final idjogo = int.tryParse('${jogo['idjogo']}') ?? 0;
+    if (idjogo <= 0) return false;
+
+    final usupla = jogo['usupla'];
+    final usuplb = jogo['usuplb'];
+    final palpiteServidor = usupla != null && usuplb != null
+        ? {
+            'palpaa': usupla,
+            'palpbb': usuplb,
+          }
+        : null;
+    final palpiteAtual = _palpitesLocais[idjogo] ?? palpiteServidor;
+
+    return UserSession.canMakePalpite() || palpiteAtual != null;
+  }
+
+  int? _obterProximoJogoElegivelId(int idjogoAtual) {
+    final indiceAtual = _jogos.indexWhere(
+      (jogo) => int.tryParse('${jogo['idjogo']}') == idjogoAtual,
+    );
+    if (indiceAtual < 0) return null;
+
+    for (int i = indiceAtual + 1; i < _jogos.length; i++) {
+      final jogo = _jogos[i];
+      final id = int.tryParse('${jogo['idjogo']}') ?? 0;
+      if (id <= 0) continue;
+      if (_jogoPodeReceberPalpite(jogo)) {
+        return id;
+      }
+    }
+
+    return null;
+  }
+
+  Future<void> _rolarParaProximoPalpite(int idjogoAtual) async {
+    if (!mounted || !_scrollController.hasClients) return;
+
+    final idProximoJogo = _obterProximoJogoElegivelId(idjogoAtual);
+    if (idProximoJogo == null) return;
+
+    await Future<void>.delayed(const Duration(milliseconds: 40));
+    if (!mounted || !_scrollController.hasClients) return;
+
+    final proximoContexto = _obterCardKey(idProximoJogo).currentContext;
+    if (proximoContexto != null) {
+      if (!proximoContexto.mounted) return;
+      await Scrollable.ensureVisible(
+        proximoContexto,
+        alignment: 0.08,
+        duration: const Duration(milliseconds: 360),
+        curve: Curves.easeOutCubic,
+      );
+      return;
+    }
+
+    // Fallback para garantir avanço mesmo quando o próximo card ainda não foi montado.
+    final atualContexto = _obterCardKey(idjogoAtual).currentContext;
+    final renderAtual = atualContexto?.findRenderObject();
+    if (renderAtual is! RenderBox) return;
+
+    final deslocamentoEstimado = renderAtual.size.height + 14;
+    final destino = (_scrollController.offset + deslocamentoEstimado).clamp(
+      0.0,
+      _scrollController.position.maxScrollExtent,
+    );
+
+    await _scrollController.animateTo(
+      destino,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  Future<void> _irParaProximoJogoComTab({
+    required int idjogoAtual,
+    required TextEditingController gol1Controller,
+    required TextEditingController gol2Controller,
+    required Map<String, dynamic>? palpiteAtual,
+  }) async {
+    if (!mounted) return;
+
+    _autoSaveTimers[idjogoAtual]?.cancel();
+
+    await _salvarPalpiteDoJogo(
+      idjogo: idjogoAtual,
+      palpaa: gol1Controller.text,
+      palpbb: gol2Controller.text,
+      palpiteAtual: palpiteAtual,
+      mostrarFeedback: false,
+    );
+
+    if (!mounted) return;
+
+    final idProximoJogo = _obterProximoJogoElegivelId(idjogoAtual);
+    if (idProximoJogo == null) return;
+
+    await _rolarParaProximoPalpite(idjogoAtual);
+    if (!mounted) return;
+
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    if (!mounted) return;
+
+    _obterFocusNodeGol(idjogo: idProximoJogo, primeiroGol: true).requestFocus();
   }
 
   Future<void> _salvarPalpiteDoJogo({
@@ -331,6 +470,9 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
       });
 
       _marcarPalpiteSalvoAgora(idjogo);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _rolarParaProximoPalpite(idjogo);
+      });
 
       if (mostrarFeedback) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -492,6 +634,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                 onRefresh: _loadData,
                 child: _jogos.isEmpty && !_loading
                     ? ListView(
+                        controller: _scrollController,
                         padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + 92),
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: [
@@ -593,6 +736,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                         ],
                       )
                     : ListView.builder(
+                        controller: _scrollController,
                         padding: EdgeInsets.fromLTRB(16, 16, 16, 0 + 92),
                         itemCount: _jogos.length,
                         itemBuilder: (ctx, i) => _buildJogoCard(_jogos[i]),
@@ -749,8 +893,11 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
       primeiroGol: false,
       valorInicial: palpiteAtual == null ? '' : '${palpiteAtual['palpbb']}',
     );
+    final gol1FocusNode = _obterFocusNodeGol(idjogo: idjogo, primeiroGol: true);
+    final gol2FocusNode = _obterFocusNodeGol(idjogo: idjogo, primeiroGol: false);
 
     return Container(
+      key: _obterCardKey(idjogo),
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -961,12 +1108,15 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                       ),
                                       child: TextField(
                                         controller: gol1Controller,
+                                        focusNode: gol1FocusNode,
                                         onChanged: (_) => _agendarAutoSave(
                                           idjogo: idjogo,
                                           jogo: jogo,
                                           gol1Controller: gol1Controller,
                                           gol2Controller: gol2Controller,
                                         ),
+                                        onSubmitted: (_) => gol2FocusNode.requestFocus(),
+                                        textInputAction: TextInputAction.next,
                                         textAlign: TextAlign.center,
                                         keyboardType: TextInputType.number,
                                         inputFormatters: [
@@ -1017,37 +1167,66 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                           ),
                                         ],
                                       ),
-                                      child: TextField(
-                                        controller: gol2Controller,
-                                        onChanged: (_) => _agendarAutoSave(
-                                          idjogo: idjogo,
-                                          jogo: jogo,
-                                          gol1Controller: gol1Controller,
-                                          gol2Controller: gol2Controller,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter.digitsOnly,
-                                          LengthLimitingTextInputFormatter(2),
-                                        ],
-                                        style: const TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFFCC0000),
-                                        ),
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                            borderSide: BorderSide.none,
+                                      child: Focus(
+                                        onKeyEvent: (_, event) {
+                                          if (event is! KeyDownEvent) {
+                                            return KeyEventResult.ignored;
+                                          }
+                                          if (event.logicalKey != LogicalKeyboardKey.tab) {
+                                            return KeyEventResult.ignored;
+                                          }
+                                          if (HardwareKeyboard.instance.isShiftPressed) {
+                                            return KeyEventResult.ignored;
+                                          }
+
+                                          _irParaProximoJogoComTab(
+                                            idjogoAtual: idjogo,
+                                            gol1Controller: gol1Controller,
+                                            gol2Controller: gol2Controller,
+                                            palpiteAtual: palpiteAtual,
+                                          );
+                                          return KeyEventResult.handled;
+                                        },
+                                        child: TextField(
+                                          controller: gol2Controller,
+                                          focusNode: gol2FocusNode,
+                                          onChanged: (_) => _agendarAutoSave(
+                                            idjogo: idjogo,
+                                            jogo: jogo,
+                                            gol1Controller: gol1Controller,
+                                            gol2Controller: gol2Controller,
                                           ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                            borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                          onSubmitted: (_) => _irParaProximoJogoComTab(
+                                            idjogoAtual: idjogo,
+                                            gol1Controller: gol1Controller,
+                                            gol2Controller: gol2Controller,
+                                            palpiteAtual: palpiteAtual,
                                           ),
-                                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                          textInputAction: TextInputAction.next,
+                                          textAlign: TextAlign.center,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.digitsOnly,
+                                            LengthLimitingTextInputFormatter(2),
+                                          ],
+                                          style: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFFCC0000),
+                                          ),
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: Colors.white,
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                              borderSide: BorderSide.none,
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                              borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                            ),
+                                            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                          ),
                                         ),
                                       ),
                                     ),
