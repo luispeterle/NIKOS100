@@ -947,15 +947,53 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    _buildScoreInput(
-                                      gol1Controller,
-                                      onChanged: (_) => _agendarAutoSave(
-                                        idjogo: idjogo,
-                                        jogo: jogo,
-                                        gol1Controller: gol1Controller,
-                                        gol2Controller: gol2Controller,
+                                    Container(
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.shade300,
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: TextField(
+                                        controller: gol1Controller,
+                                        onChanged: (_) => _agendarAutoSave(
+                                          idjogo: idjogo,
+                                          jogo: jogo,
+                                          gol1Controller: gol1Controller,
+                                          gol2Controller: gol2Controller,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(2),
+                                        ],
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFFCC0000),
+                                        ),
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                          ),
+                                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                        ),
                                       ),
                                     ),
+
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8),
                                       child: Text(
@@ -967,13 +1005,50 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                         ),
                                       ),
                                     ),
-                                    _buildScoreInput(
-                                      gol2Controller,
-                                      onChanged: (_) => _agendarAutoSave(
-                                        idjogo: idjogo,
-                                        jogo: jogo,
-                                        gol1Controller: gol1Controller,
-                                        gol2Controller: gol2Controller,
+                                    Container(
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.shade300,
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: TextField(
+                                        controller: gol2Controller,
+                                        onChanged: (_) => _agendarAutoSave(
+                                          idjogo: idjogo,
+                                          jogo: jogo,
+                                          gol1Controller: gol1Controller,
+                                          gol2Controller: gol2Controller,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(2),
+                                        ],
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFFCC0000),
+                                        ),
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                          ),
+                                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -1174,22 +1249,88 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                       ],
                     ),
                     SizedBox(height: 8),
-                    _buildStatusContainer(
-                      icon: Icons.check_circle,
-                      text: 'Jogo finalizado ',
-                      color: Colors.grey,
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withAlpha(26),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.withAlpha(77)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.check_circle, color: Colors.grey, size: 18),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'Jogo finalizado',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ] else if (!podeEditar)
-                    _buildStatusContainer(
-                      icon: Icons.timer_off,
-                      text: 'Palpites bloqueados, aguarde \naté ser cadastro o placar final',
-                      color: Colors.orange,
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withAlpha(26),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.orange.withAlpha(77)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.timer_off, color: Colors.orange, size: 18),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'Palpites bloqueados, aguarde \naté ser cadastro o placar final',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     )
                   else if (!UserSession.canMakePalpite() && palpiteAtual == null)
-                    _buildStatusContainer(
-                      icon: Icons.block,
-                      text: 'Limite de palpites atingido ',
-                      color: Colors.red,
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withAlpha(26),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.red.withAlpha(77)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.block, color: Colors.red, size: 18),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'Limite de palpites atingido ',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     )
                   else
                     SizedBox(
@@ -1201,30 +1342,93 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                         child: salvandoEsteJogo
                             ? KeyedSubtree(
                                 key: ValueKey('salvando-$idjogo'),
-                                child: _buildStatusContainer(
-                                  icon: Icons.sync_rounded,
-                                  text: 'Salvando...',
-                                  color: Colors.blue,
-                                  compact: true,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.withAlpha(26),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.blue.withAlpha(77)),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.sync_rounded, color: Colors.blue, size: 16),
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          'Salvando...',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               )
                             : salvoRecentemente
                             ? KeyedSubtree(
                                 key: ValueKey('salvo-$idjogo'),
-                                child: _buildStatusContainer(
-                                  icon: Icons.check_circle,
-                                  text: 'Palpite salvo automaticamente',
-                                  color: Colors.green,
-                                  compact: true,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.withAlpha(26),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.green.withAlpha(77)),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.check_circle, color: Colors.green, size: 16),
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          'Palpite salvo automaticamente',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.green,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               )
                             : KeyedSubtree(
                                 key: ValueKey('pronto-$idjogo'),
-                                child: _buildStatusContainer(
-                                  icon: Icons.auto_awesome_rounded,
-                                  text: 'Preencha os dois placares para salvar.',
-                                  color: Colors.blue,
-                                  compact: true,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.withAlpha(26),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.blue.withAlpha(77)),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.auto_awesome_rounded, color: Colors.blue, size: 16),
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          'Preencha os dois placares para salvar.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                       ),
@@ -1234,85 +1438,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildScoreInput(TextEditingController controller, {ValueChanged<String>? onChanged}) {
-    return Container(
-      width: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade300,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        onChanged: onChanged,
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(2),
-        ],
-        style: const TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFFCC0000),
-        ),
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 10),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatusContainer({
-    required IconData icon,
-    required String text,
-    required Color color,
-    bool compact = false,
-  }) {
-    return Container(
-      padding: compact ? const EdgeInsets.symmetric(horizontal: 12, vertical: 9) : const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withAlpha(26),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withAlpha(77)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: compact ? 16 : 18),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w600,
-                fontSize: compact ? 11.5 : 12,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
