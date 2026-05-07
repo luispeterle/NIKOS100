@@ -38,7 +38,6 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       UserSession.setSession(
         cpf: responseData["cgccpf"],
         nome: '',
-        dataNascimento: '',
         maxPalp: 0,
       );
 

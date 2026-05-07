@@ -15,13 +15,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
   final _cpfController = TextEditingController();
-  final _diaController = TextEditingController();
-  final _mesController = TextEditingController();
-  final _anoController = TextEditingController();
-
-  final _diaFocus = FocusNode();
-  final _mesFocus = FocusNode();
-  final _anoFocus = FocusNode();
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -83,14 +76,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     _formController.dispose();
     _floatingController.dispose();
     _cpfController.dispose();
-    _diaController.dispose();
-    _mesController.dispose();
-    _anoController.dispose();
     _copaReflexoController.dispose();
-
-    _diaFocus.dispose();
-    _mesFocus.dispose();
-    _anoFocus.dispose();
 
     super.dispose();
   }
@@ -102,9 +88,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     });
 
     final cpf = _cpfController.text.replaceAll(RegExp(r'[^0-9]'), '');
-    final dia = _diaController.text.padLeft(2, '0');
-    final mes = _mesController.text.padLeft(2, '0');
-    final ano = _anoController.text;
 
     if (cpf.length != 11) {
       setState(() {
@@ -114,19 +97,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       return;
     }
 
-    if (dia.isEmpty || mes.isEmpty || ano.isEmpty || ano.length != 4) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'Data inválida';
-      });
-      return;
-    }
-
-    // Formato da API: DD/MM/AAAA
-    final dataNascimento = "$dia/$mes/$ano";
-
     // Chamada à API real
-    final user = await ApiService.login(cpf, dataNascimento);
+    final user = await ApiService.login(cpf);
 
     if (user != null) {
       setState(() {
@@ -137,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     } else {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'CPF ou data inseridos incorretos.\n\nSe seus dados estão corretos, procure uma de nossas lojas.';
+        _errorMessage = 'CPF inserido incorreto.\n\nSe seus dados estão corretos, procure uma de nossas lojas.';
       });
     }
   }
@@ -424,26 +396,25 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                   icon: Icons.person_outline,
                                   cpfMask: true,
                                 ),
-                                const SizedBox(height: 24),
+                                // const SizedBox(height: 24),
 
-                                _buildLabel('Data de Nascimento'),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Expanded(flex: 2, child: _buildDateField(_diaController, 'DD')),
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 8),
-                                      child: Text('/', style: TextStyle(fontSize: 24, color: Colors.grey)),
-                                    ),
-                                    Expanded(flex: 2, child: _buildDateField(_mesController, 'MM')),
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 8),
-                                      child: Text('/', style: TextStyle(fontSize: 24, color: Colors.grey)),
-                                    ),
-                                    Expanded(flex: 3, child: _buildDateField(_anoController, 'AAAA', maxLength: 4)),
-                                  ],
-                                ),
-
+                                // _buildLabel('Data de Nascimento'),
+                                // const SizedBox(height: 8),
+                                // Row(
+                                //   children: [
+                                //     Expanded(flex: 2, child: _buildDateField(_diaController, 'DD')),
+                                //     const Padding(
+                                //       padding: EdgeInsets.symmetric(horizontal: 8),
+                                //       child: Text('/', style: TextStyle(fontSize: 24, color: Colors.grey)),
+                                //     ),
+                                //     Expanded(flex: 2, child: _buildDateField(_mesController, 'MM')),
+                                //     const Padding(
+                                //       padding: EdgeInsets.symmetric(horizontal: 8),
+                                //       child: Text('/', style: TextStyle(fontSize: 24, color: Colors.grey)),
+                                //     ),
+                                //     Expanded(flex: 3, child: _buildDateField(_anoController, 'AAAA', maxLength: 4)),
+                                //   ],
+                                // ),
                                 if (_errorMessage != null) ...[
                                   const SizedBox(height: 20),
                                   Container(
@@ -671,66 +642,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
           ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDateField(TextEditingController controller, String hint, {int maxLength = 2}) {
-    FocusNode? focus;
-
-    if (controller == _diaController) {
-      focus = _diaFocus;
-    } else if (controller == _mesController) {
-      focus = _mesFocus;
-    } else if (controller == _anoController) {
-      focus = _anoFocus;
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        focusNode: focus,
-        keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(maxLength),
-        ],
-        textAlign: TextAlign.center,
-        onChanged: (value) {
-          if (controller == _diaController && value.length == 2) {
-            FocusScope.of(context).requestFocus(_mesFocus);
-          } else if (controller == _mesController && value.length == 2) {
-            FocusScope.of(context).requestFocus(_anoFocus);
-          }
-        },
-        decoration: InputDecoration(
-          hintText: hint,
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
       ),
     );

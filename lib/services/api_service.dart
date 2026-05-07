@@ -8,15 +8,15 @@ class ApiService {
   // ============================================
   // LOGIN
   // ============================================
-  static Future<Map<String, dynamic>?> login(String cgccpf, String nascimento) async {
+  static Future<Map<String, dynamic>?> login(String cgccpf) async {
     try {
       final resp = await serverPost(
         "bolao_login",
         myJson: {
           "cgccpf": cgccpf,
-          "nascimento": nascimento,
         },
       );
+
       if (resp == true || resp == null) {
         return null; // Erro
       }
@@ -31,7 +31,6 @@ class ApiService {
           // Salvar na sessão global
           UserSession.setSession(
             cpf: cgccpf,
-            dataNascimento: nascimento,
             nome: userData['nomcli'] ?? '',
             maxPalp: maxPalpites,
           );
@@ -150,7 +149,6 @@ class ApiService {
         "bolao_salva_palpite",
         myJson: {
           "cgccpf": UserSession.cgccpf,
-          "nascimento": UserSession.nascimento,
           "idjogo": idjogo,
           "palpaa": palpaa,
           "palpbb": palpbb,
