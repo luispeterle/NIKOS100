@@ -1006,8 +1006,6 @@ class _AdminScreenState extends State<AdminScreen> {
         },
       );
     } finally {
-      // O RawAutocomplete ainda pode estar finalizando listeners no frame de fechamento.
-      // Dispor no próximo frame evita "used after being disposed".
       WidgetsBinding.instance.addPostFrameCallback((_) {
         idjogoController.dispose();
         datjogController.dispose();

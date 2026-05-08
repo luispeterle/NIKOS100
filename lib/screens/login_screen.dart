@@ -164,7 +164,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             ),
           ),
 
-          // Elementos 3D flutuantes
           AnimatedBuilder(
             animation: _floatingAnimation,
             builder: (context, child) {
@@ -396,7 +395,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             },
           ),
 
-          // Conteudo principal
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -430,7 +428,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Header com logo 3D
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(32),
@@ -549,7 +546,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                             ),
                           ),
 
-                          // Formulario
                           Padding(
                             padding: const EdgeInsets.all(32),
                             child: Column(
@@ -631,7 +627,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
                                 const SizedBox(height: 32),
 
-                                // Botao de login com efeito 3D
                                 SizedBox(
                                   width: double.infinity,
                                   height: 56,
@@ -683,7 +678,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
                                 const SizedBox(height: 24),
 
-                                // Info box
                                 Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
@@ -718,7 +712,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                 ),
                                 const SizedBox(height: 16),
 
-                                // 🔒 BOTÃO SECRETO ADMIN
                                 GestureDetector(
                                   onLongPress: () {
                                     Navigator.push(

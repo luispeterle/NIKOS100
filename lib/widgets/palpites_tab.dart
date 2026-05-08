@@ -642,7 +642,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
               ),
             ),
 
-            // Lista de jogos
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _loadData,
