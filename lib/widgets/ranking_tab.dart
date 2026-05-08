@@ -67,8 +67,6 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
     _animController.forward(from: 0);
   }
 
-  // Encontra a posição do usuário atual no ranking
-
   Map<String, dynamic>? _getUserRanking(List<Map<String, dynamic>> rankingList) {
     final cpf = UserSession.cgccpf;
     if (cpf == null) return null;
@@ -756,6 +754,88 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final item = _ranking[index];
+
+                    final posicao = (item['posicao'] as num).toInt();
+                    final nome = item['nomcli'] ?? 'Desconhecido';
+                    final pontos = (item['pontos'] as num).toInt();
+
+                    final isMeuRanking = normalizarCpf(item['cpfcli']) == normalizarCpf(meuRanking?['cpfcli']);
+                    final isPodium = posicao <= 3;
+
+                    Color accentColor = Colors.grey.shade400;
+
+                    List<Color> podiumColors = [
+                      Colors.white,
+                      Colors.white,
+                    ];
+
+                    List<Color> posicaoGradient = [
+                      Colors.grey.shade100,
+                      Colors.grey.shade200,
+                    ];
+
+                    List<Color> medalhaColors = [
+                      Colors.grey.shade300,
+                      Colors.grey.shade500,
+                    ];
+
+                    if (posicao == 1) {
+                      accentColor = Colors.amber.shade700;
+
+                      podiumColors = const [
+                        Color(0xFFFFB300),
+                        Color(0xFFFF9800),
+                      ];
+
+                      posicaoGradient = [
+                        Colors.amber.shade300,
+                        Colors.orange.shade700,
+                      ];
+
+                      medalhaColors = [
+                        Colors.amber.shade300,
+                        Colors.orange.shade700,
+                      ];
+                    }
+
+                    if (posicao == 2) {
+                      accentColor = Colors.blueGrey.shade400;
+
+                      podiumColors = const [
+                        Color(0xFF9E9E9E),
+                        Color(0xFF616161),
+                      ];
+
+                      posicaoGradient = [
+                        Colors.grey.shade300,
+                        Colors.blueGrey.shade500,
+                      ];
+
+                      medalhaColors = [
+                        Colors.grey.shade300,
+                        Colors.blueGrey.shade500,
+                      ];
+                    }
+
+                    if (posicao == 3) {
+                      accentColor = Colors.brown.shade500;
+
+                      podiumColors = const [
+                        Color(0xFF8D5A48),
+                        Color(0xFF5D4037),
+                      ];
+
+                      posicaoGradient = [
+                        Colors.orange.shade300,
+                        Colors.brown.shade600,
+                      ];
+
+                      medalhaColors = [
+                        Colors.orange.shade300,
+                        Colors.brown.shade600,
+                      ];
+                    }
+
                     return AnimatedBuilder(
                       animation: _animController,
                       builder: (context, child) {
@@ -770,7 +850,211 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                           ),
                         );
                       },
-                      child: _buildRankingItem(item),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          gradient: isPodium
+                              ? LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: podiumColors,
+                                )
+                              : isMeuRanking
+                              ? const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xFFFFF7E0),
+                                    Color(0xFFFFECB3),
+                                  ],
+                                )
+                              : null,
+                          color: isPodium || isMeuRanking ? null : Colors.white,
+                          border: Border.all(
+                            width: isMeuRanking ? 2 : 1,
+                            color: isMeuRanking
+                                ? Colors.amber.shade700
+                                : isPodium
+                                ? Colors.white.withValues(alpha: 0.16)
+                                : Colors.grey.shade100,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isMeuRanking
+                                  ? Colors.amber.withValues(alpha: 0.32)
+                                  : isPodium
+                                  ? accentColor.withValues(alpha: 0.28)
+                                  : Colors.black.withValues(alpha: 0.045),
+                              blurRadius: isMeuRanking
+                                  ? 18
+                                  : isPodium
+                                  ? 16
+                                  : 10,
+                              spreadRadius: isMeuRanking
+                                  ? -1
+                                  : isPodium
+                                  ? -2
+                                  : 0,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Stack(
+                            children: [
+                              if (!isPodium)
+                                Positioned(
+                                  left: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    width: 4,
+                                    color: accentColor.withValues(alpha: 0.55),
+                                  ),
+                                ),
+
+                              if (isPodium)
+                                Positioned(
+                                  right: -18,
+                                  top: -18,
+                                  child: Icon(
+                                    Icons.emoji_events_rounded,
+                                    size: 86,
+                                    color: Colors.white.withValues(alpha: 0.08),
+                                  ),
+                                ),
+
+                              Padding(
+                                padding: const EdgeInsets.all(14),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 46,
+                                      height: 46,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: posicaoGradient,
+                                        ),
+                                        borderRadius: BorderRadius.circular(14),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: accentColor.withValues(alpha: isPodium ? 0.38 : 0.18),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          '$posicao',
+                                          style: TextStyle(
+                                            color: isPodium ? Colors.white : Colors.black87,
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 17,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    const SizedBox(width: 14),
+
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            nome,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 14,
+                                              color: isPodium ? Colors.white : Colors.black87,
+                                              letterSpacing: 0.2,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.star_rounded,
+                                                size: 14,
+                                                color: isPodium ? Colors.white.withValues(alpha: 0.75) : Colors.amber.shade700,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '$pontos pontos acumulados',
+                                                style: TextStyle(
+                                                  fontSize: 11.5,
+                                                  color: isPodium ? Colors.white.withValues(alpha: 0.78) : Colors.grey.shade600,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    const SizedBox(width: 10),
+
+                                    if (isPodium)
+                                      Container(
+                                        width: 38,
+                                        height: 38,
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: medalhaColors,
+                                          ),
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: medalhaColors[1].withValues(alpha: 0.35),
+                                              blurRadius: 12,
+                                              spreadRadius: -2,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                          border: Border.all(
+                                            color: Colors.white.withValues(alpha: 0.45),
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.emoji_events_rounded,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                      )
+                                    else
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade100,
+                                          borderRadius: BorderRadius.circular(999),
+                                          border: Border.all(color: Colors.grey.shade200),
+                                        ),
+                                        child: Text(
+                                          '$pontos pts',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.grey.shade800,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     );
                   },
                   childCount: top20Count,
@@ -784,295 +1068,5 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
         ],
       ),
     );
-  }
-
-  Widget _buildRankingItem(Map<String, dynamic> item) {
-    final posicao = (item['posicao'] as num).toInt();
-    final nome = item['nomcli'] ?? 'Desconhecido';
-    final pontos = (item['pontos'] as num).toInt();
-
-    final isMeuRanking = normalizarCpf(item['cpfcli']) == normalizarCpf(meuRanking?['cpfcli']);
-    final isPodium = posicao <= 3;
-    final podiumColors = _getPodiumColors(posicao);
-    final accentColor = _getPosicaoColor(posicao);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: isPodium
-            ? LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: podiumColors,
-              )
-            : isMeuRanking
-            ? const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFFFF7E0),
-                  Color(0xFFFFECB3),
-                ],
-              )
-            : null,
-        color: isPodium || isMeuRanking ? null : Colors.white,
-        border: Border.all(
-          width: isMeuRanking ? 2 : 1,
-          color: isMeuRanking
-              ? Colors.amber.shade700
-              : isPodium
-              ? Colors.white.withValues(alpha: 0.16)
-              : Colors.grey.shade100,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isMeuRanking
-                ? Colors.amber.withValues(alpha: 0.32)
-                : isPodium
-                ? accentColor.withValues(alpha: 0.28)
-                : Colors.black.withValues(alpha: 0.045),
-            blurRadius: isMeuRanking
-                ? 18
-                : isPodium
-                ? 16
-                : 10,
-            spreadRadius: isMeuRanking
-                ? -1
-                : isPodium
-                ? -2
-                : 0,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: Stack(
-          children: [
-            if (!isPodium)
-              Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                child: Container(
-                  width: 4,
-                  color: accentColor.withValues(alpha: 0.55),
-                ),
-              ),
-
-            if (isPodium)
-              Positioned(
-                right: -18,
-                top: -18,
-                child: Icon(
-                  Icons.emoji_events_rounded,
-                  size: 86,
-                  color: Colors.white.withValues(alpha: 0.08),
-                ),
-              ),
-
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: _getPosicaoGradient(posicao),
-                      ),
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: accentColor.withValues(alpha: isPodium ? 0.38 : 0.18),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        '$posicao',
-                        style: TextStyle(
-                          color: isPodium ? Colors.white : Colors.black87,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 17,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 14),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          nome,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 14,
-                            color: isPodium ? Colors.white : Colors.black87,
-                            letterSpacing: 0.2,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.star_rounded,
-                              size: 14,
-                              color: isPodium ? Colors.white.withValues(alpha: 0.75) : Colors.amber.shade700,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '$pontos pontos acumulados',
-                              style: TextStyle(
-                                fontSize: 11.5,
-                                color: isPodium ? Colors.white.withValues(alpha: 0.78) : Colors.grey.shade600,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  if (isPodium)
-                    _buildMedalha(posicao)
-                  else
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Text(
-                        '$pontos pts',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMedalha(int posicao) {
-    final colors = {
-      1: [Colors.amber.shade300, Colors.orange.shade700],
-      2: [Colors.grey.shade300, Colors.blueGrey.shade500],
-      3: [Colors.orange.shade300, Colors.brown.shade600],
-    };
-
-    return Container(
-      width: 38,
-      height: 38,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: colors[posicao]!,
-        ),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: colors[posicao]![1].withValues(alpha: 0.35),
-            blurRadius: 12,
-            spreadRadius: -2,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.45),
-        ),
-      ),
-      child: const Icon(
-        Icons.emoji_events_rounded,
-        color: Colors.white,
-        size: 20,
-      ),
-    );
-  }
-
-  List<Color> _getPodiumColors(int posicao) {
-    switch (posicao) {
-      case 1:
-        return [
-          Color(0xFFFFB300),
-          Color(0xFFFF9800),
-        ];
-      case 2:
-        return [
-          Color(0xFF9E9E9E),
-          Color(0xFF616161),
-        ];
-      case 3:
-        return [
-          Color(0xFF8D5A48),
-          Color(0xFF5D4037),
-        ];
-      default:
-        return [
-          Colors.white,
-          Colors.white,
-        ];
-    }
-  }
-
-  List<Color> _getPosicaoGradient(int posicao) {
-    switch (posicao) {
-      case 1:
-        return [
-          Colors.amber.shade300,
-          Colors.orange.shade700,
-        ];
-      case 2:
-        return [
-          Colors.grey.shade300,
-          Colors.blueGrey.shade500,
-        ];
-      case 3:
-        return [
-          Colors.orange.shade300,
-          Colors.brown.shade600,
-        ];
-      default:
-        return [
-          Colors.grey.shade100,
-          Colors.grey.shade200,
-        ];
-    }
-  }
-
-  Color _getPosicaoColor(int posicao) {
-    switch (posicao) {
-      case 1:
-        return Colors.amber.shade700;
-      case 2:
-        return Colors.blueGrey.shade400;
-      case 3:
-        return Colors.brown.shade500;
-      default:
-        return Colors.grey.shade400;
-    }
   }
 }

@@ -133,7 +133,6 @@ class _AdminScreenState extends State<AdminScreen> {
           .take(8);
     }
 
-
     try {
       await showDialog(
         context: context,
@@ -1122,58 +1121,6 @@ class _AdminScreenState extends State<AdminScreen> {
               }
             }
 
-            Widget buildScoreField({
-              required String initialValue,
-              required String label,
-              required ValueChanged<String> onChanged,
-            }) {
-              return TextFormField(
-                initialValue: initialValue,
-                onChanged: onChanged,
-                enabled: !salvando,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(2),
-                ],
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF1F1F1F),
-                ),
-                decoration: InputDecoration(
-                  counterText: '',
-                  labelText: label,
-                  labelStyle: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w800,
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xFFFAFAFA),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 18,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFCC0000),
-                      width: 2,
-                    ),
-                  ),
-                ),
-              );
-            }
-
             return Dialog(
               insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               backgroundColor: Colors.transparent,
@@ -1328,10 +1275,50 @@ class _AdminScreenState extends State<AdminScreen> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: buildScoreField(
+                                      child: TextFormField(
                                         initialValue: placarA,
-                                        label: siglaA,
                                         onChanged: (value) => placarA = value,
+                                        enabled: !salvando,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(2),
+                                        ],
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w900,
+                                          color: Color(0xFF1F1F1F),
+                                        ),
+                                        decoration: InputDecoration(
+                                          counterText: '',
+                                          labelText: siglaA,
+                                          labelStyle: TextStyle(
+                                            color: Colors.grey.shade600,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                          filled: true,
+                                          fillColor: const Color(0xFFFAFAFA),
+                                          contentPadding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 18,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(18),
+                                            borderSide: BorderSide(color: Colors.grey.shade200),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(18),
+                                            borderSide: BorderSide(color: Colors.grey.shade200),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(18),
+                                            borderSide: const BorderSide(
+                                              color: Color(0xFFCC0000),
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                     Padding(
@@ -1356,10 +1343,50 @@ class _AdminScreenState extends State<AdminScreen> {
                                       ),
                                     ),
                                     Expanded(
-                                      child: buildScoreField(
+                                      child: TextFormField(
                                         initialValue: placarB,
-                                        label: siglaB,
                                         onChanged: (value) => placarB = value,
+                                        enabled: !salvando,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(2),
+                                        ],
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w900,
+                                          color: Color(0xFF1F1F1F),
+                                        ),
+                                        decoration: InputDecoration(
+                                          counterText: '',
+                                          labelText: siglaB,
+                                          labelStyle: TextStyle(
+                                            color: Colors.grey.shade600,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                          filled: true,
+                                          fillColor: const Color(0xFFFAFAFA),
+                                          contentPadding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 18,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(18),
+                                            borderSide: BorderSide(color: Colors.grey.shade200),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(18),
+                                            borderSide: BorderSide(color: Colors.grey.shade200),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(18),
+                                            borderSide: const BorderSide(
+                                              color: Color(0xFFCC0000),
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -1485,7 +1512,6 @@ class _AdminScreenState extends State<AdminScreen> {
     return Scaffold(
       body: Column(
         children: [
-          // Header fixo vermelho
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -1844,7 +1870,6 @@ class _AdminScreenState extends State<AdminScreen> {
             ),
           ),
 
-          // Lista de jogos
           Expanded(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),

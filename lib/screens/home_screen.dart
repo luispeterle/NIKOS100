@@ -20,7 +20,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  // Removido "Conta" conforme solicitado
   final List<String> _tabTitles = ['Palpites', 'Ranking', 'Premios', 'Regras'];
   final List<IconData> _tabIcons = [
     Icons.sports_soccer,
@@ -562,7 +561,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          // Header customizado com efeito 3D
           Container(
             width: double.infinity,
             clipBehavior: Clip.antiAlias,
@@ -1136,7 +1134,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Conteudo
           Expanded(
             child: IndexedStack(
               index: _selectedIndex,
@@ -1151,7 +1148,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-      // Footer elegante
       bottomNavigationBar: LayoutBuilder(
         builder: (context, constraints) {
           final isMobile = constraints.maxWidth < 600;

@@ -1,4 +1,3 @@
-// sessão global do usuário - armazena credenciais para requisição
 class UserSession {
   static String? cgccpf;
   static String? nome;

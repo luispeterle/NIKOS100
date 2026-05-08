@@ -19,7 +19,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   bool _isLoading = false;
   String? _errorMessage;
 
-  // Animacoes
   late AnimationController _logoController;
   late AnimationController _formController;
   late AnimationController _floatingController;
@@ -32,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   void initState() {
     super.initState();
 
-    // Animacao do logo - pulsa suavemente
     _logoController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -47,7 +45,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       CurvedAnimation(parent: _logoController, curve: Curves.easeInOut),
     );
 
-    // Animacao do formulario - slide de baixo
     _formController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -59,7 +56,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
     _formController.forward();
 
-    // Animacao flutuante para elementos de fundo
     _floatingController = AnimationController(
       duration: const Duration(seconds: 4),
       vsync: this,
@@ -97,7 +93,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       return;
     }
 
-    // Chamada à API real
     final user = await ApiService.login(cpf);
 
     if (user != null) {
@@ -119,7 +114,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     return Scaffold(
       body: Stack(
         children: [
-          // Fundo com gradiente animado
           Positioned.fill(
             child: Stack(
               children: [
@@ -179,32 +173,145 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   Positioned(
                     top: 80 + _floatingAnimation.value,
                     left: 24,
-                    child: _buildFloatingBall(
-                      48,
-                      Colors.white.withValues(alpha: 0.07),
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [Colors.white.withValues(alpha: 0.07).withValues(alpha: 0.8), Colors.white.withValues(alpha: 0.07).withValues(alpha: 0.2)],
+                          center: const Alignment(-0.3, -0.3),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white.withValues(alpha: 0.07).withValues(alpha: 0.3),
+                            blurRadius: 48 * 0.3,
+                            spreadRadius: 48 * 0.1,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
                   Positioned(
                     bottom: 180 - _floatingAnimation.value,
                     right: 54,
-                    child: _buildFloatingBall(
-                      38,
-                      const Color(0xFFFFC107).withValues(alpha: 0.12),
+                    child: Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [Color(0xFFFFC107).withValues(alpha: 0.12).withValues(alpha: 0.8), Color(0xFFFFC107).withValues(alpha: 0.12).withValues(alpha: 0.2)],
+                          center: const Alignment(-0.3, -0.3),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFFFFC107).withValues(alpha: 0.12).withValues(alpha: 0.3),
+                            blurRadius: 38 * 0.3,
+                            spreadRadius: 38 * 0.1,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Positioned(
                     bottom: 300 - _floatingAnimation.value,
                     right: 80,
-                    child: _buildFloatingBall(50, Colors.amber.withValues(alpha: 0.15)),
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [Colors.amber.withValues(alpha: 0.15).withValues(alpha: 0.8), Colors.amber.withValues(alpha: 0.15).withValues(alpha: 0.2)],
+                          center: const Alignment(-0.3, -0.3),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.amber.withValues(alpha: 0.15).withValues(alpha: 0.3),
+                            blurRadius: 50 * 0.3,
+                            spreadRadius: 50 * 0.1,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  // Bola de futebol estilizada
                   Positioned(
                     top: 58 + _floatingAnimation.value * 1.2,
                     right: -28,
                     child: Transform.rotate(
                       angle: _floatingAnimation.value * 0.025,
-                      child: _buildWorldCupBall(118),
+                      child: SizedBox(
+                        width: 118 + 36,
+                        height: 118 + 52,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Positioned(
+                              top: 6,
+                              child: Container(
+                                width: 118 + 28,
+                                height: 118 + 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      const Color(0xFFFFC107).withValues(alpha: 0.34),
+                                      const Color(0xFFFFC107).withValues(alpha: 0.10),
+                                      Colors.transparent,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            Positioned(
+                              top: 14,
+                              child: Container(
+                                width: 118 + 10,
+                                height: 118 + 10,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.18),
+                                    width: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            Positioned(
+                              top: 18,
+                              child: Container(
+                                width: 118,
+                                height: 118,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.34),
+                                      blurRadius: 22,
+                                      offset: const Offset(0, 12),
+                                    ),
+                                    BoxShadow(
+                                      color: Colors.white.withValues(alpha: 0.18),
+                                      blurRadius: 8,
+                                      offset: const Offset(-4, -4),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    'assets/bola_copa.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -212,7 +319,76 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     left: -28,
                     child: Transform.rotate(
                       angle: _floatingAnimation.value * 0.025,
-                      child: _buildWorldCupBall(118),
+                      child: SizedBox(
+                        width: 118 + 36,
+                        height: 118 + 52,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Positioned(
+                              top: 6,
+                              child: Container(
+                                width: 118 + 28,
+                                height: 118 + 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      const Color(0xFFFFC107).withValues(alpha: 0.34),
+                                      const Color(0xFFFFC107).withValues(alpha: 0.10),
+                                      Colors.transparent,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            Positioned(
+                              top: 14,
+                              child: Container(
+                                width: 118 + 10,
+                                height: 118 + 10,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.18),
+                                    width: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            Positioned(
+                              top: 18,
+                              child: Container(
+                                width: 118,
+                                height: 118,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.34),
+                                      blurRadius: 22,
+                                      offset: const Offset(0, 12),
+                                    ),
+                                    BoxShadow(
+                                      color: Colors.white.withValues(alpha: 0.18),
+                                      blurRadius: 8,
+                                      offset: const Offset(-4, -4),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    'assets/bola_copa.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -282,15 +458,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                         ),
                                       ],
                                     ),
-                                    // child: const Text(
-                                    //   "NIKO'\$",
-                                    //   style: TextStyle(
-                                    //     fontSize: 36,
-                                    //     fontWeight: FontWeight.w900,
-                                    //     color: Color(0xFFCC0000),
-                                    //     letterSpacing: 4,
-                                    //   ),
-                                    // ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: Image.asset(
@@ -388,33 +555,53 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildLabel('CPF'),
-                                const SizedBox(height: 8),
-                                _buildTextField(
-                                  controller: _cpfController,
-                                  hint: '000.000.000-00',
-                                  icon: Icons.person_outline,
-                                  cpfMask: true,
+                                Text(
+                                  'CPF',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
                                 ),
-                                // const SizedBox(height: 24),
+                                const SizedBox(height: 8),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.shade200,
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: TextField(
+                                    controller: _cpfController,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [CpfInputFormatter()],
 
-                                // _buildLabel('Data de Nascimento'),
-                                // const SizedBox(height: 8),
-                                // Row(
-                                //   children: [
-                                //     Expanded(flex: 2, child: _buildDateField(_diaController, 'DD')),
-                                //     const Padding(
-                                //       padding: EdgeInsets.symmetric(horizontal: 8),
-                                //       child: Text('/', style: TextStyle(fontSize: 24, color: Colors.grey)),
-                                //     ),
-                                //     Expanded(flex: 2, child: _buildDateField(_mesController, 'MM')),
-                                //     const Padding(
-                                //       padding: EdgeInsets.symmetric(horizontal: 8),
-                                //       child: Text('/', style: TextStyle(fontSize: 24, color: Colors.grey)),
-                                //     ),
-                                //     Expanded(flex: 3, child: _buildDateField(_anoController, 'AAAA', maxLength: 4)),
-                                //   ],
-                                // ),
+                                    decoration: InputDecoration(
+                                      hintText: '000.000.000-00',
+                                      prefixIcon: Icon(Icons.person_outline, color: Colors.grey.shade500),
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(color: Colors.grey.shade300),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(color: Colors.grey.shade300),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                      ),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                    ),
+                                  ),
+                                ),
+
                                 if (_errorMessage != null) ...[
                                   const SizedBox(height: 20),
                                   Container(
@@ -577,164 +764,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       ),
                     ),
                   ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLabel(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 14,
-        color: Colors.black87,
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    bool cpfMask = false,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        keyboardType: TextInputType.number,
-        inputFormatters: cpfMask
-            ? [
-                CpfInputFormatter(),
-              ]
-            : [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-        decoration: InputDecoration(
-          hintText: hint,
-          prefixIcon: Icon(icon, color: Colors.grey.shade500),
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
-          ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFloatingBall(double size, Color color) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [color.withValues(alpha: 0.8), color.withValues(alpha: 0.2)],
-          center: const Alignment(-0.3, -0.3),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.3),
-            blurRadius: size * 0.3,
-            spreadRadius: size * 0.1,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWorldCupBall(double size) {
-    return SizedBox(
-      width: size + 36,
-      height: size + 52,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Brilho dourado atrás da bola
-          Positioned(
-            top: 6,
-            child: Container(
-              width: size + 28,
-              height: size + 28,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFFFFC107).withValues(alpha: 0.34),
-                    const Color(0xFFFFC107).withValues(alpha: 0.10),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Aro sutil para dar acabamento
-          Positioned(
-            top: 14,
-            child: Container(
-              width: size + 10,
-              height: size + 10,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.18),
-                  width: 1.2,
-                ),
-              ),
-            ),
-          ),
-
-          // Bola
-          Positioned(
-            top: 18,
-            child: Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.34),
-                    blurRadius: 22,
-                    offset: const Offset(0, 12),
-                  ),
-                  BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.18),
-                    blurRadius: 8,
-                    offset: const Offset(-4, -4),
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/bola_copa.png',
-                  fit: BoxFit.contain,
                 ),
               ),
             ),

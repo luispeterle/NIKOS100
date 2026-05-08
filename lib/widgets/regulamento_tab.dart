@@ -9,7 +9,6 @@ class RegulamentoTab extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Header 3D
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -156,91 +155,1752 @@ class RegulamentoTab extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          _buildSection(
-            numero: '1',
-            titulo: 'INSCRIÇÃO',
-            icon: Icons.person_add,
-            items: [
-              'Inscrição mediante pagamento de R\$ 5,00 por jogo ou R\$ 520,00 para todos os 104 jogos.',
-              'O pagamento deve ser feito via PIX ou diretamente no RH.',
-            ],
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.grey.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 14,
+                  spreadRadius: -3,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFCC0000),
+                          Color(0xFF990000),
+                          Color(0xFF750000),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '1',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Text(
+                            'INSCRIÇÃO',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 0.6,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Inscrição mediante pagamento de R\$ 5,00 por jogo ou R\$ 520,00 para todos os 104 jogos.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'O pagamento deve ser feito via PIX ou diretamente no RH.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          _buildSection(
-            numero: '2',
-            titulo: 'JOGOS',
-            icon: Icons.sports_soccer,
-            items: [
-              'O bolao contempla todos os 104 jogos da Copa do Mundo 2026.',
-              '72 jogos da fase de grupos.',
-              '32 jogos da fase eliminatoria (oitavas, quartas, semi, disputa 3º e final).',
-            ],
+
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.grey.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 14,
+                  spreadRadius: -3,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFCC0000),
+                          Color(0xFF990000),
+                          Color(0xFF750000),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '2',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.sports_soccer,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Text(
+                            'JOGOS',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 0.6,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'O bolao contempla todos os 104 jogos da Copa do Mundo 2026.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '72 jogos da fase de grupos.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '32 jogos da fase eliminatoria (oitavas, quartas, semi, disputa 3º e final).',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          _buildSection(
-            numero: '3',
-            titulo: 'PALPITES',
-            icon: Icons.edit_note,
-            items: [
-              'Os palpites podem ser registrados ate 1 hora antes do inicio de cada jogo.',
-              'Apos esse prazo, o sistema bloqueia automaticamente os palpites.',
-              'Cada participante pode alterar seu palpite quantas vezes quiser ate o bloqueio.',
-            ],
+
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.grey.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 14,
+                  spreadRadius: -3,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFCC0000),
+                          Color(0xFF990000),
+                          Color(0xFF750000),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '3',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.edit_note,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Text(
+                            'PALPITES',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 0.6,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Os palpites podem ser registrados ate 1 hora antes do inicio de cada jogo.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Apos esse prazo, o sistema bloqueia automaticamente os palpites.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Cada participante pode alterar seu palpite quantas vezes quiser ate o bloqueio.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          _buildSection(
-            numero: '4',
-            titulo: 'PONTUAÇÃO',
-            icon: Icons.stars,
-            items: [
-              'Acerto do placar exato: 20 pontos.',
-              'Acerto do vencedor/empate (sem acertar o placar): 10 pontos.',
-              'Jogos do Brasil e a Final valem PONTUAÇÃO EM DOBRO.',
-            ],
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.grey.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 14,
+                  spreadRadius: -3,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFCC0000),
+                          Color(0xFF990000),
+                          Color(0xFF750000),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '4',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.stars,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Text(
+                            'PONTUAÇÃO',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 0.6,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Acerto do placar exato: 20 pontos.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Acerto do vencedor/empate (sem acertar o placar): 10 pontos.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Jogos do Brasil e a Final valem PONTUAÇÃO EM DOBRO.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          _buildSection(
-            numero: '5',
-            titulo: 'RANKING',
-            icon: Icons.leaderboard,
-            items: [
-              'O ranking é atualizado a cada 5 minutos.',
-              'Exibe os Top 5 colocados.',
-            ],
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.grey.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 14,
+                  spreadRadius: -3,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFCC0000),
+                          Color(0xFF990000),
+                          Color(0xFF750000),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '5',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.leaderboard,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Text(
+                            'RANKING',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 0.6,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'O ranking é atualizado a cada 5 minutos.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Exibe os Top 5 colocados.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          _buildSection(
-            numero: '6',
-            titulo: 'PREMIAÇÃO',
-            icon: Icons.emoji_events,
-            items: [
-              '1º Lugar: R\$ 5.000,00 via PIX.',
-              '2º Lugar: TV 50 Polegadas Smart LED.',
-              '3º Lugar: R\$ 1.000,00 em compras.',
-              '4º Lugar: R\$ 500,00 em compras.',
-              '5º Lugar: R\$ 250,00 em compras.',
-            ],
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.grey.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 14,
+                  spreadRadius: -3,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFCC0000),
+                          Color(0xFF990000),
+                          Color(0xFF750000),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '6',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.emoji_events,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Text(
+                            'PREMIAÇÃO',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 0.6,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '1º Lugar: R\$ 5.000,00 via PIX.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '2º Lugar: TV 50 Polegadas Smart LED.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '3º Lugar: R\$ 1.000,00 em compras.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '4º Lugar: R\$ 500,00 em compras.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '5º Lugar: R\$ 250,00 em compras.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          _buildSection(
-            numero: '7',
-            titulo: 'DESEMPATE',
-            icon: Icons.balance,
-            items: [
-              'Em caso de empate na pontuação final:',
-              '1. Maior número de placares exatos.',
-              '2. Maior número de acertos de vencedor/empate.',
-              '3. Sorteio entre os empatados.',
-            ],
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.grey.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 14,
+                  spreadRadius: -3,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFCC0000),
+                          Color(0xFF990000),
+                          Color(0xFF750000),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '7',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.balance,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Text(
+                            'DESEMPATE',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 0.6,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Em caso de empate na pontuação final:',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '1. Maior número de placares exatos.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '2. Maior número de acertos de vencedor/empate.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '3. Sorteio entre os empatados.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          _buildSection(
-            numero: '8',
-            titulo: 'DISPOSIÇÕES GERAIS',
-            icon: Icons.gavel,
-            items: [
-              'Casos omissos serão resolvidos pela comissão organizadora.',
-              'A participação implica na aceitação integral deste regulamento.',
-              'Qualquer tentativa de fraude resulta em desclassificação imediata.',
-            ],
+
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.grey.shade100,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 14,
+                  spreadRadius: -3,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFCC0000),
+                          Color(0xFF990000),
+                          Color(0xFF750000),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '8',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.gavel,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Text(
+                            'DISPOSIÇÕES GERAIS',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                              letterSpacing: 0.6,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Casos omissos serão resolvidos pela comissão organizadora.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'A participação implica na aceitação integral deste regulamento.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  'Qualquer tentativa de fraude resulta em desclassificação imediata.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
 
           const SizedBox(height: 24),
 
-          // Contato
           Container(
             width: double.infinity,
             clipBehavior: Clip.antiAlias,
@@ -368,157 +2028,6 @@ class RegulamentoTab extends StatelessWidget {
           ),
           const SizedBox(height: 92),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSection({
-    required String numero,
-    required String titulo,
-    required IconData icon,
-    required List<String> items,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.grey.shade100,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 14,
-            spreadRadius: -3,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFCC0000),
-                    Color(0xFF990000),
-                    Color(0xFF750000),
-                  ],
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.18),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        numero,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 17,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 12),
-
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      icon,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-
-                  const SizedBox(width: 12),
-
-                  Expanded(
-                    child: Text(
-                      titulo,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 15,
-                        letterSpacing: 0.6,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-              child: Column(
-                children: List.generate(items.length, (index) {
-                  final item = items[index];
-                  final isLast = index == items.length - 1;
-
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: isLast ? 0 : 13),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 24,
-                          height: 24,
-                          margin: const EdgeInsets.only(top: 1),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFCC0000).withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.check_rounded,
-                            size: 16,
-                            color: Color(0xFFCC0000),
-                          ),
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        Expanded(
-                          child: Text(
-                            item,
-                            style: TextStyle(
-                              fontSize: 13.5,
-                              height: 1.45,
-                              color: Colors.grey.shade800,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

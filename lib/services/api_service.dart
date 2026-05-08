@@ -18,7 +18,7 @@ class ApiService {
       );
 
       if (resp == true || resp == null) {
-        return null; // Erro
+        return null; 
       }
 
       final data = jsonDecode(resp);
@@ -28,7 +28,6 @@ class ApiService {
           final userData = responseList[0];
           final maxPalpites = userData['max_palpites'] ?? 25;
 
-          // Salvar na sessão global
           UserSession.setSession(
             cpf: cgccpf,
             nome: userData['nomcli'] ?? '',

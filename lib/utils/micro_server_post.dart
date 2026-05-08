@@ -55,7 +55,7 @@ Future<Uint8List> _encryptForServerDart({required String kemPubB64, required Str
   final hkdf = DartHkdf(hmac: const DartHmac(DartSha256()), outputLength: 32);
   final secret = await hkdf.deriveKey(
     secretKey: shared,
-    nonce: nonce, // salt
+    nonce: nonce,
     info: utf8.encode('sc-aesgcm-v1'),
   );
 
