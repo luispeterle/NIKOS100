@@ -395,12 +395,19 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
       palpbb: gol2Controller.text,
       palpiteAtual: palpiteAtual,
       mostrarFeedback: false,
+      rolarAposSalvar: false,
     );
 
     if (!mounted) return;
 
     final idProximoJogo = _obterProximoJogoElegivelId(idjogoAtual);
     if (idProximoJogo == null) return;
+
+    final ambosPreenchidos = gol1Controller.text.trim().isNotEmpty && gol2Controller.text.trim().isNotEmpty;
+    if (ambosPreenchidos) {
+      await Future<void>.delayed(const Duration(milliseconds: 320));
+      if (!mounted) return;
+    }
 
     await _rolarParaProximoPalpite(idjogoAtual);
     if (!mounted) return;
@@ -417,6 +424,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     required String palpbb,
     required Map<String, dynamic>? palpiteAtual,
     required bool mostrarFeedback,
+    bool rolarAposSalvar = true,
   }) async {
     final palpaaLimpo = palpaa.trim();
     final palpbbLimpo = palpbb.trim();
@@ -464,9 +472,14 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
       });
 
       _marcarPalpiteSalvoAgora(idjogo);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _rolarParaProximoPalpite(idjogo);
-      });
+      if (rolarAposSalvar) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          if (!mounted) return;
+          await Future<void>.delayed(const Duration(milliseconds: 320));
+          if (!mounted) return;
+          await _rolarParaProximoPalpite(idjogo);
+        });
+      }
 
       if (mostrarFeedback) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1010,40 +1023,56 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                 ),
                                                               ],
                                                             ),
-                                                            child: TextField(
-                                                              controller: gol1Controller,
-                                                              focusNode: gol1FocusNode,
-                                                              onChanged: (_) => _agendarAutoSave(
-                                                                idjogo: idjogo,
-                                                                jogo: jogo,
-                                                                gol1Controller: gol1Controller,
-                                                                gol2Controller: gol2Controller,
-                                                              ),
-                                                              onSubmitted: (_) => gol2FocusNode.requestFocus(),
-                                                              textInputAction: TextInputAction.next,
-                                                              textAlign: TextAlign.center,
-                                                              keyboardType: TextInputType.number,
-                                                              inputFormatters: [
-                                                                FilteringTextInputFormatter.digitsOnly,
-                                                                LengthLimitingTextInputFormatter(2),
-                                                              ],
-                                                              style: const TextStyle(
-                                                                fontSize: 22,
-                                                                fontWeight: FontWeight.bold,
-                                                                color: Color(0xFFCC0000),
-                                                              ),
-                                                              decoration: InputDecoration(
-                                                                filled: true,
-                                                                fillColor: Colors.white,
-                                                                border: OutlineInputBorder(
-                                                                  borderRadius: BorderRadius.circular(12),
-                                                                  borderSide: BorderSide.none,
+                                                            child: Focus(
+                                                              onKeyEvent: (_, event) {
+                                                                if (event is! KeyDownEvent) {
+                                                                  return KeyEventResult.ignored;
+                                                                }
+                                                                if (event.logicalKey != LogicalKeyboardKey.tab) {
+                                                                  return KeyEventResult.ignored;
+                                                                }
+                                                                if (HardwareKeyboard.instance.isShiftPressed) {
+                                                                  return KeyEventResult.ignored;
+                                                                }
+
+                                                                gol2FocusNode.requestFocus();
+                                                                return KeyEventResult.handled;
+                                                              },
+                                                              child: TextField(
+                                                                controller: gol1Controller,
+                                                                focusNode: gol1FocusNode,
+                                                                onChanged: (_) => _agendarAutoSave(
+                                                                  idjogo: idjogo,
+                                                                  jogo: jogo,
+                                                                  gol1Controller: gol1Controller,
+                                                                  gol2Controller: gol2Controller,
                                                                 ),
-                                                                focusedBorder: OutlineInputBorder(
-                                                                  borderRadius: BorderRadius.circular(12),
-                                                                  borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                                                onSubmitted: (_) => gol2FocusNode.requestFocus(),
+                                                                textInputAction: TextInputAction.next,
+                                                                textAlign: TextAlign.center,
+                                                                keyboardType: TextInputType.number,
+                                                                inputFormatters: [
+                                                                  FilteringTextInputFormatter.digitsOnly,
+                                                                  LengthLimitingTextInputFormatter(2),
+                                                                ],
+                                                                style: const TextStyle(
+                                                                  fontSize: 22,
+                                                                  fontWeight: FontWeight.bold,
+                                                                  color: Color(0xFFCC0000),
                                                                 ),
-                                                                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                                                decoration: InputDecoration(
+                                                                  filled: true,
+                                                                  fillColor: Colors.white,
+                                                                  border: OutlineInputBorder(
+                                                                    borderRadius: BorderRadius.circular(12),
+                                                                    borderSide: BorderSide.none,
+                                                                  ),
+                                                                  focusedBorder: OutlineInputBorder(
+                                                                    borderRadius: BorderRadius.circular(12),
+                                                                    borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                                                  ),
+                                                                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
@@ -1080,7 +1109,8 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                   return KeyEventResult.ignored;
                                                                 }
                                                                 if (HardwareKeyboard.instance.isShiftPressed) {
-                                                                  return KeyEventResult.ignored;
+                                                                  gol1FocusNode.requestFocus();
+                                                                  return KeyEventResult.handled;
                                                                 }
 
                                                                 _irParaProximoJogoComTab(
