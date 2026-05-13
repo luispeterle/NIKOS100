@@ -802,6 +802,7 @@ void mostrarInformacoesBolao(BuildContext context) {
                                             Image.asset(
                                               'assets/images/comoPontuar.png',
                                               fit: BoxFit.contain,
+                                              height: 250,
                                             ),
                                           ],
                                         ),
