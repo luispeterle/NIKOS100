@@ -115,52 +115,29 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       body: Stack(
         children: [
           Positioned.fill(
-            child: Stack(
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFFCC0000),
-                        Color(0xFF8B0000),
-                        Color(0xFF3F0000),
-                      ],
-                    ),
-                  ),
-                ),
+            child: Image.asset(
+              'assets/images/background.png',
+              fit: BoxFit.fill,
+            ),
+          ),
 
-                Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.22,
-                    child: Transform.translate(
-                      offset: const Offset(-220, 0),
-                      child: Image.asset(
-                        'assets/taca_copa.png',
-                        fit: BoxFit.cover,
-                        alignment: Alignment.centerLeft,
-                      ),
-                    ),
-                  ),
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.85,
+              child: Transform.translate(
+                offset: const Offset(-220, 0),
+                child: Image.asset(
+                  'assets/taca_copa.png',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.centerLeft,
                 ),
+              ),
+            ),
+          ),
 
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withValues(alpha: 0.10),
-                          Colors.black.withValues(alpha: 0.35),
-                          Colors.black.withValues(alpha: 0.55),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withValues(alpha: 0.35),
             ),
           ),
 
@@ -430,7 +407,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                         children: [
                           Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.all(32),
+                            padding: const EdgeInsets.all(18),
                             decoration: const BoxDecoration(
                               gradient: LinearGradient(
                                 begin: Alignment.topLeft,
@@ -442,25 +419,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                               children: [
                                 ScaleTransition(
                                   scale: _logoScale,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.3),
-                                          blurRadius: 20,
-                                          offset: const Offset(0, 8),
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.asset(
-                                        'assets/adelino.webp',
-                                        fit: BoxFit.contain,
-                                      ),
+                                  child: ClipRRect(
+                                    child: Image.asset(
+                                      'assets/logo.png',
+                                      fit: BoxFit.cover,
+                                      height: 160,
                                     ),
                                   ),
                                 ),
