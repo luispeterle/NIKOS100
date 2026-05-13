@@ -123,6 +123,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             child: Image.asset(
               'assets/images/background.jpg',
               fit: BoxFit.cover,
+              filterQuality: FilterQuality.low,
             ),
           ),
 
