@@ -121,8 +121,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background.png',
-              fit: BoxFit.fill,
+              'assets/images/background.jpg',
+              fit: BoxFit.cover,
             ),
           ),
 
