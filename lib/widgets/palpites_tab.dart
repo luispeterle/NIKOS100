@@ -572,12 +572,17 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     if (plcraa == null || plcrbb == null || usupla == null || usuplb == null) {
       return 0;
     }
-
     if (plcraa == usupla && plcrbb == usuplb) {
-      return 20;
+      if (jogo['siglaa'] == 'BRA' || jogo['siglbb'] == 'BRA') {
+        return 60;
+      }
+      return 30;
     }
 
     if ((plcraa < plcrbb && usupla < usuplb) || (plcraa > plcrbb && usupla > usuplb) || (plcraa == plcrbb && usupla == usuplb)) {
+      if (jogo['siglaa'] == 'BRA' || jogo['siglbb'] == 'BRA') {
+        return 20;
+      }
       return 10;
     }
 
@@ -627,7 +632,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
 
                   Expanded(
                     child: Text(
-                      'Palpites: ${UserSession.palpitesFeitos}/${UserSession.maxPalpites ?? 0}',
+                      'Palpites: ${UserSession.palpitesFeitos}/${(UserSession.maxPalpites ?? 0) < 0 ? 0 : (UserSession.maxPalpites ?? 0)}',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,

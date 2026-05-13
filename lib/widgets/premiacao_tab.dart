@@ -950,7 +950,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                                       ),
                                     ),
                                     child: Text(
-                                      '4º COLADO',
+                                      '4º COLOCADO',
                                       style: TextStyle(
                                         color: Colors.blueGrey.shade300,
                                         fontSize: 10,
