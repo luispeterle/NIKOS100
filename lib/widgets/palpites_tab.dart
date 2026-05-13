@@ -72,8 +72,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     setState(() => _loading = true);
 
     final jogos = await ApiService.getJogos();
-    final jogosAbertos = jogos.where((jogo) => !_jogoEstaFinalizado(jogo)).length;
-    final jogosFinalizados = jogos.length - jogosAbertos;
 
     setState(() {
       _jogos = jogos;
@@ -329,7 +327,10 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
         : null;
     final palpiteAtual = _palpitesLocais[idjogo] ?? palpiteServidor;
 
-    return UserSession.canMakePalpite() || palpiteAtual != null;
+    return _podeSalvarNoJogo(
+      idjogo: idjogo,
+      palpiteAtual: palpiteAtual,
+    );
   }
 
   int? _obterProximoJogoElegivelId(int idjogoAtual) {
@@ -445,7 +446,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     final palpiteAtualB = palpiteAtual?['palpbb']?.toString();
     if (palpiteAtualA == palpaaLimpo && palpiteAtualB == palpbbLimpo) return;
 
-    if (!UserSession.canMakePalpite() && palpiteAtual == null) {
+    if (!_podeSalvarNoJogo(idjogo: idjogo, palpiteAtual: palpiteAtual)) {
       if (mostrarFeedback && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -650,6 +651,17 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     final temPlacarOficial = _placarDefinido(jogo['plcraa']) && _placarDefinido(jogo['plcrbb']);
 
     return !podeEditar && temPlacarOficial;
+  }
+
+  bool _isJogoExcecaoLimite(int idjogo) {
+    return idjogo >= 1 && idjogo <= 10;
+  }
+
+  bool _podeSalvarNoJogo({
+    required int idjogo,
+    required Map<String, dynamic>? palpiteAtual,
+  }) {
+    return _isJogoExcecaoLimite(idjogo) || UserSession.canMakePalpite() || palpiteAtual != null;
   }
 
   @override
@@ -971,7 +983,10 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                       final jogoFinalizado = !podeEditar && temPlacarOficial;
                                       final salvandoEsteJogo = _salvandoPalpite[idjogo] == true;
                                       final salvoRecentemente = _salvoAgoraPorJogo.containsKey(idjogo);
-                                      final podeSalvarOuEditar = UserSession.canMakePalpite() || palpiteAtual != null;
+                                      final podeSalvarOuEditar = _podeSalvarNoJogo(
+                                        idjogo: idjogo,
+                                        palpiteAtual: palpiteAtual,
+                                      );
 
                                       final pontosGanhos = calcularPontosGanhos(jogo);
 
@@ -1580,7 +1595,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                           ],
                                                         ),
                                                       )
-                                                    else if (!UserSession.canMakePalpite() && palpiteAtual == null)
+                                                    else if (!podeSalvarOuEditar)
                                                       Container(
                                                         padding: const EdgeInsets.all(12),
                                                         decoration: BoxDecoration(
@@ -2462,7 +2477,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                           ],
                                                         ),
                                                       )
-                                                    else if (!UserSession.canMakePalpite() && palpiteAtual == null)
+                                                    else if (!podeSalvarOuEditar)
                                                       Container(
                                                         padding: const EdgeInsets.all(12),
                                                         decoration: BoxDecoration(
