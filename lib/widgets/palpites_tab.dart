@@ -16,6 +16,8 @@ class PalpitesTab extends StatefulWidget {
 }
 
 class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStateMixin {
+  static const int _loteRenderizacaoJogos = 12;
+
   List<Map<String, dynamic>> _jogos = [];
   final Map<int, Map<String, dynamic>> _palpitesLocais = {};
 
@@ -29,6 +31,10 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   final Map<int, FocusNode> _gol2FocusNodes = {};
   final Map<int, bool> _salvandoPalpite = {};
   final Map<int, GlobalKey> _jogoCardKeys = {};
+  Timer? _renderAbertosTimer;
+  Timer? _renderFinalizadosTimer;
+  int _limiteJogosAbertos = _loteRenderizacaoJogos;
+  int _limiteJogosFinalizados = _loteRenderizacaoJogos;
   bool _loading = true;
 
   bool _mostrarJogosAbertos = true;
@@ -42,6 +48,8 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
 
   @override
   void dispose() {
+    _renderAbertosTimer?.cancel();
+    _renderFinalizadosTimer?.cancel();
     for (final timer in _autoSaveTimers.values) {
       timer.cancel();
     }
@@ -68,10 +76,68 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     setState(() => _loading = true);
 
     final jogos = await ApiService.getJogos();
+    final jogosAbertos = jogos.where((jogo) => !_jogoEstaFinalizado(jogo)).length;
+    final jogosFinalizados = jogos.length - jogosAbertos;
 
     setState(() {
       _jogos = jogos;
+      _limiteJogosAbertos = jogosAbertos > _loteRenderizacaoJogos ? _loteRenderizacaoJogos : jogosAbertos;
+      _limiteJogosFinalizados = jogosFinalizados > _loteRenderizacaoJogos ? _loteRenderizacaoJogos : jogosFinalizados;
       _loading = false;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_mostrarJogosAbertos) {
+        _iniciarRenderizacaoProgressivaAbertos();
+      }
+      if (_mostrarJogosFinalizados) {
+        _iniciarRenderizacaoProgressivaFinalizados();
+      }
+    });
+  }
+
+  void _iniciarRenderizacaoProgressivaAbertos() {
+    _renderAbertosTimer?.cancel();
+    final total = _jogos.where((jogo) => !_jogoEstaFinalizado(jogo)).length;
+    if (_limiteJogosAbertos >= total) return;
+
+    _renderAbertosTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      final novoLimite = (_limiteJogosAbertos + _loteRenderizacaoJogos).clamp(0, total);
+      setState(() {
+        _limiteJogosAbertos = novoLimite;
+      });
+
+      if (novoLimite >= total) {
+        timer.cancel();
+      }
+    });
+  }
+
+  void _iniciarRenderizacaoProgressivaFinalizados() {
+    _renderFinalizadosTimer?.cancel();
+    final total = _jogos.where((jogo) => _jogoEstaFinalizado(jogo)).length;
+    if (_limiteJogosFinalizados >= total) return;
+
+    _renderFinalizadosTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      final novoLimite = (_limiteJogosFinalizados + _loteRenderizacaoJogos).clamp(0, total);
+      setState(() {
+        _limiteJogosFinalizados = novoLimite;
+      });
+
+      if (novoLimite >= total) {
+        timer.cancel();
+      }
     });
   }
 
@@ -505,17 +571,62 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.error, color: Colors.white),
-              SizedBox(width: 10),
-              Text('Erro ao salvar palpite'),
-            ],
-          ),
-          backgroundColor: Colors.red.shade600,
+          backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+          elevation: 8,
+          duration: const Duration(seconds: 5),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          content: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.white,
+                  size: 21,
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              const Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Palpite não salvo',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+
+                    SizedBox(height: 3),
+
+                    Text(
+                      'O jogo pode já ter começado. Se achar que houve erro, entre em contato.',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.5,
+                        height: 1.35,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -605,6 +716,8 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final jogosAbertos = _jogos.where((jogo) => !_jogoEstaFinalizado(jogo)).toList();
     final jogosFinalizados = _jogos.where((jogo) => _jogoEstaFinalizado(jogo)).toList();
+    final jogosAbertosExibidos = jogosAbertos.take(_limiteJogosAbertos).toList();
+    final jogosFinalizadosExibidos = jogosFinalizados.take(_limiteJogosFinalizados).toList();
 
     return Stack(
       children: [
@@ -800,6 +913,11 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                   initiallyExpanded: _mostrarJogosAbertos,
                                   onExpansionChanged: (value) {
                                     setState(() => _mostrarJogosAbertos = value);
+                                    if (value) {
+                                      _iniciarRenderizacaoProgressivaAbertos();
+                                    } else {
+                                      _renderAbertosTimer?.cancel();
+                                    }
                                   },
                                   backgroundColor: Colors.white.withValues(alpha: 0.55),
                                   collapsedBackgroundColor: Colors.white.withValues(alpha: 0.55),
@@ -888,7 +1006,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                         ),
                                       ),
 
-                                    ...jogosAbertos.map((jogo) {
+                                    ...jogosAbertosExibidos.map((jogo) {
                                       final fase = jogo['fase'];
                                       final idjogo = int.tryParse('${jogo['idjogo']}') ?? 0;
                                       final datjog = jogo['datjog'] ?? '';
@@ -1663,7 +1781,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                           ),
                                         ),
                                       );
-                                    }).toList(),
+                                    }),
                                   ],
                                 ),
                               ),
@@ -1685,6 +1803,11 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                   initiallyExpanded: _mostrarJogosFinalizados,
                                   onExpansionChanged: (value) {
                                     setState(() => _mostrarJogosFinalizados = value);
+                                    if (value) {
+                                      _iniciarRenderizacaoProgressivaFinalizados();
+                                    } else {
+                                      _renderFinalizadosTimer?.cancel();
+                                    }
                                   },
                                   backgroundColor: Colors.white.withValues(alpha: 0.55),
                                   collapsedBackgroundColor: Colors.white.withValues(alpha: 0.55),
@@ -1771,7 +1894,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                         ),
                                       ),
 
-                                    ...jogosFinalizados.map((jogo) {
+                                    ...jogosFinalizadosExibidos.map((jogo) {
                                       final fase = jogo['fase'];
                                       final idjogo = int.tryParse('${jogo['idjogo']}') ?? 0;
                                       final datjog = jogo['datjog'] ?? '';
@@ -2545,7 +2668,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                           ),
                                         ),
                                       );
-                                    }).toList(),
+                                    }),
                                   ],
                                 ),
                               ),
