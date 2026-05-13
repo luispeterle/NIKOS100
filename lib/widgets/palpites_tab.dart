@@ -31,6 +31,9 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   final Map<int, GlobalKey> _jogoCardKeys = {};
   bool _loading = true;
 
+  bool _mostrarJogosAbertos = true;
+  bool _mostrarJogosFinalizados = true;
+
   @override
   void initState() {
     super.initState();
@@ -589,8 +592,20 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     return 0;
   }
 
+  bool _jogoEstaFinalizado(Map<String, dynamic> jogo) {
+    final datjog = (jogo['datjog'] ?? '').toString();
+    final podeEditar = _podeEditarPalpite(datjog);
+
+    final temPlacarOficial = _placarDefinido(jogo['plcraa']) && _placarDefinido(jogo['plcrbb']);
+
+    return !podeEditar && temPlacarOficial;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final jogosAbertos = _jogos.where((jogo) => !_jogoEstaFinalizado(jogo)).toList();
+    final jogosFinalizados = _jogos.where((jogo) => _jogoEstaFinalizado(jogo)).toList();
+
     return Stack(
       children: [
         Column(
@@ -766,799 +781,1777 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                           ),
                         ],
                       )
-                    : ListView.builder(
+                    : ListView(
                         controller: _scrollController,
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 0 + 92),
-                        itemCount: _jogos.length,
-                        itemBuilder: (ctx, i) {
-                          final jogo = _jogos[i];
-                          final fase = jogo['fase'];
-                          final idjogo = int.tryParse('${jogo['idjogo']}') ?? 0;
-                          final datjog = jogo['datjog'] ?? '';
-                          final timeaa = jogo['timeaa'] ?? '';
-                          final siglaa = jogo['siglaa'] ?? '';
-                          final timebb = jogo['timebb'] ?? '';
-                          final siglbb = jogo['siglbb'] ?? '';
-                          final plcraa = jogo['plcraa'];
-                          final plcrbb = jogo['plcrbb'];
-                          final usupla = jogo['usupla'];
-                          final usuplb = jogo['usuplb'];
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 92),
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 12),
 
-                          final podeEditar = _podeEditarPalpite(datjog);
-                          final ehBrasil = _ehJogoDoBrasil(jogo);
-
-                          final palpiteLocal = _palpitesLocais[idjogo];
-                          final palpiteServidor = usupla != null && usuplb != null
-                              ? {
-                                  'palpaa': usupla,
-                                  'palpbb': usuplb,
-                                }
-                              : null;
-
-                          final palpiteAtual = palpiteLocal ?? palpiteServidor;
-
-                          final temPlacarOficial = _placarDefinido(plcraa) && _placarDefinido(plcrbb);
-                          final jogoFinalizado = !podeEditar && temPlacarOficial;
-                          final salvandoEsteJogo = _salvandoPalpite[idjogo] == true;
-                          final salvoRecentemente = _salvoAgoraPorJogo.containsKey(idjogo);
-                          final podeSalvarOuEditar = UserSession.canMakePalpite() || palpiteAtual != null;
-
-                          final pontosGanhos = calcularPontosGanhos(jogo);
-
-                          final gol1Controller = _obterControllerGol(
-                            idjogo: idjogo,
-                            primeiroGol: true,
-                            valorInicial: palpiteAtual == null ? '' : '${palpiteAtual['palpaa']}',
-                          );
-                          final gol2Controller = _obterControllerGol(
-                            idjogo: idjogo,
-                            primeiroGol: false,
-                            valorInicial: palpiteAtual == null ? '' : '${palpiteAtual['palpbb']}',
-                          );
-                          final gol1FocusNode = _obterFocusNodeGol(idjogo: idjogo, primeiroGol: true);
-                          final gol2FocusNode = _obterFocusNodeGol(idjogo: idjogo, primeiroGol: false);
-
-                          return Container(
-                            key: _obterCardKey(idjogo),
-                            margin: const EdgeInsets.only(bottom: 14),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(
-                                color: ehBrasil ? Colors.green.shade200 : Colors.grey.shade200,
-                                width: 1,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.06),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(18),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
-                                        colors: ehBrasil
-                                            ? [
-                                                Color(0xFFF1FAF4),
-                                                Color(0xFFD9F2E2),
-                                                Color(0xFFBFE8CA),
-                                              ]
-                                            : [
-                                                Colors.grey.shade50,
-                                                Colors.grey.shade100,
-                                                Colors.white,
-                                              ],
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 30,
-                                          height: 30,
-                                          decoration: BoxDecoration(
-                                            color: ehBrasil ? Colors.green.shade100 : Colors.grey.shade200,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            Icons.sports_soccer,
-                                            size: 16,
-                                            color: ehBrasil ? Colors.green.shade800 : Colors.grey.shade700,
-                                          ),
-                                        ),
-
-                                        const SizedBox(width: 10),
-
-                                        Expanded(
-                                          child: Text(
-                                            '#$idjogo - $fase',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w800,
-                                              color: ehBrasil ? Colors.green.shade900 : Colors.grey.shade800,
-                                            ),
-                                          ),
-                                        ),
-
-                                        if (ehBrasil) ...[
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFF009739),
-                                              borderRadius: BorderRadius.circular(999),
-                                            ),
-                                            child: const Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(Icons.star_rounded, size: 12, color: Colors.white),
-                                                SizedBox(width: 3),
-                                                Text(
-                                                  '2X',
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w900,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                        ],
-
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(999),
-                                            border: Border.all(color: Colors.grey.shade200),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(Icons.schedule_rounded, size: 12, color: Colors.grey.shade600),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                _formatarData(datjog),
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.grey.shade700,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                              child: Theme(
+                                data: Theme.of(context).copyWith(
+                                  dividerColor: Colors.transparent,
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                ),
+                                child: ExpansionTile(
+                                  initiallyExpanded: _mostrarJogosAbertos,
+                                  onExpansionChanged: (value) {
+                                    setState(() => _mostrarJogosAbertos = value);
+                                  },
+                                  backgroundColor: Colors.white.withValues(alpha: 0.55),
+                                  collapsedBackgroundColor: Colors.white.withValues(alpha: 0.55),
+                                  iconColor: const Color(0xFF8B5E3C),
+                                  collapsedIconColor: const Color(0xFF8B5E3C),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    side: BorderSide.none,
+                                  ),
+                                  collapsedShape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    side: BorderSide.none,
                                   ),
 
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                children: [
-                                                  Container(
-                                                    padding: const EdgeInsets.all(4),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(12),
-                                                      color: Colors.grey.shade50,
-                                                      shape: BoxShape.rectangle,
-                                                      border: Border.all(color: Colors.grey.shade200),
-                                                    ),
-                                                    child: _getBandeira(siglaa),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Text(
-                                                    timeaa,
-                                                    style: const TextStyle(
-                                                      fontWeight: FontWeight.w800,
-                                                      fontSize: 12,
-                                                      color: Colors.black87,
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
+                                  tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                  childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
 
-                                            Container(
-                                              margin: const EdgeInsets.symmetric(horizontal: 10),
-                                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                                              child: Column(
-                                                children: [
-                                                  if (jogoFinalizado) ...[
+                                  leading: Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(13),
+                                    ),
+                                    child: const Icon(
+                                      Icons.lock_open_rounded,
+                                      color: Colors.green,
+                                      size: 21,
+                                    ),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      const Expanded(
+                                        child: Text(
+                                          'Jogos abertos',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w900,
+                                            color: Color(0xFF222222),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.withValues(alpha: 0.10),
+                                          borderRadius: BorderRadius.circular(999),
+                                        ),
+                                        child: Text(
+                                          '${jogosAbertos.length}',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.green,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  subtitle: Text(
+                                    'Jogos disponíveis ou aguardando placar final',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                  children: [
+                                    if (jogosAbertos.isEmpty)
+                                      Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.all(14),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade50,
+                                          borderRadius: BorderRadius.circular(14),
+                                          border: Border.all(color: Colors.grey.shade200),
+                                        ),
+                                        child: Text(
+                                          'Nenhum jogo aberto.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 12.5,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+
+                                    ...jogosAbertos.map((jogo) {
+                                      final fase = jogo['fase'];
+                                      final idjogo = int.tryParse('${jogo['idjogo']}') ?? 0;
+                                      final datjog = jogo['datjog'] ?? '';
+                                      final timeaa = jogo['timeaa'] ?? '';
+                                      final siglaa = jogo['siglaa'] ?? '';
+                                      final timebb = jogo['timebb'] ?? '';
+                                      final siglbb = jogo['siglbb'] ?? '';
+                                      final plcraa = jogo['plcraa'];
+                                      final plcrbb = jogo['plcrbb'];
+                                      final usupla = jogo['usupla'];
+                                      final usuplb = jogo['usuplb'];
+
+                                      final podeEditar = _podeEditarPalpite(datjog);
+                                      final ehBrasil = _ehJogoDoBrasil(jogo);
+
+                                      final palpiteLocal = _palpitesLocais[idjogo];
+                                      final palpiteServidor = usupla != null && usuplb != null
+                                          ? {
+                                              'palpaa': usupla,
+                                              'palpbb': usuplb,
+                                            }
+                                          : null;
+
+                                      final palpiteAtual = palpiteLocal ?? palpiteServidor;
+
+                                      final temPlacarOficial = _placarDefinido(plcraa) && _placarDefinido(plcrbb);
+                                      final jogoFinalizado = !podeEditar && temPlacarOficial;
+                                      final salvandoEsteJogo = _salvandoPalpite[idjogo] == true;
+                                      final salvoRecentemente = _salvoAgoraPorJogo.containsKey(idjogo);
+                                      final podeSalvarOuEditar = UserSession.canMakePalpite() || palpiteAtual != null;
+
+                                      final pontosGanhos = calcularPontosGanhos(jogo);
+
+                                      final gol1Controller = _obterControllerGol(
+                                        idjogo: idjogo,
+                                        primeiroGol: true,
+                                        valorInicial: palpiteAtual == null ? '' : '${palpiteAtual['palpaa']}',
+                                      );
+
+                                      final gol2Controller = _obterControllerGol(
+                                        idjogo: idjogo,
+                                        primeiroGol: false,
+                                        valorInicial: palpiteAtual == null ? '' : '${palpiteAtual['palpbb']}',
+                                      );
+
+                                      final gol1FocusNode = _obterFocusNodeGol(idjogo: idjogo, primeiroGol: true);
+                                      final gol2FocusNode = _obterFocusNodeGol(idjogo: idjogo, primeiroGol: false);
+
+                                      return Container(
+                                        key: _obterCardKey(idjogo),
+                                        margin: const EdgeInsets.only(bottom: 14),
+
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(18),
+                                          border: Border.all(
+                                            color: ehBrasil ? Colors.green.shade200 : Colors.grey.shade200,
+                                            width: 1,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withValues(alpha: 0.12),
+                                              blurRadius: 24,
+                                              spreadRadius: 1,
+                                              offset: const Offset(0, 10),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(18),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.centerLeft,
+                                                    end: Alignment.centerRight,
+                                                    colors: ehBrasil
+                                                        ? [
+                                                            Color(0xFFF1FAF4),
+                                                            Color(0xFFD9F2E2),
+                                                            Color(0xFFBFE8CA),
+                                                          ]
+                                                        : [
+                                                            Colors.grey.shade50,
+                                                            Colors.grey.shade100,
+                                                            Colors.white,
+                                                          ],
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  children: [
                                                     Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                                      width: 30,
+                                                      height: 30,
                                                       decoration: BoxDecoration(
-                                                        color: Colors.grey.shade900,
-                                                        borderRadius: BorderRadius.circular(14),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withValues(alpha: 0.12),
-                                                            blurRadius: 10,
-                                                            offset: const Offset(0, 4),
-                                                          ),
-                                                        ],
+                                                        color: ehBrasil ? Colors.green.shade100 : Colors.grey.shade200,
+                                                        shape: BoxShape.circle,
                                                       ),
+                                                      child: Icon(
+                                                        Icons.sports_soccer,
+                                                        size: 16,
+                                                        color: ehBrasil ? Colors.green.shade800 : Colors.grey.shade700,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    Expanded(
                                                       child: Text(
-                                                        '$plcraa X $plcrbb',
-                                                        style: const TextStyle(
-                                                          fontSize: 20,
-                                                          fontWeight: FontWeight.w900,
-                                                          color: Colors.white,
+                                                        '#$idjogo - $fase',
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight: FontWeight.w800,
+                                                          color: ehBrasil ? Colors.green.shade900 : Colors.grey.shade800,
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
-                                                  if (!jogoFinalizado && podeEditar && podeSalvarOuEditar)
+                                                    if (ehBrasil) ...[
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                                                        decoration: BoxDecoration(
+                                                          color: const Color(0xFF009739),
+                                                          borderRadius: BorderRadius.circular(999),
+                                                        ),
+                                                        child: const Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Icon(Icons.star_rounded, size: 12, color: Colors.white),
+                                                            SizedBox(width: 3),
+                                                            Text(
+                                                              '2X',
+                                                              style: TextStyle(
+                                                                fontSize: 10,
+                                                                fontWeight: FontWeight.w900,
+                                                                color: Colors.white,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                    ],
                                                     Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                                                       decoration: BoxDecoration(
-                                                        color: Colors.grey.shade50,
-                                                        borderRadius: BorderRadius.circular(16),
+                                                        color: Colors.white,
+                                                        borderRadius: BorderRadius.circular(999),
                                                         border: Border.all(color: Colors.grey.shade200),
                                                       ),
                                                       child: Row(
                                                         mainAxisSize: MainAxisSize.min,
                                                         children: [
-                                                          Container(
-                                                            width: 50,
-                                                            decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius.circular(12),
-                                                              boxShadow: [
-                                                                BoxShadow(
-                                                                  color: Colors.grey.shade300,
-                                                                  blurRadius: 6,
-                                                                  offset: const Offset(0, 2),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            child: Focus(
-                                                              onKeyEvent: (_, event) {
-                                                                if (event is! KeyDownEvent) {
-                                                                  return KeyEventResult.ignored;
-                                                                }
-                                                                if (event.logicalKey != LogicalKeyboardKey.tab) {
-                                                                  return KeyEventResult.ignored;
-                                                                }
-                                                                if (HardwareKeyboard.instance.isShiftPressed) {
-                                                                  return KeyEventResult.ignored;
-                                                                }
-
-                                                                gol2FocusNode.requestFocus();
-                                                                return KeyEventResult.handled;
-                                                              },
-                                                              child: TextField(
-                                                                controller: gol1Controller,
-                                                                focusNode: gol1FocusNode,
-                                                                onChanged: (_) => _agendarAutoSave(
-                                                                  idjogo: idjogo,
-                                                                  jogo: jogo,
-                                                                  gol1Controller: gol1Controller,
-                                                                  gol2Controller: gol2Controller,
-                                                                ),
-                                                                onSubmitted: (_) => gol2FocusNode.requestFocus(),
-                                                                textInputAction: TextInputAction.next,
-                                                                textAlign: TextAlign.center,
-                                                                keyboardType: TextInputType.number,
-                                                                inputFormatters: [
-                                                                  FilteringTextInputFormatter.digitsOnly,
-                                                                  LengthLimitingTextInputFormatter(2),
-                                                                ],
-                                                                style: const TextStyle(
-                                                                  fontSize: 22,
-                                                                  fontWeight: FontWeight.bold,
-                                                                  color: Color(0xFFCC0000),
-                                                                ),
-                                                                decoration: InputDecoration(
-                                                                  filled: true,
-                                                                  fillColor: Colors.white,
-                                                                  border: OutlineInputBorder(
-                                                                    borderRadius: BorderRadius.circular(12),
-                                                                    borderSide: BorderSide.none,
-                                                                  ),
-                                                                  focusedBorder: OutlineInputBorder(
-                                                                    borderRadius: BorderRadius.circular(12),
-                                                                    borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
-                                                                  ),
-                                                                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-
-                                                          Padding(
-                                                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                            child: Text(
-                                                              'X',
-                                                              style: TextStyle(
-                                                                fontSize: 18,
-                                                                fontWeight: FontWeight.w900,
-                                                                color: Colors.grey.shade600,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            width: 50,
-                                                            decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius.circular(12),
-                                                              boxShadow: [
-                                                                BoxShadow(
-                                                                  color: Colors.grey.shade300,
-                                                                  blurRadius: 6,
-                                                                  offset: const Offset(0, 2),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            child: Focus(
-                                                              onKeyEvent: (_, event) {
-                                                                if (event is! KeyDownEvent) {
-                                                                  return KeyEventResult.ignored;
-                                                                }
-                                                                if (event.logicalKey != LogicalKeyboardKey.tab) {
-                                                                  return KeyEventResult.ignored;
-                                                                }
-                                                                if (HardwareKeyboard.instance.isShiftPressed) {
-                                                                  gol1FocusNode.requestFocus();
-                                                                  return KeyEventResult.handled;
-                                                                }
-
-                                                                _irParaProximoJogoComTab(
-                                                                  idjogoAtual: idjogo,
-                                                                  gol1Controller: gol1Controller,
-                                                                  gol2Controller: gol2Controller,
-                                                                  palpiteAtual: palpiteAtual,
-                                                                );
-                                                                return KeyEventResult.handled;
-                                                              },
-                                                              child: TextField(
-                                                                controller: gol2Controller,
-                                                                focusNode: gol2FocusNode,
-                                                                onChanged: (_) => _agendarAutoSave(
-                                                                  idjogo: idjogo,
-                                                                  jogo: jogo,
-                                                                  gol1Controller: gol1Controller,
-                                                                  gol2Controller: gol2Controller,
-                                                                ),
-                                                                onSubmitted: (_) => _irParaProximoJogoComTab(
-                                                                  idjogoAtual: idjogo,
-                                                                  gol1Controller: gol1Controller,
-                                                                  gol2Controller: gol2Controller,
-                                                                  palpiteAtual: palpiteAtual,
-                                                                ),
-                                                                textInputAction: TextInputAction.next,
-                                                                textAlign: TextAlign.center,
-                                                                keyboardType: TextInputType.number,
-                                                                inputFormatters: [
-                                                                  FilteringTextInputFormatter.digitsOnly,
-                                                                  LengthLimitingTextInputFormatter(2),
-                                                                ],
-                                                                style: const TextStyle(
-                                                                  fontSize: 22,
-                                                                  fontWeight: FontWeight.bold,
-                                                                  color: Color(0xFFCC0000),
-                                                                ),
-                                                                decoration: InputDecoration(
-                                                                  filled: true,
-                                                                  fillColor: Colors.white,
-                                                                  border: OutlineInputBorder(
-                                                                    borderRadius: BorderRadius.circular(12),
-                                                                    borderSide: BorderSide.none,
-                                                                  ),
-                                                                  focusedBorder: OutlineInputBorder(
-                                                                    borderRadius: BorderRadius.circular(12),
-                                                                    borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
-                                                                  ),
-                                                                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                                                                ),
-                                                              ),
+                                                          Icon(Icons.schedule_rounded, size: 12, color: Colors.grey.shade600),
+                                                          const SizedBox(width: 4),
+                                                          Text(
+                                                            _formatarData(datjog),
+                                                            style: TextStyle(
+                                                              fontSize: 11,
+                                                              fontWeight: FontWeight.w600,
+                                                              color: Colors.grey.shade700,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
                                                     ),
-
-                                                  if (!jogoFinalizado && podeEditar && !podeSalvarOuEditar)
-                                                    Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.grey.shade100,
-                                                        borderRadius: BorderRadius.circular(14),
-                                                        border: Border.all(color: Colors.grey.shade300),
-                                                      ),
-                                                      child: Text(
-                                                        '- X -',
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight: FontWeight.w900,
-                                                          color: Colors.grey.shade500,
+                                                  ],
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                                                child: Column(
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Column(
+                                                            children: [
+                                                              Container(
+                                                                padding: const EdgeInsets.all(4),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.circular(12),
+                                                                  color: Colors.grey.shade50,
+                                                                  shape: BoxShape.rectangle,
+                                                                  border: Border.all(color: Colors.grey.shade200),
+                                                                ),
+                                                                child: _getBandeira(siglaa),
+                                                              ),
+                                                              const SizedBox(height: 8),
+                                                              Text(
+                                                                timeaa,
+                                                                style: const TextStyle(
+                                                                  fontWeight: FontWeight.w800,
+                                                                  fontSize: 12,
+                                                                  color: Colors.black87,
+                                                                ),
+                                                                textAlign: TextAlign.center,
+                                                                maxLines: 2,
+                                                                overflow: TextOverflow.ellipsis,
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
+                                                        Container(
+                                                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                          child: Column(
+                                                            children: [
+                                                              if (jogoFinalizado) ...[
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.grey.shade900,
+                                                                    borderRadius: BorderRadius.circular(14),
+                                                                    boxShadow: [
+                                                                      BoxShadow(
+                                                                        color: Colors.black.withValues(alpha: 0.12),
+                                                                        blurRadius: 10,
+                                                                        offset: const Offset(0, 4),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  child: Text(
+                                                                    '$plcraa X $plcrbb',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 20,
+                                                                      fontWeight: FontWeight.w900,
+                                                                      color: Colors.white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                              if (!jogoFinalizado && podeEditar && podeSalvarOuEditar)
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.grey.shade50,
+                                                                    borderRadius: BorderRadius.circular(16),
+                                                                    border: Border.all(color: Colors.grey.shade200),
+                                                                  ),
+                                                                  child: Row(
+                                                                    mainAxisSize: MainAxisSize.min,
+                                                                    children: [
+                                                                      Container(
+                                                                        width: 50,
+                                                                        decoration: BoxDecoration(
+                                                                          borderRadius: BorderRadius.circular(12),
+                                                                          boxShadow: [
+                                                                            BoxShadow(
+                                                                              color: Colors.grey.shade300,
+                                                                              blurRadius: 6,
+                                                                              offset: const Offset(0, 2),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                        child: Focus(
+                                                                          onKeyEvent: (_, event) {
+                                                                            if (event is! KeyDownEvent) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            if (event.logicalKey != LogicalKeyboardKey.tab) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            if (HardwareKeyboard.instance.isShiftPressed) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            gol2FocusNode.requestFocus();
+                                                                            return KeyEventResult.handled;
+                                                                          },
+                                                                          child: TextField(
+                                                                            controller: gol1Controller,
+                                                                            focusNode: gol1FocusNode,
+                                                                            onChanged: (_) => _agendarAutoSave(
+                                                                              idjogo: idjogo,
+                                                                              jogo: jogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                            ),
+                                                                            onSubmitted: (_) => gol2FocusNode.requestFocus(),
+                                                                            textInputAction: TextInputAction.next,
+                                                                            textAlign: TextAlign.center,
+                                                                            keyboardType: TextInputType.number,
+                                                                            inputFormatters: [
+                                                                              FilteringTextInputFormatter.digitsOnly,
+                                                                              LengthLimitingTextInputFormatter(2),
+                                                                            ],
+                                                                            style: const TextStyle(
+                                                                              fontSize: 22,
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: Color(0xFFCC0000),
+                                                                            ),
+                                                                            decoration: InputDecoration(
+                                                                              filled: true,
+                                                                              fillColor: Colors.white,
+                                                                              border: OutlineInputBorder(
+                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                borderSide: BorderSide.none,
+                                                                              ),
+                                                                              focusedBorder: OutlineInputBorder(
+                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                                                              ),
+                                                                              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      Padding(
+                                                                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                                        child: Text(
+                                                                          'X',
+                                                                          style: TextStyle(
+                                                                            fontSize: 18,
+                                                                            fontWeight: FontWeight.w900,
+                                                                            color: Colors.grey.shade600,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      Container(
+                                                                        width: 50,
+                                                                        decoration: BoxDecoration(
+                                                                          borderRadius: BorderRadius.circular(12),
+                                                                          boxShadow: [
+                                                                            BoxShadow(
+                                                                              color: Colors.grey.shade300,
+                                                                              blurRadius: 6,
+                                                                              offset: const Offset(0, 2),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                        child: Focus(
+                                                                          onKeyEvent: (_, event) {
+                                                                            if (event is! KeyDownEvent) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            if (event.logicalKey != LogicalKeyboardKey.tab) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            if (HardwareKeyboard.instance.isShiftPressed) {
+                                                                              gol1FocusNode.requestFocus();
+                                                                              return KeyEventResult.handled;
+                                                                            }
+                                                                            _irParaProximoJogoComTab(
+                                                                              idjogoAtual: idjogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                              palpiteAtual: palpiteAtual,
+                                                                            );
+                                                                            return KeyEventResult.handled;
+                                                                          },
+                                                                          child: TextField(
+                                                                            controller: gol2Controller,
+                                                                            focusNode: gol2FocusNode,
+                                                                            onChanged: (_) => _agendarAutoSave(
+                                                                              idjogo: idjogo,
+                                                                              jogo: jogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                            ),
+                                                                            onSubmitted: (_) => _irParaProximoJogoComTab(
+                                                                              idjogoAtual: idjogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                              palpiteAtual: palpiteAtual,
+                                                                            ),
+                                                                            textInputAction: TextInputAction.next,
+                                                                            textAlign: TextAlign.center,
+                                                                            keyboardType: TextInputType.number,
+                                                                            inputFormatters: [
+                                                                              FilteringTextInputFormatter.digitsOnly,
+                                                                              LengthLimitingTextInputFormatter(2),
+                                                                            ],
+                                                                            style: const TextStyle(
+                                                                              fontSize: 22,
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: Color(0xFFCC0000),
+                                                                            ),
+                                                                            decoration: InputDecoration(
+                                                                              filled: true,
+                                                                              fillColor: Colors.white,
+                                                                              border: OutlineInputBorder(
+                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                borderSide: BorderSide.none,
+                                                                              ),
+                                                                              focusedBorder: OutlineInputBorder(
+                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                                                              ),
+                                                                              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              if (!jogoFinalizado && podeEditar && !podeSalvarOuEditar)
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.grey.shade100,
+                                                                    borderRadius: BorderRadius.circular(14),
+                                                                    border: Border.all(color: Colors.grey.shade300),
+                                                                  ),
+                                                                  child: Text(
+                                                                    '- X -',
+                                                                    style: TextStyle(
+                                                                      fontSize: 18,
+                                                                      fontWeight: FontWeight.w900,
+                                                                      color: Colors.grey.shade500,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              if (!jogoFinalizado && !podeEditar && palpiteAtual != null)
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                                                  decoration: BoxDecoration(
+                                                                    gradient: const LinearGradient(
+                                                                      begin: Alignment.topLeft,
+                                                                      end: Alignment.bottomRight,
+                                                                      colors: [
+                                                                        Color(0xFFCC0000),
+                                                                        Color(0xFF990000),
+                                                                      ],
+                                                                    ),
+                                                                    borderRadius: BorderRadius.circular(14),
+                                                                  ),
+                                                                  child: Text(
+                                                                    '${palpiteAtual['palpaa']} X ${palpiteAtual['palpbb']}',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 18,
+                                                                      fontWeight: FontWeight.w900,
+                                                                      color: Colors.white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              if (!jogoFinalizado && !podeEditar && palpiteAtual == null)
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.grey.shade100,
+                                                                    borderRadius: BorderRadius.circular(14),
+                                                                    border: Border.all(color: Colors.grey.shade300),
+                                                                  ),
+                                                                  child: Text(
+                                                                    '- X -',
+                                                                    style: TextStyle(
+                                                                      fontSize: 18,
+                                                                      fontWeight: FontWeight.w900,
+                                                                      color: Colors.grey.shade500,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          child: Column(
+                                                            children: [
+                                                              Container(
+                                                                padding: const EdgeInsets.all(4),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.circular(12),
+                                                                  color: Colors.grey.shade50,
+                                                                  shape: BoxShape.rectangle,
+                                                                  border: Border.all(color: Colors.grey.shade200),
+                                                                ),
+                                                                child: _getBandeira(siglbb),
+                                                              ),
+                                                              const SizedBox(height: 8),
+                                                              Text(
+                                                                timebb,
+                                                                style: const TextStyle(
+                                                                  fontWeight: FontWeight.w800,
+                                                                  fontSize: 12,
+                                                                  color: Colors.black87,
+                                                                ),
+                                                                textAlign: TextAlign.center,
+                                                                maxLines: 2,
+                                                                overflow: TextOverflow.ellipsis,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-
-                                                  if (!jogoFinalizado && !podeEditar && palpiteAtual != null)
-                                                    Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                                                      decoration: BoxDecoration(
-                                                        gradient: const LinearGradient(
-                                                          begin: Alignment.topLeft,
-                                                          end: Alignment.bottomRight,
-                                                          colors: [
-                                                            Color(0xFFCC0000),
-                                                            Color(0xFF990000),
+                                                    const SizedBox(height: 16),
+                                                    if (jogoFinalizado) ...[
+                                                      Wrap(
+                                                        alignment: WrapAlignment.center,
+                                                        crossAxisAlignment: WrapCrossAlignment.center,
+                                                        spacing: 10,
+                                                        runSpacing: 8,
+                                                        children: [
+                                                          Container(
+                                                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                                            decoration: BoxDecoration(
+                                                              color: const Color(0xFFF7F7F8),
+                                                              borderRadius: BorderRadius.circular(999),
+                                                              border: Border.all(
+                                                                color: const Color(0xFFE3E4E8),
+                                                              ),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: Colors.black.withValues(alpha: 0.04),
+                                                                  blurRadius: 10,
+                                                                  offset: const Offset(0, 3),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisSize: MainAxisSize.min,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.edit_note_rounded,
+                                                                  size: 16,
+                                                                  color: Colors.grey.shade700,
+                                                                ),
+                                                                const SizedBox(width: 6),
+                                                                Text(
+                                                                  'Meu palpite: ${gol1Controller.text} X ${gol2Controller.text}',
+                                                                  style: TextStyle(
+                                                                    fontSize: 13.5,
+                                                                    fontWeight: FontWeight.w700,
+                                                                    color: Colors.grey.shade800,
+                                                                    letterSpacing: 0.1,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                                            decoration: BoxDecoration(
+                                                              gradient: LinearGradient(
+                                                                colors: [
+                                                                  Colors.amber.shade50,
+                                                                  Colors.orange.shade50,
+                                                                ],
+                                                              ),
+                                                              borderRadius: BorderRadius.circular(999),
+                                                              border: Border.all(
+                                                                color: Colors.amber.shade200,
+                                                              ),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: Colors.orange.withValues(alpha: 0.08),
+                                                                  blurRadius: 10,
+                                                                  offset: const Offset(0, 3),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisSize: MainAxisSize.min,
+                                                              children: [
+                                                                Container(
+                                                                  width: 20,
+                                                                  height: 20,
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.amber.shade100,
+                                                                    shape: BoxShape.circle,
+                                                                  ),
+                                                                  child: Icon(
+                                                                    Icons.emoji_events_rounded,
+                                                                    size: 13,
+                                                                    color: Colors.amber.shade800,
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(width: 6),
+                                                                Text(
+                                                                  '$pontosGanhos pts ganhos',
+                                                                  style: TextStyle(
+                                                                    fontSize: 12.5,
+                                                                    fontWeight: FontWeight.w800,
+                                                                    color: Colors.orange.shade900,
+                                                                    letterSpacing: 0.1,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 8),
+                                                      Container(
+                                                        padding: const EdgeInsets.all(12),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.grey.withAlpha(26),
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(color: Colors.grey.withAlpha(77)),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            Icon(Icons.check_circle, color: Colors.grey, size: 18),
+                                                            const SizedBox(width: 8),
+                                                            Flexible(
+                                                              child: Text(
+                                                                'Jogo finalizado',
+                                                                textAlign: TextAlign.center,
+                                                                style: TextStyle(
+                                                                  color: Colors.grey,
+                                                                  fontWeight: FontWeight.w600,
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ),
                                                           ],
                                                         ),
-                                                        borderRadius: BorderRadius.circular(14),
                                                       ),
-                                                      child: Text(
-                                                        '${palpiteAtual['palpaa']} X ${palpiteAtual['palpbb']}',
-                                                        style: const TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight: FontWeight.w900,
-                                                          color: Colors.white,
+                                                    ] else if (!podeEditar)
+                                                      Container(
+                                                        padding: const EdgeInsets.all(12),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.orange.withAlpha(26),
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(color: Colors.orange.withAlpha(77)),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            Icon(Icons.timer_off, color: Colors.orange, size: 18),
+                                                            const SizedBox(width: 8),
+                                                            Flexible(
+                                                              child: Text(
+                                                                'Palpites bloqueados, aguarde \naté ser cadastro o placar final',
+                                                                textAlign: TextAlign.center,
+                                                                style: TextStyle(
+                                                                  color: Colors.orange,
+                                                                  fontWeight: FontWeight.w600,
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    else if (!UserSession.canMakePalpite() && palpiteAtual == null)
+                                                      Container(
+                                                        padding: const EdgeInsets.all(12),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.red.withAlpha(26),
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(color: Colors.red.withAlpha(77)),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            Icon(Icons.block, color: Colors.red, size: 18),
+                                                            const SizedBox(width: 8),
+                                                            Flexible(
+                                                              child: Text(
+                                                                'Limite de palpites atingido ',
+                                                                textAlign: TextAlign.center,
+                                                                style: TextStyle(
+                                                                  color: Colors.red,
+                                                                  fontWeight: FontWeight.w600,
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    else
+                                                      SizedBox(
+                                                        height: 44,
+                                                        child: AnimatedSwitcher(
+                                                          duration: const Duration(milliseconds: 220),
+                                                          switchInCurve: Curves.easeOut,
+                                                          switchOutCurve: Curves.easeIn,
+                                                          child: salvandoEsteJogo
+                                                              ? KeyedSubtree(
+                                                                  key: ValueKey('salvando-$idjogo'),
+                                                                  child: Container(
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors.blue.withAlpha(26),
+                                                                      borderRadius: BorderRadius.circular(12),
+                                                                      border: Border.all(color: Colors.blue.withAlpha(77)),
+                                                                    ),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                                      children: [
+                                                                        Icon(Icons.sync_rounded, color: Colors.blue, size: 16),
+                                                                        const SizedBox(width: 8),
+                                                                        Flexible(
+                                                                          child: Text(
+                                                                            'Salvando...',
+                                                                            textAlign: TextAlign.center,
+                                                                            style: TextStyle(
+                                                                              color: Colors.blue,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 11.5,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              : salvoRecentemente
+                                                              ? KeyedSubtree(
+                                                                  key: ValueKey('salvo-$idjogo'),
+                                                                  child: Container(
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors.green.withAlpha(26),
+                                                                      borderRadius: BorderRadius.circular(12),
+                                                                      border: Border.all(color: Colors.green.withAlpha(77)),
+                                                                    ),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                                      children: [
+                                                                        Icon(Icons.check_circle, color: Colors.green, size: 16),
+                                                                        const SizedBox(width: 8),
+                                                                        Flexible(
+                                                                          child: Text(
+                                                                            'Palpite salvo automaticamente',
+                                                                            textAlign: TextAlign.center,
+                                                                            style: TextStyle(
+                                                                              color: Colors.green,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 11.5,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              : KeyedSubtree(
+                                                                  key: ValueKey('pronto-$idjogo'),
+                                                                  child: Container(
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors.blue.withAlpha(26),
+                                                                      borderRadius: BorderRadius.circular(12),
+                                                                      border: Border.all(color: Colors.blue.withAlpha(77)),
+                                                                    ),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                                      children: [
+                                                                        Icon(Icons.auto_awesome_rounded, color: Colors.blue, size: 16),
+                                                                        const SizedBox(width: 8),
+                                                                        Flexible(
+                                                                          child: Text(
+                                                                            'Preencha os dois placares para salvar.',
+                                                                            textAlign: TextAlign.center,
+                                                                            style: TextStyle(
+                                                                              color: Colors.blue,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 11.5,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
                                                         ),
                                                       ),
-                                                    ),
-
-                                                  if (!jogoFinalizado && !podeEditar && palpiteAtual == null)
-                                                    Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.grey.shade100,
-                                                        borderRadius: BorderRadius.circular(14),
-                                                        border: Border.all(color: Colors.grey.shade300),
-                                                      ),
-                                                      child: Text(
-                                                        '- X -',
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight: FontWeight.w900,
-                                                          color: Colors.grey.shade500,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                ],
-                                              ),
-                                            ),
-
-                                            Expanded(
-                                              child: Column(
-                                                children: [
-                                                  Container(
-                                                    padding: const EdgeInsets.all(4),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(12),
-                                                      color: Colors.grey.shade50,
-                                                      shape: BoxShape.rectangle,
-                                                      border: Border.all(color: Colors.grey.shade200),
-                                                    ),
-                                                    child: _getBandeira(siglbb),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Text(
-                                                    timebb,
-                                                    style: const TextStyle(
-                                                      fontWeight: FontWeight.w800,
-                                                      fontSize: 12,
-                                                      color: Colors.black87,
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-
-                                        const SizedBox(height: 16),
-
-                                        if (jogoFinalizado) ...[
-                                          Wrap(
-                                            alignment: WrapAlignment.center,
-                                            crossAxisAlignment: WrapCrossAlignment.center,
-                                            spacing: 10,
-                                            runSpacing: 8,
-                                            children: [
-                                              Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                                decoration: BoxDecoration(
-                                                  color: const Color(0xFFF7F7F8),
-                                                  borderRadius: BorderRadius.circular(999),
-                                                  border: Border.all(
-                                                    color: const Color(0xFFE3E4E8),
-                                                  ),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black.withValues(alpha: 0.04),
-                                                      blurRadius: 10,
-                                                      offset: const Offset(0, 3),
-                                                    ),
-                                                  ],
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.edit_note_rounded,
-                                                      size: 16,
-                                                      color: Colors.grey.shade700,
-                                                    ),
-                                                    const SizedBox(width: 6),
-                                                    Text(
-                                                      'Meu palpite: ${gol1Controller.text} X ${gol2Controller.text}',
-                                                      style: TextStyle(
-                                                        fontSize: 13.5,
-                                                        fontWeight: FontWeight.w700,
-                                                        color: Colors.grey.shade800,
-                                                        letterSpacing: 0.1,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-
-                                              Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                                decoration: BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                    colors: [
-                                                      Colors.amber.shade50,
-                                                      Colors.orange.shade50,
-                                                    ],
-                                                  ),
-                                                  borderRadius: BorderRadius.circular(999),
-                                                  border: Border.all(
-                                                    color: Colors.amber.shade200,
-                                                  ),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.orange.withValues(alpha: 0.08),
-                                                      blurRadius: 10,
-                                                      offset: const Offset(0, 3),
-                                                    ),
-                                                  ],
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    Container(
-                                                      width: 20,
-                                                      height: 20,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.amber.shade100,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                      child: Icon(
-                                                        Icons.emoji_events_rounded,
-                                                        size: 13,
-                                                        color: Colors.amber.shade800,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 6),
-                                                    Text(
-                                                      '$pontosGanhos pts ganhos',
-                                                      style: TextStyle(
-                                                        fontSize: 12.5,
-                                                        fontWeight: FontWeight.w800,
-                                                        color: Colors.orange.shade900,
-                                                        letterSpacing: 0.1,
-                                                      ),
-                                                    ),
                                                   ],
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          SizedBox(height: 8),
-                                          Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey.withAlpha(26),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(color: Colors.grey.withAlpha(77)),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.check_circle, color: Colors.grey, size: 18),
-                                                const SizedBox(width: 8),
-                                                Flexible(
-                                                  child: Text(
-                                                    'Jogo finalizado',
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontWeight: FontWeight.w600,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ] else if (!podeEditar)
-                                          Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: Colors.orange.withAlpha(26),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(color: Colors.orange.withAlpha(77)),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.timer_off, color: Colors.orange, size: 18),
-                                                const SizedBox(width: 8),
-                                                Flexible(
-                                                  child: Text(
-                                                    'Palpites bloqueados, aguarde \naté ser cadastro o placar final',
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      color: Colors.orange,
-                                                      fontWeight: FontWeight.w600,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        else if (!UserSession.canMakePalpite() && palpiteAtual == null)
-                                          Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: Colors.red.withAlpha(26),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(color: Colors.red.withAlpha(77)),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.block, color: Colors.red, size: 18),
-                                                const SizedBox(width: 8),
-                                                Flexible(
-                                                  child: Text(
-                                                    'Limite de palpites atingido ',
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      color: Colors.red,
-                                                      fontWeight: FontWeight.w600,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        else
-                                          SizedBox(
-                                            height: 44,
-                                            child: AnimatedSwitcher(
-                                              duration: const Duration(milliseconds: 220),
-                                              switchInCurve: Curves.easeOut,
-                                              switchOutCurve: Curves.easeIn,
-                                              child: salvandoEsteJogo
-                                                  ? KeyedSubtree(
-                                                      key: ValueKey('salvando-$idjogo'),
-                                                      child: Container(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.blue.withAlpha(26),
-                                                          borderRadius: BorderRadius.circular(12),
-                                                          border: Border.all(color: Colors.blue.withAlpha(77)),
-                                                        ),
-                                                        child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          children: [
-                                                            Icon(Icons.sync_rounded, color: Colors.blue, size: 16),
-                                                            const SizedBox(width: 8),
-                                                            Flexible(
-                                                              child: Text(
-                                                                'Salvando...',
-                                                                textAlign: TextAlign.center,
-                                                                style: TextStyle(
-                                                                  color: Colors.blue,
-                                                                  fontWeight: FontWeight.w600,
-                                                                  fontSize: 11.5,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    )
-                                                  : salvoRecentemente
-                                                  ? KeyedSubtree(
-                                                      key: ValueKey('salvo-$idjogo'),
-                                                      child: Container(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.green.withAlpha(26),
-                                                          borderRadius: BorderRadius.circular(12),
-                                                          border: Border.all(color: Colors.green.withAlpha(77)),
-                                                        ),
-                                                        child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          children: [
-                                                            Icon(Icons.check_circle, color: Colors.green, size: 16),
-                                                            const SizedBox(width: 8),
-                                                            Flexible(
-                                                              child: Text(
-                                                                'Palpite salvo automaticamente',
-                                                                textAlign: TextAlign.center,
-                                                                style: TextStyle(
-                                                                  color: Colors.green,
-                                                                  fontWeight: FontWeight.w600,
-                                                                  fontSize: 11.5,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    )
-                                                  : KeyedSubtree(
-                                                      key: ValueKey('pronto-$idjogo'),
-                                                      child: Container(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.blue.withAlpha(26),
-                                                          borderRadius: BorderRadius.circular(12),
-                                                          border: Border.all(color: Colors.blue.withAlpha(77)),
-                                                        ),
-                                                        child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          children: [
-                                                            Icon(Icons.auto_awesome_rounded, color: Colors.blue, size: 16),
-                                                            const SizedBox(width: 8),
-                                                            Flexible(
-                                                              child: Text(
-                                                                'Preencha os dois placares para salvar.',
-                                                                textAlign: TextAlign.center,
-                                                                style: TextStyle(
-                                                                  color: Colors.blue,
-                                                                  fontWeight: FontWeight.w600,
-                                                                  fontSize: 11.5,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ],
+                                ),
                               ),
                             ),
-                          );
-                        },
+                          ),
+
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(18),
+                              child: Theme(
+                                data: Theme.of(context).copyWith(
+                                  dividerColor: Colors.transparent,
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                ),
+                                child: ExpansionTile(
+                                  initiallyExpanded: _mostrarJogosFinalizados,
+                                  onExpansionChanged: (value) {
+                                    setState(() => _mostrarJogosFinalizados = value);
+                                  },
+                                  backgroundColor: Colors.white.withValues(alpha: 0.55),
+                                  collapsedBackgroundColor: Colors.white.withValues(alpha: 0.55),
+                                  iconColor: const Color(0xFF8B5E3C),
+                                  collapsedIconColor: const Color(0xFF8B5E3C),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    side: BorderSide.none,
+                                  ),
+                                  collapsedShape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    side: BorderSide.none,
+                                  ),
+                                  tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                  childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                                  leading: Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withValues(alpha: 0.14),
+                                      borderRadius: BorderRadius.circular(13),
+                                    ),
+                                    child: const Icon(
+                                      Icons.check_circle_rounded,
+                                      color: Colors.grey,
+                                      size: 21,
+                                    ),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      const Expanded(
+                                        child: Text(
+                                          'Jogos finalizados',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w900,
+                                            color: Color(0xFF222222),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.withValues(alpha: 0.12),
+                                          borderRadius: BorderRadius.circular(999),
+                                        ),
+                                        child: Text(
+                                          '${jogosFinalizados.length}',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  subtitle: Text(
+                                    'Jogos com placar oficial cadastrado',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                  children: [
+                                    if (jogosFinalizados.isEmpty)
+                                      Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.all(14),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade50,
+                                          borderRadius: BorderRadius.circular(14),
+                                          border: Border.all(color: Colors.grey.shade200),
+                                        ),
+                                        child: Text(
+                                          'Nenhum jogo finalizado.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 12.5,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+
+                                    ...jogosFinalizados.map((jogo) {
+                                      final fase = jogo['fase'];
+                                      final idjogo = int.tryParse('${jogo['idjogo']}') ?? 0;
+                                      final datjog = jogo['datjog'] ?? '';
+                                      final timeaa = jogo['timeaa'] ?? '';
+                                      final siglaa = jogo['siglaa'] ?? '';
+                                      final timebb = jogo['timebb'] ?? '';
+                                      final siglbb = jogo['siglbb'] ?? '';
+                                      final plcraa = jogo['plcraa'];
+                                      final plcrbb = jogo['plcrbb'];
+                                      final usupla = jogo['usupla'];
+                                      final usuplb = jogo['usuplb'];
+
+                                      final podeEditar = _podeEditarPalpite(datjog);
+                                      final ehBrasil = _ehJogoDoBrasil(jogo);
+
+                                      final palpiteLocal = _palpitesLocais[idjogo];
+                                      final palpiteServidor = usupla != null && usuplb != null
+                                          ? {
+                                              'palpaa': usupla,
+                                              'palpbb': usuplb,
+                                            }
+                                          : null;
+
+                                      final palpiteAtual = palpiteLocal ?? palpiteServidor;
+
+                                      final temPlacarOficial = _placarDefinido(plcraa) && _placarDefinido(plcrbb);
+                                      final jogoFinalizado = !podeEditar && temPlacarOficial;
+                                      final salvandoEsteJogo = _salvandoPalpite[idjogo] == true;
+                                      final salvoRecentemente = _salvoAgoraPorJogo.containsKey(idjogo);
+                                      final podeSalvarOuEditar = UserSession.canMakePalpite() || palpiteAtual != null;
+
+                                      final pontosGanhos = calcularPontosGanhos(jogo);
+
+                                      final gol1Controller = _obterControllerGol(
+                                        idjogo: idjogo,
+                                        primeiroGol: true,
+                                        valorInicial: palpiteAtual == null ? '' : '${palpiteAtual['palpaa']}',
+                                      );
+
+                                      final gol2Controller = _obterControllerGol(
+                                        idjogo: idjogo,
+                                        primeiroGol: false,
+                                        valorInicial: palpiteAtual == null ? '' : '${palpiteAtual['palpbb']}',
+                                      );
+
+                                      final gol1FocusNode = _obterFocusNodeGol(idjogo: idjogo, primeiroGol: true);
+                                      final gol2FocusNode = _obterFocusNodeGol(idjogo: idjogo, primeiroGol: false);
+
+                                      return Container(
+                                        key: _obterCardKey(idjogo),
+                                        margin: const EdgeInsets.only(bottom: 14),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(18),
+                                          border: Border.all(
+                                            color: ehBrasil ? Colors.green.shade200 : Colors.grey.shade200,
+                                            width: 1,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withValues(alpha: 0.12),
+                                              blurRadius: 24,
+                                              spreadRadius: 1,
+                                              offset: const Offset(0, 10),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(18),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.centerLeft,
+                                                    end: Alignment.centerRight,
+                                                    colors: ehBrasil
+                                                        ? [
+                                                            Color(0xFFF1FAF4),
+                                                            Color(0xFFD9F2E2),
+                                                            Color(0xFFBFE8CA),
+                                                          ]
+                                                        : [
+                                                            Colors.grey.shade50,
+                                                            Colors.grey.shade100,
+                                                            Colors.white,
+                                                          ],
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Container(
+                                                      width: 30,
+                                                      height: 30,
+                                                      decoration: BoxDecoration(
+                                                        color: ehBrasil ? Colors.green.shade100 : Colors.grey.shade200,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: Icon(
+                                                        Icons.sports_soccer,
+                                                        size: 16,
+                                                        color: ehBrasil ? Colors.green.shade800 : Colors.grey.shade700,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    Expanded(
+                                                      child: Text(
+                                                        '#$idjogo - $fase',
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight: FontWeight.w800,
+                                                          color: ehBrasil ? Colors.green.shade900 : Colors.grey.shade800,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    if (ehBrasil) ...[
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                                                        decoration: BoxDecoration(
+                                                          color: const Color(0xFF009739),
+                                                          borderRadius: BorderRadius.circular(999),
+                                                        ),
+                                                        child: const Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Icon(Icons.star_rounded, size: 12, color: Colors.white),
+                                                            SizedBox(width: 3),
+                                                            Text(
+                                                              '2X',
+                                                              style: TextStyle(
+                                                                fontSize: 10,
+                                                                fontWeight: FontWeight.w900,
+                                                                color: Colors.white,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                    ],
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius: BorderRadius.circular(999),
+                                                        border: Border.all(color: Colors.grey.shade200),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          Icon(Icons.schedule_rounded, size: 12, color: Colors.grey.shade600),
+                                                          const SizedBox(width: 4),
+                                                          Text(
+                                                            _formatarData(datjog),
+                                                            style: TextStyle(
+                                                              fontSize: 11,
+                                                              fontWeight: FontWeight.w600,
+                                                              color: Colors.grey.shade700,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                                                child: Column(
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Column(
+                                                            children: [
+                                                              Container(
+                                                                padding: const EdgeInsets.all(4),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.circular(12),
+                                                                  color: Colors.grey.shade50,
+                                                                  shape: BoxShape.rectangle,
+                                                                  border: Border.all(color: Colors.grey.shade200),
+                                                                ),
+                                                                child: _getBandeira(siglaa),
+                                                              ),
+                                                              const SizedBox(height: 8),
+                                                              Text(
+                                                                timeaa,
+                                                                style: const TextStyle(
+                                                                  fontWeight: FontWeight.w800,
+                                                                  fontSize: 12,
+                                                                  color: Colors.black87,
+                                                                ),
+                                                                textAlign: TextAlign.center,
+                                                                maxLines: 2,
+                                                                overflow: TextOverflow.ellipsis,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                          child: Column(
+                                                            children: [
+                                                              if (jogoFinalizado) ...[
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.grey.shade900,
+                                                                    borderRadius: BorderRadius.circular(14),
+                                                                    boxShadow: [
+                                                                      BoxShadow(
+                                                                        color: Colors.black.withValues(alpha: 0.12),
+                                                                        blurRadius: 10,
+                                                                        offset: const Offset(0, 4),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  child: Text(
+                                                                    '$plcraa X $plcrbb',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 20,
+                                                                      fontWeight: FontWeight.w900,
+                                                                      color: Colors.white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                              if (!jogoFinalizado && podeEditar && podeSalvarOuEditar)
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.grey.shade50,
+                                                                    borderRadius: BorderRadius.circular(16),
+                                                                    border: Border.all(color: Colors.grey.shade200),
+                                                                  ),
+                                                                  child: Row(
+                                                                    mainAxisSize: MainAxisSize.min,
+                                                                    children: [
+                                                                      Container(
+                                                                        width: 50,
+                                                                        decoration: BoxDecoration(
+                                                                          borderRadius: BorderRadius.circular(12),
+                                                                          boxShadow: [
+                                                                            BoxShadow(
+                                                                              color: Colors.grey.shade300,
+                                                                              blurRadius: 6,
+                                                                              offset: const Offset(0, 2),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                        child: Focus(
+                                                                          onKeyEvent: (_, event) {
+                                                                            if (event is! KeyDownEvent) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            if (event.logicalKey != LogicalKeyboardKey.tab) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            if (HardwareKeyboard.instance.isShiftPressed) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            gol2FocusNode.requestFocus();
+                                                                            return KeyEventResult.handled;
+                                                                          },
+                                                                          child: TextField(
+                                                                            controller: gol1Controller,
+                                                                            focusNode: gol1FocusNode,
+                                                                            onChanged: (_) => _agendarAutoSave(
+                                                                              idjogo: idjogo,
+                                                                              jogo: jogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                            ),
+                                                                            onSubmitted: (_) => gol2FocusNode.requestFocus(),
+                                                                            textInputAction: TextInputAction.next,
+                                                                            textAlign: TextAlign.center,
+                                                                            keyboardType: TextInputType.number,
+                                                                            inputFormatters: [
+                                                                              FilteringTextInputFormatter.digitsOnly,
+                                                                              LengthLimitingTextInputFormatter(2),
+                                                                            ],
+                                                                            style: const TextStyle(
+                                                                              fontSize: 22,
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: Color(0xFFCC0000),
+                                                                            ),
+                                                                            decoration: InputDecoration(
+                                                                              filled: true,
+                                                                              fillColor: Colors.white,
+                                                                              border: OutlineInputBorder(
+                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                borderSide: BorderSide.none,
+                                                                              ),
+                                                                              focusedBorder: OutlineInputBorder(
+                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                                                              ),
+                                                                              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      Padding(
+                                                                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                                        child: Text(
+                                                                          'X',
+                                                                          style: TextStyle(
+                                                                            fontSize: 18,
+                                                                            fontWeight: FontWeight.w900,
+                                                                            color: Colors.grey.shade600,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      Container(
+                                                                        width: 50,
+                                                                        decoration: BoxDecoration(
+                                                                          borderRadius: BorderRadius.circular(12),
+                                                                          boxShadow: [
+                                                                            BoxShadow(
+                                                                              color: Colors.grey.shade300,
+                                                                              blurRadius: 6,
+                                                                              offset: const Offset(0, 2),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                        child: Focus(
+                                                                          onKeyEvent: (_, event) {
+                                                                            if (event is! KeyDownEvent) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            if (event.logicalKey != LogicalKeyboardKey.tab) {
+                                                                              return KeyEventResult.ignored;
+                                                                            }
+                                                                            if (HardwareKeyboard.instance.isShiftPressed) {
+                                                                              gol1FocusNode.requestFocus();
+                                                                              return KeyEventResult.handled;
+                                                                            }
+                                                                            _irParaProximoJogoComTab(
+                                                                              idjogoAtual: idjogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                              palpiteAtual: palpiteAtual,
+                                                                            );
+                                                                            return KeyEventResult.handled;
+                                                                          },
+                                                                          child: TextField(
+                                                                            controller: gol2Controller,
+                                                                            focusNode: gol2FocusNode,
+                                                                            onChanged: (_) => _agendarAutoSave(
+                                                                              idjogo: idjogo,
+                                                                              jogo: jogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                            ),
+                                                                            onSubmitted: (_) => _irParaProximoJogoComTab(
+                                                                              idjogoAtual: idjogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                              palpiteAtual: palpiteAtual,
+                                                                            ),
+                                                                            textInputAction: TextInputAction.next,
+                                                                            textAlign: TextAlign.center,
+                                                                            keyboardType: TextInputType.number,
+                                                                            inputFormatters: [
+                                                                              FilteringTextInputFormatter.digitsOnly,
+                                                                              LengthLimitingTextInputFormatter(2),
+                                                                            ],
+                                                                            style: const TextStyle(
+                                                                              fontSize: 22,
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: Color(0xFFCC0000),
+                                                                            ),
+                                                                            decoration: InputDecoration(
+                                                                              filled: true,
+                                                                              fillColor: Colors.white,
+                                                                              border: OutlineInputBorder(
+                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                borderSide: BorderSide.none,
+                                                                              ),
+                                                                              focusedBorder: OutlineInputBorder(
+                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2),
+                                                                              ),
+                                                                              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              if (!jogoFinalizado && podeEditar && !podeSalvarOuEditar)
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.grey.shade100,
+                                                                    borderRadius: BorderRadius.circular(14),
+                                                                    border: Border.all(color: Colors.grey.shade300),
+                                                                  ),
+                                                                  child: Text(
+                                                                    '- X -',
+                                                                    style: TextStyle(
+                                                                      fontSize: 18,
+                                                                      fontWeight: FontWeight.w900,
+                                                                      color: Colors.grey.shade500,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              if (!jogoFinalizado && !podeEditar && palpiteAtual != null)
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                                                  decoration: BoxDecoration(
+                                                                    gradient: const LinearGradient(
+                                                                      begin: Alignment.topLeft,
+                                                                      end: Alignment.bottomRight,
+                                                                      colors: [
+                                                                        Color(0xFFCC0000),
+                                                                        Color(0xFF990000),
+                                                                      ],
+                                                                    ),
+                                                                    borderRadius: BorderRadius.circular(14),
+                                                                  ),
+                                                                  child: Text(
+                                                                    '${palpiteAtual['palpaa']} X ${palpiteAtual['palpbb']}',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 18,
+                                                                      fontWeight: FontWeight.w900,
+                                                                      color: Colors.white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              if (!jogoFinalizado && !podeEditar && palpiteAtual == null)
+                                                                Container(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.grey.shade100,
+                                                                    borderRadius: BorderRadius.circular(14),
+                                                                    border: Border.all(color: Colors.grey.shade300),
+                                                                  ),
+                                                                  child: Text(
+                                                                    '- X -',
+                                                                    style: TextStyle(
+                                                                      fontSize: 18,
+                                                                      fontWeight: FontWeight.w900,
+                                                                      color: Colors.grey.shade500,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          child: Column(
+                                                            children: [
+                                                              Container(
+                                                                padding: const EdgeInsets.all(4),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.circular(12),
+                                                                  color: Colors.grey.shade50,
+                                                                  shape: BoxShape.rectangle,
+                                                                  border: Border.all(color: Colors.grey.shade200),
+                                                                ),
+                                                                child: _getBandeira(siglbb),
+                                                              ),
+                                                              const SizedBox(height: 8),
+                                                              Text(
+                                                                timebb,
+                                                                style: const TextStyle(
+                                                                  fontWeight: FontWeight.w800,
+                                                                  fontSize: 12,
+                                                                  color: Colors.black87,
+                                                                ),
+                                                                textAlign: TextAlign.center,
+                                                                maxLines: 2,
+                                                                overflow: TextOverflow.ellipsis,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 16),
+                                                    if (jogoFinalizado) ...[
+                                                      Wrap(
+                                                        alignment: WrapAlignment.center,
+                                                        crossAxisAlignment: WrapCrossAlignment.center,
+                                                        spacing: 10,
+                                                        runSpacing: 8,
+                                                        children: [
+                                                          Container(
+                                                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                                            decoration: BoxDecoration(
+                                                              color: const Color(0xFFF7F7F8),
+                                                              borderRadius: BorderRadius.circular(999),
+                                                              border: Border.all(
+                                                                color: const Color(0xFFE3E4E8),
+                                                              ),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: Colors.black.withValues(alpha: 0.04),
+                                                                  blurRadius: 10,
+                                                                  offset: const Offset(0, 3),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisSize: MainAxisSize.min,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.edit_note_rounded,
+                                                                  size: 16,
+                                                                  color: Colors.grey.shade700,
+                                                                ),
+                                                                const SizedBox(width: 6),
+                                                                Text(
+                                                                  'Meu palpite: ${gol1Controller.text} X ${gol2Controller.text}',
+                                                                  style: TextStyle(
+                                                                    fontSize: 13.5,
+                                                                    fontWeight: FontWeight.w700,
+                                                                    color: Colors.grey.shade800,
+                                                                    letterSpacing: 0.1,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                                            decoration: BoxDecoration(
+                                                              gradient: LinearGradient(
+                                                                colors: [
+                                                                  Colors.amber.shade50,
+                                                                  Colors.orange.shade50,
+                                                                ],
+                                                              ),
+                                                              borderRadius: BorderRadius.circular(999),
+                                                              border: Border.all(
+                                                                color: Colors.amber.shade200,
+                                                              ),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: Colors.orange.withValues(alpha: 0.08),
+                                                                  blurRadius: 10,
+                                                                  offset: const Offset(0, 3),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisSize: MainAxisSize.min,
+                                                              children: [
+                                                                Container(
+                                                                  width: 20,
+                                                                  height: 20,
+                                                                  decoration: BoxDecoration(
+                                                                    color: Colors.amber.shade100,
+                                                                    shape: BoxShape.circle,
+                                                                  ),
+                                                                  child: Icon(
+                                                                    Icons.emoji_events_rounded,
+                                                                    size: 13,
+                                                                    color: Colors.amber.shade800,
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(width: 6),
+                                                                Text(
+                                                                  '$pontosGanhos pts ganhos',
+                                                                  style: TextStyle(
+                                                                    fontSize: 12.5,
+                                                                    fontWeight: FontWeight.w800,
+                                                                    color: Colors.orange.shade900,
+                                                                    letterSpacing: 0.1,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 8),
+                                                      Container(
+                                                        padding: const EdgeInsets.all(12),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.grey.withAlpha(26),
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(color: Colors.grey.withAlpha(77)),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            Icon(Icons.check_circle, color: Colors.grey, size: 18),
+                                                            const SizedBox(width: 8),
+                                                            Flexible(
+                                                              child: Text(
+                                                                'Jogo finalizado',
+                                                                textAlign: TextAlign.center,
+                                                                style: TextStyle(
+                                                                  color: Colors.grey,
+                                                                  fontWeight: FontWeight.w600,
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ] else if (!podeEditar)
+                                                      Container(
+                                                        padding: const EdgeInsets.all(12),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.orange.withAlpha(26),
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(color: Colors.orange.withAlpha(77)),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            Icon(Icons.timer_off, color: Colors.orange, size: 18),
+                                                            const SizedBox(width: 8),
+                                                            Flexible(
+                                                              child: Text(
+                                                                'Palpites bloqueados, aguarde \naté ser cadastro o placar final',
+                                                                textAlign: TextAlign.center,
+                                                                style: TextStyle(
+                                                                  color: Colors.orange,
+                                                                  fontWeight: FontWeight.w600,
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    else if (!UserSession.canMakePalpite() && palpiteAtual == null)
+                                                      Container(
+                                                        padding: const EdgeInsets.all(12),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.red.withAlpha(26),
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(color: Colors.red.withAlpha(77)),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            Icon(Icons.block, color: Colors.red, size: 18),
+                                                            const SizedBox(width: 8),
+                                                            Flexible(
+                                                              child: Text(
+                                                                'Limite de palpites atingido ',
+                                                                textAlign: TextAlign.center,
+                                                                style: TextStyle(
+                                                                  color: Colors.red,
+                                                                  fontWeight: FontWeight.w600,
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    else
+                                                      SizedBox(
+                                                        height: 44,
+                                                        child: AnimatedSwitcher(
+                                                          duration: const Duration(milliseconds: 220),
+                                                          switchInCurve: Curves.easeOut,
+                                                          switchOutCurve: Curves.easeIn,
+                                                          child: salvandoEsteJogo
+                                                              ? KeyedSubtree(
+                                                                  key: ValueKey('salvando-$idjogo'),
+                                                                  child: Container(
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors.blue.withAlpha(26),
+                                                                      borderRadius: BorderRadius.circular(12),
+                                                                      border: Border.all(color: Colors.blue.withAlpha(77)),
+                                                                    ),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                                      children: [
+                                                                        Icon(Icons.sync_rounded, color: Colors.blue, size: 16),
+                                                                        const SizedBox(width: 8),
+                                                                        Flexible(
+                                                                          child: Text(
+                                                                            'Salvando...',
+                                                                            textAlign: TextAlign.center,
+                                                                            style: TextStyle(
+                                                                              color: Colors.blue,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 11.5,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              : salvoRecentemente
+                                                              ? KeyedSubtree(
+                                                                  key: ValueKey('salvo-$idjogo'),
+                                                                  child: Container(
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors.green.withAlpha(26),
+                                                                      borderRadius: BorderRadius.circular(12),
+                                                                      border: Border.all(color: Colors.green.withAlpha(77)),
+                                                                    ),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                                      children: [
+                                                                        Icon(Icons.check_circle, color: Colors.green, size: 16),
+                                                                        const SizedBox(width: 8),
+                                                                        Flexible(
+                                                                          child: Text(
+                                                                            'Palpite salvo automaticamente',
+                                                                            textAlign: TextAlign.center,
+                                                                            style: TextStyle(
+                                                                              color: Colors.green,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 11.5,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              : KeyedSubtree(
+                                                                  key: ValueKey('pronto-$idjogo'),
+                                                                  child: Container(
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors.blue.withAlpha(26),
+                                                                      borderRadius: BorderRadius.circular(12),
+                                                                      border: Border.all(color: Colors.blue.withAlpha(77)),
+                                                                    ),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                                      children: [
+                                                                        Icon(Icons.auto_awesome_rounded, color: Colors.blue, size: 16),
+                                                                        const SizedBox(width: 8),
+                                                                        Flexible(
+                                                                          child: Text(
+                                                                            'Preencha os dois placares para salvar.',
+                                                                            textAlign: TextAlign.center,
+                                                                            style: TextStyle(
+                                                                              color: Colors.blue,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 11.5,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
               ),
             ),
