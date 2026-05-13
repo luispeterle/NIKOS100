@@ -111,6 +111,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+    final trophyFit = isMobile ? BoxFit.contain : BoxFit.cover;
+    final trophyAlignment = isMobile ? Alignment.center : Alignment.centerLeft;
+    final trophyOffset = isMobile ? Offset.zero : const Offset(-220, 0);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -125,11 +130,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             child: Opacity(
               opacity: 0.85,
               child: Transform.translate(
-                offset: const Offset(-220, 0),
+                offset: trophyOffset,
                 child: Image.asset(
                   'assets/taca_copa.png',
-                  fit: BoxFit.cover,
-                  alignment: Alignment.centerLeft,
+                  fit: trophyFit,
+                  alignment: trophyAlignment,
                 ),
               ),
             ),
