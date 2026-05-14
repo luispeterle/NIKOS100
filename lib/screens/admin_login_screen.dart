@@ -42,6 +42,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         cpf: responseData["cgccpf"],
         nome: '',
         maxPalp: 0,
+        totalCompra: 0,
       );
 
       if (!mounted) return;

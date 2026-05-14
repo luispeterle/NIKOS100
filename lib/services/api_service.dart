@@ -18,7 +18,7 @@ class ApiService {
       );
 
       if (resp == true || resp == null) {
-        return null; 
+        return null;
       }
 
       final data = jsonDecode(resp);
@@ -32,12 +32,14 @@ class ApiService {
             cpf: cgccpf,
             nome: userData['nomcli'] ?? '',
             maxPalp: maxPalpites,
+            totalCompra: userData['total'] ?? 0,
           );
 
           return {
             'cpf': userData['cpf']?.toString() ?? cgccpf,
             'max_palpites': maxPalpites,
             'nome': userData['nomcli'] ?? '',
+            'total': userData['total'] ?? 0,
             'isAdmin': false,
           };
         }

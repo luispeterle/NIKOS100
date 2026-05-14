@@ -56,6 +56,52 @@ String rdz(String ns) {
   return ns;
 }
 
+String formatMoneyValue(String? value, {bool allowNegative = false}) {
+  if (value == null) return '';
+  value = value.trim();
+  if (value.isEmpty) return '';
+
+  // Detecta negativo ANTES de limpar
+  bool isNegative = value.startsWith('-');
+
+  // Remove tudo que não é número, vírgula ou ponto
+  value = value.replaceAll(RegExp(r'[^0-9.,]'), '');
+
+  if (value.isEmpty) return 'R\$ 0,00';
+
+  // Padroniza separadores
+  value = value.replaceAll('.', ',');
+  value = value.replaceFirst(RegExp(r'^0+(?=\d)'), '');
+
+  if (value == '0' || value == '0,0' || value == '0,00') {
+    return 'R\$ 0,00';
+  }
+
+  final parts = value.split(',');
+  String inteiro = parts[0].isEmpty ? '0' : parts[0];
+  String decimal = parts.length > 1 ? parts[1] : '';
+
+  if (decimal.isEmpty) {
+    decimal = '00';
+  } else if (decimal.length == 1) {
+    decimal = '${decimal}0';
+  } else if (decimal.length > 2) {
+    decimal = decimal.substring(0, 2);
+  }
+
+  // Formata milhar
+  inteiro = inteiro.replaceAll(RegExp(r'\B(?=(\d{3})+(?!\d))'), '.');
+
+  final formatted = '$inteiro,$decimal';
+
+  // Decide se mostra negativo
+  if (isNegative && allowNegative) {
+    return 'R\$ -$formatted';
+  }
+
+  return 'R\$ $formatted';
+}
+
 class DateTimeBrInputFormatter extends TextInputFormatter {
   static final _notDigit = RegExp(r'\D');
   static const _sep = {2: '/', 4: '/', 8: ' ', 10: ':'};

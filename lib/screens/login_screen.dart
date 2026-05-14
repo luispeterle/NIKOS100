@@ -140,25 +140,24 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           ),
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background.jpg',
+              'assets/images/background.png',
               fit: BoxFit.cover,
             ),
           ),
 
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.85,
-              child: Transform.translate(
-                offset: trophyOffset,
-                child: Image.asset(
-                  'assets/taca_copa.png',
-                  fit: trophyFit,
-                  alignment: trophyAlignment,
-                ),
-              ),
-            ),
-          ),
-
+          // Positioned.fill(
+          //   child: Opacity(
+          //     opacity: 0.85,
+          //     child: Transform.translate(
+          //       offset: trophyOffset,
+          //       child: Image.asset(
+          //         'assets/taca_copa.png',
+          //         fit: trophyFit,
+          //         alignment: trophyAlignment,
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Positioned.fill(
             child: Container(
               color: Colors.black.withValues(alpha: 0.35),

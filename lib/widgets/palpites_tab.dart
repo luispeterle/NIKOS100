@@ -21,17 +21,20 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
 
   final ScrollController _scrollController = ScrollController();
   final Map<int, Timer> _autoSaveTimers = {};
+  final Map<int, Timer> _navegacaoInativaTimers = {};
   final Map<int, Timer> _salvoAgoraTimers = {};
   final Map<int, DateTime> _salvoAgoraPorJogo = {};
   final Map<int, TextEditingController> _gol1Controllers = {};
   final Map<int, TextEditingController> _gol2Controllers = {};
   final Map<int, FocusNode> _gol1FocusNodes = {};
   final Map<int, FocusNode> _gol2FocusNodes = {};
+  final Map<int, bool> _jogosComInteracao = {};
   final Map<int, bool> _salvandoPalpite = {};
   final Map<int, GlobalKey> _jogoCardKeys = {};
   Timer? _renderAbertosTimer;
   Timer? _renderFinalizadosTimer;
   bool _loading = true;
+  static const Duration _tempoInatividadeNavegacao = Duration(seconds: 2);
 
   bool _mostrarJogosAbertos = true;
   bool _mostrarJogosFinalizados = true;
@@ -47,6 +50,9 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     _renderAbertosTimer?.cancel();
     _renderFinalizadosTimer?.cancel();
     for (final timer in _autoSaveTimers.values) {
+      timer.cancel();
+    }
+    for (final timer in _navegacaoInativaTimers.values) {
       timer.cancel();
     }
     for (final timer in _salvoAgoraTimers.values) {
@@ -398,6 +404,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     if (!mounted) return;
 
     _autoSaveTimers[idjogoAtual]?.cancel();
+    _navegacaoInativaTimers[idjogoAtual]?.cancel();
 
     await _salvarPalpiteDoJogo(
       idjogo: idjogoAtual,
@@ -425,7 +432,163 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     await Future<void>.delayed(const Duration(milliseconds: 80));
     if (!mounted) return;
 
-    _obterFocusNodeGol(idjogo: idProximoJogo, primeiroGol: true).requestFocus();
+    _focarCampoComSelecao(
+      focusNode: _obterFocusNodeGol(idjogo: idProximoJogo, primeiroGol: true),
+      controller: _obterControllerGol(
+        idjogo: idProximoJogo,
+        primeiroGol: true,
+        valorInicial: '',
+      ),
+    );
+  }
+
+  Map<String, dynamic>? _obterPalpiteAtualDoJogo({
+    required int idjogo,
+    required Map<String, dynamic> jogo,
+  }) {
+    final palpiteServidor = jogo['usupla'] != null && jogo['usuplb'] != null
+        ? {
+            'palpaa': jogo['usupla'],
+            'palpbb': jogo['usuplb'],
+          }
+        : null;
+
+    return _palpitesLocais[idjogo] ?? palpiteServidor;
+  }
+
+  void _selecionarTextoInteiro({
+    required FocusNode focusNode,
+    required TextEditingController controller,
+  }) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !focusNode.hasFocus) return;
+      controller.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: controller.text.length,
+      );
+    });
+  }
+
+  void _focarCampoComSelecao({
+    required FocusNode focusNode,
+    required TextEditingController controller,
+  }) {
+    if (!mounted) return;
+    focusNode.requestFocus();
+    _selecionarTextoInteiro(
+      focusNode: focusNode,
+      controller: controller,
+    );
+  }
+
+  void _focarNoGol2EAguardarInatividade({
+    required int idjogo,
+    required Map<String, dynamic> jogo,
+    required TextEditingController gol1Controller,
+    required TextEditingController gol2Controller,
+  }) {
+    if (!mounted) return;
+    _focarCampoComSelecao(
+      focusNode: _obterFocusNodeGol(idjogo: idjogo, primeiroGol: false),
+      controller: gol2Controller,
+    );
+
+    _agendarNavegacaoPorInatividade(
+      idjogo: idjogo,
+      jogo: jogo,
+      primeiroGol: false,
+      gol1Controller: gol1Controller,
+      gol2Controller: gol2Controller,
+    );
+  }
+
+  void _agendarNavegacaoPorInatividade({
+    required int idjogo,
+    required Map<String, dynamic> jogo,
+    required bool primeiroGol,
+    required TextEditingController gol1Controller,
+    required TextEditingController gol2Controller,
+  }) {
+    _navegacaoInativaTimers[idjogo]?.cancel();
+
+    _navegacaoInativaTimers[idjogo] = Timer(_tempoInatividadeNavegacao, () async {
+      if (!mounted) return;
+      if (_jogosComInteracao[idjogo] != true) return;
+
+      final focusNodeEsperado = _obterFocusNodeGol(idjogo: idjogo, primeiroGol: primeiroGol);
+      if (!focusNodeEsperado.hasFocus) return;
+
+      if (_salvandoPalpite[idjogo] == true) {
+        _agendarNavegacaoPorInatividade(
+          idjogo: idjogo,
+          jogo: jogo,
+          primeiroGol: primeiroGol,
+          gol1Controller: gol1Controller,
+          gol2Controller: gol2Controller,
+        );
+        return;
+      }
+
+      if (primeiroGol) {
+        _focarNoGol2EAguardarInatividade(
+          idjogo: idjogo,
+          jogo: jogo,
+          gol1Controller: gol1Controller,
+          gol2Controller: gol2Controller,
+        );
+        return;
+      }
+
+      await _irParaProximoJogoComTab(
+        idjogoAtual: idjogo,
+        gol1Controller: gol1Controller,
+        gol2Controller: gol2Controller,
+        palpiteAtual: _obterPalpiteAtualDoJogo(idjogo: idjogo, jogo: jogo),
+      );
+    });
+  }
+
+  void _registrarInteracaoNoCampo({
+    required int idjogo,
+    required Map<String, dynamic> jogo,
+    required bool primeiroGol,
+    required TextEditingController gol1Controller,
+    required TextEditingController gol2Controller,
+  }) {
+    _jogosComInteracao[idjogo] = true;
+
+    _agendarAutoSave(
+      idjogo: idjogo,
+      jogo: jogo,
+      gol1Controller: gol1Controller,
+      gol2Controller: gol2Controller,
+    );
+
+    _agendarNavegacaoPorInatividade(
+      idjogo: idjogo,
+      jogo: jogo,
+      primeiroGol: primeiroGol,
+      gol1Controller: gol1Controller,
+      gol2Controller: gol2Controller,
+    );
+  }
+
+  void _registrarFocoNoCampo({
+    required int idjogo,
+    required Map<String, dynamic> jogo,
+    required bool primeiroGol,
+    required TextEditingController gol1Controller,
+    required TextEditingController gol2Controller,
+  }) {
+    _jogosComInteracao[idjogo] = true;
+
+    _agendarNavegacaoPorInatividade(
+      idjogo: idjogo,
+      jogo: jogo,
+      primeiroGol: primeiroGol,
+      gol1Controller: gol1Controller,
+      gol2Controller: gol2Controller,
+    );
   }
 
   Future<void> _salvarPalpiteDoJogo({
@@ -434,7 +597,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     required String palpbb,
     required Map<String, dynamic>? palpiteAtual,
     required bool mostrarFeedback,
-    bool rolarAposSalvar = true,
+    bool rolarAposSalvar = false,
   }) async {
     final palpaaLimpo = palpaa.trim();
     final palpbbLimpo = palpbb.trim();
@@ -614,6 +777,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
         palpbb: palpbb,
         palpiteAtual: palpiteAtual,
         mostrarFeedback: false,
+        rolarAposSalvar: false,
       );
     });
   }
@@ -702,25 +866,59 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.sports_soccer,
-                    size: 18,
-                    color: Colors.amber.shade900,
-                  ),
-
-                  const SizedBox(width: 10),
-
                   Expanded(
-                    child: Text(
-                      'Palpites: ${UserSession.palpitesFeitos}/${(UserSession.maxPalpites ?? 0) < 0 ? 0 : (UserSession.maxPalpites ?? 0)}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          if (UserSession.totalCompra >= 500) ...[
+                            TextSpan(
+                              text: 'Todos os jogos ',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'LIBERADOS',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF0A8F3C),
+                              ),
+                            ),
+                          ] else ...[
+                            const TextSpan(
+                              text: 'Faltam em compras ',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            TextSpan(
+                              text: formatMoneyValue((500 - UserSession.totalCompra).toString()),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFFB60000),
+                              ),
+                            ),
+                            const TextSpan(
+                              text: ' para liberar todos os jogos',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
@@ -1222,19 +1420,43 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                             if (HardwareKeyboard.instance.isShiftPressed) {
                                                                               return KeyEventResult.ignored;
                                                                             }
-                                                                            gol2FocusNode.requestFocus();
+                                                                            _focarNoGol2EAguardarInatividade(
+                                                                              idjogo: idjogo,
+                                                                              jogo: jogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                            );
                                                                             return KeyEventResult.handled;
                                                                           },
                                                                           child: TextField(
                                                                             controller: gol1Controller,
                                                                             focusNode: gol1FocusNode,
-                                                                            onChanged: (_) => _agendarAutoSave(
+                                                                            onTap: () {
+                                                                              _selecionarTextoInteiro(
+                                                                                focusNode: gol1FocusNode,
+                                                                                controller: gol1Controller,
+                                                                              );
+                                                                              _registrarFocoNoCampo(
+                                                                                idjogo: idjogo,
+                                                                                jogo: jogo,
+                                                                                primeiroGol: true,
+                                                                                gol1Controller: gol1Controller,
+                                                                                gol2Controller: gol2Controller,
+                                                                              );
+                                                                            },
+                                                                            onChanged: (_) => _registrarInteracaoNoCampo(
+                                                                              idjogo: idjogo,
+                                                                              jogo: jogo,
+                                                                              primeiroGol: true,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                            ),
+                                                                            onSubmitted: (_) => _focarNoGol2EAguardarInatividade(
                                                                               idjogo: idjogo,
                                                                               jogo: jogo,
                                                                               gol1Controller: gol1Controller,
                                                                               gol2Controller: gol2Controller,
                                                                             ),
-                                                                            onSubmitted: (_) => gol2FocusNode.requestFocus(),
                                                                             textInputAction: TextInputAction.next,
                                                                             textAlign: TextAlign.center,
                                                                             keyboardType: TextInputType.number,
@@ -1295,7 +1517,10 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                               return KeyEventResult.ignored;
                                                                             }
                                                                             if (HardwareKeyboard.instance.isShiftPressed) {
-                                                                              gol1FocusNode.requestFocus();
+                                                                              _focarCampoComSelecao(
+                                                                                focusNode: gol1FocusNode,
+                                                                                controller: gol1Controller,
+                                                                              );
                                                                               return KeyEventResult.handled;
                                                                             }
                                                                             _irParaProximoJogoComTab(
@@ -1309,9 +1534,23 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                           child: TextField(
                                                                             controller: gol2Controller,
                                                                             focusNode: gol2FocusNode,
-                                                                            onChanged: (_) => _agendarAutoSave(
+                                                                            onTap: () {
+                                                                              _selecionarTextoInteiro(
+                                                                                focusNode: gol2FocusNode,
+                                                                                controller: gol2Controller,
+                                                                              );
+                                                                              _registrarFocoNoCampo(
+                                                                                idjogo: idjogo,
+                                                                                jogo: jogo,
+                                                                                primeiroGol: false,
+                                                                                gol1Controller: gol1Controller,
+                                                                                gol2Controller: gol2Controller,
+                                                                              );
+                                                                            },
+                                                                            onChanged: (_) => _registrarInteracaoNoCampo(
                                                                               idjogo: idjogo,
                                                                               jogo: jogo,
+                                                                              primeiroGol: false,
                                                                               gol1Controller: gol1Controller,
                                                                               gol2Controller: gol2Controller,
                                                                             ),
@@ -2104,19 +2343,43 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                             if (HardwareKeyboard.instance.isShiftPressed) {
                                                                               return KeyEventResult.ignored;
                                                                             }
-                                                                            gol2FocusNode.requestFocus();
+                                                                            _focarNoGol2EAguardarInatividade(
+                                                                              idjogo: idjogo,
+                                                                              jogo: jogo,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                            );
                                                                             return KeyEventResult.handled;
                                                                           },
                                                                           child: TextField(
                                                                             controller: gol1Controller,
                                                                             focusNode: gol1FocusNode,
-                                                                            onChanged: (_) => _agendarAutoSave(
+                                                                            onTap: () {
+                                                                              _selecionarTextoInteiro(
+                                                                                focusNode: gol1FocusNode,
+                                                                                controller: gol1Controller,
+                                                                              );
+                                                                              _registrarFocoNoCampo(
+                                                                                idjogo: idjogo,
+                                                                                jogo: jogo,
+                                                                                primeiroGol: true,
+                                                                                gol1Controller: gol1Controller,
+                                                                                gol2Controller: gol2Controller,
+                                                                              );
+                                                                            },
+                                                                            onChanged: (_) => _registrarInteracaoNoCampo(
+                                                                              idjogo: idjogo,
+                                                                              jogo: jogo,
+                                                                              primeiroGol: true,
+                                                                              gol1Controller: gol1Controller,
+                                                                              gol2Controller: gol2Controller,
+                                                                            ),
+                                                                            onSubmitted: (_) => _focarNoGol2EAguardarInatividade(
                                                                               idjogo: idjogo,
                                                                               jogo: jogo,
                                                                               gol1Controller: gol1Controller,
                                                                               gol2Controller: gol2Controller,
                                                                             ),
-                                                                            onSubmitted: (_) => gol2FocusNode.requestFocus(),
                                                                             textInputAction: TextInputAction.next,
                                                                             textAlign: TextAlign.center,
                                                                             keyboardType: TextInputType.number,
@@ -2177,7 +2440,10 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                               return KeyEventResult.ignored;
                                                                             }
                                                                             if (HardwareKeyboard.instance.isShiftPressed) {
-                                                                              gol1FocusNode.requestFocus();
+                                                                              _focarCampoComSelecao(
+                                                                                focusNode: gol1FocusNode,
+                                                                                controller: gol1Controller,
+                                                                              );
                                                                               return KeyEventResult.handled;
                                                                             }
                                                                             _irParaProximoJogoComTab(
@@ -2191,9 +2457,23 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                           child: TextField(
                                                                             controller: gol2Controller,
                                                                             focusNode: gol2FocusNode,
-                                                                            onChanged: (_) => _agendarAutoSave(
+                                                                            onTap: () {
+                                                                              _selecionarTextoInteiro(
+                                                                                focusNode: gol2FocusNode,
+                                                                                controller: gol2Controller,
+                                                                              );
+                                                                              _registrarFocoNoCampo(
+                                                                                idjogo: idjogo,
+                                                                                jogo: jogo,
+                                                                                primeiroGol: false,
+                                                                                gol1Controller: gol1Controller,
+                                                                                gol2Controller: gol2Controller,
+                                                                              );
+                                                                            },
+                                                                            onChanged: (_) => _registrarInteracaoNoCampo(
                                                                               idjogo: idjogo,
                                                                               jogo: jogo,
+                                                                              primeiroGol: false,
                                                                               gol1Controller: gol1Controller,
                                                                               gol2Controller: gol2Controller,
                                                                             ),

@@ -134,6 +134,42 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 38,
                           height: 38,
                           decoration: BoxDecoration(
+                            color: Colors.blue.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.question_mark_outlined,
+                            color: Colors.blue,
+                            size: 20,
+                          ),
+                        ),
+                        title: const Text(
+                          'Informações do Bolão',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 14,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Regras dos palpites e ranking.',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 12,
+                          ),
+                        ),
+                        onTap: () {
+                          mostrarInformacoesBolao(context);
+                        },
+                      ),
+                      SizedBox(height: 8),
+                      ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        leading: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
                             color: const Color(0xFFCC0000).withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -160,42 +196,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () {
                           Navigator.of(context).pop();
                           widget.onLogout();
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        leading: Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.question_mark_outlined,
-                            color: Colors.blue,
-                            size: 20,
-                          ),
-                        ),
-                        title: const Text(
-                          'Informações do Bolão',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 14,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'Regras dos palpites e ranking.',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 12,
-                          ),
-                        ),
-                        onTap: () {
-                          mostrarInformacoesBolao(context);
                         },
                       ),
                     ],
