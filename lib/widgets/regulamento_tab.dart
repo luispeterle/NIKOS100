@@ -1989,7 +1989,7 @@ class RegulamentoTab extends StatelessWidget {
                       const SizedBox(height: 6),
 
                       Text(
-                        'Entre em contato com o RH ou envie um e-mail para:',
+                        'Entre em contato pelo whatsapp:',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.grey.shade700,
@@ -2011,7 +2011,7 @@ class RegulamentoTab extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          'bolao@nikos.com.br',
+                          '(48) 9 9946-5614',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.blue.shade800,
