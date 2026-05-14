@@ -233,7 +233,7 @@ class RegulamentoTab extends StatelessWidget {
 
                         Expanded(
                           child: Text(
-                            'INSCRIÇÃO',
+                            'PARTICIPAR',
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
@@ -276,7 +276,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'Inscrição mediante pagamento de R\$ 5,00 por jogo ou R\$ 520,00 para todos os 104 jogos.',
+                                  "Já é cliente Adelino ou Niko's? Ganhe 10 palpites grátis para os primeiros jogos",
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -313,7 +313,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'O pagamento deve ser feito via PIX ou diretamente no RH.',
+                                  'Acumule R\$ 500,00 em compras no Nikos Supermercado ou Lojas Adelino a partir do dia 18/05/2026 e desbloqueie todos os jogos da copa!',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -454,7 +454,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'O bolao contempla todos os 104 jogos da Copa do Mundo 2026.',
+                                  'O bolão contempla todos os 104 jogos da Copa do Mundo 2026.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -527,7 +527,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  '32 jogos da fase eliminatoria (oitavas, quartas, semi, disputa 3º e final).',
+                                  '32 jogos da fase eliminatória (dezesseis avos de final, oitavas de final, quartas de final, semifinal, disputa de 3º e final).',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -668,7 +668,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'Os palpites podem ser registrados ate 1 hora antes do inicio de cada jogo.',
+                                  'Os palpites podem ser registrados até 1 hora antes do inicio de cada jogo no horário oficial de Brasília.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -704,7 +704,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'Apos esse prazo, o sistema bloqueia automaticamente os palpites.',
+                                  'Após esse prazo, o sistema bloqueia automaticamente novos palpites ou alterações de palpites já feitos.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -741,7 +741,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'Cada participante pode alterar seu palpite quantas vezes quiser ate o bloqueio.',
+                                  'Cada participante pode alterar seu palpite quantas vezes quiser até o horário limite permitido.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -881,7 +881,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'Acerto do placar exato: 20 pontos.',
+                                  'Acertar o placar exato vale 30 pontos.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -917,7 +917,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'Acerto do vencedor/empate (sem acertar o placar): 10 pontos.',
+                                  'Acerto do vencedor ou empate sem acertar o placar exato vale 10 pontos.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -954,7 +954,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'Jogos do Brasil e a Final valem PONTUAÇÃO EM DOBRO.',
+                                  'Jogos do Brasil valem PONTUAÇÃO EM DOBRO.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -1094,7 +1094,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'O ranking é atualizado a cada 5 minutos.',
+                                  'O ranking é atualizado em até 24 horas após o término de cada jogo.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -1131,7 +1131,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'Exibe os Top 5 colocados.',
+                                  'Exibe os Top 20 primeiros colocados e a posição atual do participante.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -1307,7 +1307,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  '2º Lugar: TV 50 Polegadas Smart LED.',
+                                  '2º Lugar: TV 65 Polegadas.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -1343,7 +1343,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  '3º Lugar: R\$ 1.000,00 em compras.',
+                                  '3º Lugar: Cervejeira Consul.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -1379,7 +1379,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  '4º Lugar: R\$ 500,00 em compras.',
+                                  '4º Lugar: R\$ 1.000,00 em compras no Nikos Supermercado ou Lojas Adelino.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -1416,7 +1416,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  '5º Lugar: R\$ 250,00 em compras.',
+                                  '5º Lugar: R\$ 500,00 em compras no Nikos Supermercado ou Lojas Adelino.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -1556,42 +1556,6 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  'Em caso de empate na pontuação final:',
-                                  style: TextStyle(
-                                    fontSize: 13.5,
-                                    height: 1.45,
-                                    color: Colors.grey.shade800,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 13),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 24,
-                                height: 24,
-                                margin: const EdgeInsets.only(top: 1),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.check_rounded,
-                                  size: 16,
-                                  color: Color(0xFFCC0000),
-                                ),
-                              ),
-
-                              const SizedBox(width: 12),
-
-                              Expanded(
-                                child: Text(
                                   '1. Maior número de placares exatos.',
                                   style: TextStyle(
                                     fontSize: 13.5,
@@ -1628,7 +1592,43 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  '2. Maior número de acertos de vencedor/empate.',
+                                  '2. Maior pontuação em jogos do Brasil.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: Colors.grey.shade800,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(top: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 16,
+                                  color: Color(0xFFCC0000),
+                                ),
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  '3. Maior pontuação nas fases decisivas, seguindo a ordem: final, disputa de 3º lugar, semifinais e fases anteriores.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,
@@ -1665,7 +1665,7 @@ class RegulamentoTab extends StatelessWidget {
 
                               Expanded(
                                 child: Text(
-                                  '3. Sorteio entre os empatados.',
+                                  '4. Sorteio entre os participantes empatados.',
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     height: 1.45,

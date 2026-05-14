@@ -111,11 +111,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 700;
-    final trophyFit = isMobile ? BoxFit.contain : BoxFit.cover;
-    final trophyAlignment = isMobile ? Alignment.center : Alignment.centerLeft;
-    final trophyOffset = isMobile ? Offset.zero : const Offset(-220, 0);
-
     return Scaffold(
       body: Stack(
         children: [
@@ -145,19 +140,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             ),
           ),
 
-          // Positioned.fill(
-          //   child: Opacity(
-          //     opacity: 0.85,
-          //     child: Transform.translate(
-          //       offset: trophyOffset,
-          //       child: Image.asset(
-          //         'assets/taca_copa.png',
-          //         fit: trophyFit,
-          //         alignment: trophyAlignment,
-          //       ),
-          //     ),
-          //   ),
-          // ),
           Positioned.fill(
             child: Container(
               color: Colors.black.withValues(alpha: 0.35),
@@ -169,73 +151,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             builder: (context, child) {
               return Stack(
                 children: [
-                  Positioned(
-                    top: 80 + _floatingAnimation.value,
-                    left: 24,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [Colors.white.withValues(alpha: 0.07).withValues(alpha: 0.8), Colors.white.withValues(alpha: 0.07).withValues(alpha: 0.2)],
-                          center: const Alignment(-0.3, -0.3),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withValues(alpha: 0.07).withValues(alpha: 0.3),
-                            blurRadius: 48 * 0.3,
-                            spreadRadius: 48 * 0.1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  Positioned(
-                    bottom: 180 - _floatingAnimation.value,
-                    right: 54,
-                    child: Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [Color(0xFFFFC107).withValues(alpha: 0.12).withValues(alpha: 0.8), Color(0xFFFFC107).withValues(alpha: 0.12).withValues(alpha: 0.2)],
-                          center: const Alignment(-0.3, -0.3),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xFFFFC107).withValues(alpha: 0.12).withValues(alpha: 0.3),
-                            blurRadius: 38 * 0.3,
-                            spreadRadius: 38 * 0.1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 300 - _floatingAnimation.value,
-                    right: 80,
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [Colors.amber.withValues(alpha: 0.15).withValues(alpha: 0.8), Colors.amber.withValues(alpha: 0.15).withValues(alpha: 0.2)],
-                          center: const Alignment(-0.3, -0.3),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.amber.withValues(alpha: 0.15).withValues(alpha: 0.3),
-                            blurRadius: 50 * 0.3,
-                            spreadRadius: 50 * 0.1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                   Positioned(
                     top: 58 + _floatingAnimation.value * 1.2,
                     right: -28,

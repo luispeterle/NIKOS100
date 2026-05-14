@@ -575,20 +575,10 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
 
   void _registrarFocoNoCampo({
     required int idjogo,
-    required Map<String, dynamic> jogo,
-    required bool primeiroGol,
-    required TextEditingController gol1Controller,
-    required TextEditingController gol2Controller,
   }) {
-    _jogosComInteracao[idjogo] = true;
-
-    _agendarNavegacaoPorInatividade(
-      idjogo: idjogo,
-      jogo: jogo,
-      primeiroGol: primeiroGol,
-      gol1Controller: gol1Controller,
-      gol2Controller: gol2Controller,
-    );
+    // Apenas foco/clique não deve acionar navegação automática.
+    // A navegação por inatividade começa somente após digitação (onChanged).
+    _navegacaoInativaTimers[idjogo]?.cancel();
   }
 
   Future<void> _salvarPalpiteDoJogo({
@@ -889,7 +879,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                             ),
                           ] else ...[
                             const TextSpan(
-                              text: 'Faltam em compras ',
+                              text: 'Faltam ',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
@@ -905,7 +895,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                               ),
                             ),
                             const TextSpan(
-                              text: ' para liberar todos os jogos',
+                              text: ' em compras para liberar todos os jogos',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
@@ -1438,10 +1428,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                               );
                                                                               _registrarFocoNoCampo(
                                                                                 idjogo: idjogo,
-                                                                                jogo: jogo,
-                                                                                primeiroGol: true,
-                                                                                gol1Controller: gol1Controller,
-                                                                                gol2Controller: gol2Controller,
                                                                               );
                                                                             },
                                                                             onChanged: (_) => _registrarInteracaoNoCampo(
@@ -1541,10 +1527,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                               );
                                                                               _registrarFocoNoCampo(
                                                                                 idjogo: idjogo,
-                                                                                jogo: jogo,
-                                                                                primeiroGol: false,
-                                                                                gol1Controller: gol1Controller,
-                                                                                gol2Controller: gol2Controller,
                                                                               );
                                                                             },
                                                                             onChanged: (_) => _registrarInteracaoNoCampo(
@@ -2361,10 +2343,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                               );
                                                                               _registrarFocoNoCampo(
                                                                                 idjogo: idjogo,
-                                                                                jogo: jogo,
-                                                                                primeiroGol: true,
-                                                                                gol1Controller: gol1Controller,
-                                                                                gol2Controller: gol2Controller,
                                                                               );
                                                                             },
                                                                             onChanged: (_) => _registrarInteracaoNoCampo(
@@ -2464,10 +2442,6 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                               );
                                                                               _registrarFocoNoCampo(
                                                                                 idjogo: idjogo,
-                                                                                jogo: jogo,
-                                                                                primeiroGol: false,
-                                                                                gol1Controller: gol1Controller,
-                                                                                gol2Controller: gol2Controller,
                                                                               );
                                                                             },
                                                                             onChanged: (_) => _registrarInteracaoNoCampo(

@@ -188,39 +188,6 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                         ],
                       ),
                     ),
-
-                    const SizedBox(height: 10),
-
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.14),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.18),
-                        ),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.sports_soccer_rounded,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            "Lojas Adelino - Copa do Mundo 2026",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ],
@@ -764,24 +731,6 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                             ],
                           ),
                         ),
-
-                        const SizedBox(width: 10),
-                        Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            color: Colors.brown.shade400.withValues(alpha: 0.14),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: Colors.brown.shade400.withValues(alpha: 0.18),
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.star_rounded,
-                            color: Colors.brown.shade400,
-                            size: 22,
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -953,7 +902,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                               const SizedBox(height: 4),
 
                               Text(
-                                'Em compras',
+                                "Em compras nas Lojas Adelino ou Niko's Supermercado",
                                 style: TextStyle(
                                   color: Colors.grey.shade700,
                                   fontSize: 13,
@@ -964,24 +913,6 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ],
-                          ),
-                        ),
-
-                        const SizedBox(width: 10),
-                        Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            color: Colors.blueGrey.shade300.withValues(alpha: 0.14),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: Colors.blueGrey.shade300.withValues(alpha: 0.18),
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.star_rounded,
-                            color: Colors.blueGrey.shade300,
-                            size: 22,
                           ),
                         ),
                       ],
@@ -1155,7 +1086,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                               const SizedBox(height: 4),
 
                               Text(
-                                'Em compras',
+                                "Em compras Lojas Adelino ou Niko's Supermercado",
                                 style: TextStyle(
                                   color: Colors.grey.shade700,
                                   fontSize: 13,
@@ -1166,24 +1097,6 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ],
-                          ),
-                        ),
-
-                        const SizedBox(width: 10),
-                        Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            color: Colors.blueGrey.shade200.withValues(alpha: 0.14),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: Colors.blueGrey.shade200.withValues(alpha: 0.18),
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.star_rounded,
-                            color: Colors.blueGrey.shade200,
-                            size: 22,
                           ),
                         ),
                       ],
