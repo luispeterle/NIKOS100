@@ -682,18 +682,85 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                           const SizedBox(width: 8),
                                           Text(
                                             'Participe do bolão da Copa 2026',
-                                            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey.shade600,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'R\$ 5,00/jogo ou R\$ 520,00 todos',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.grey.shade700,
-                                          fontWeight: FontWeight.w500,
+
+                                      const SizedBox(height: 10),
+
+                                      Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: 'Já é cliente ',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey.shade700,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: "Adelino ou Niko's ? ",
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey.shade700,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: 'Ganhe 10 palpites',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.red.shade700,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                          ],
                                         ),
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+
+                                      const SizedBox(height: 8),
+
+                                      Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: 'Acumule ',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey.shade700,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: 'R\$ 500 em compras',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.red.shade700,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: " na Lojas Adelino ou Niko's e desbloqueie todos os jogos da Copa.",
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey.shade700,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ],
                                   ),

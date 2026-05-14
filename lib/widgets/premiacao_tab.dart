@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nikos/utils/date_utils.dart';
 
 class PremiacaoTab extends StatefulWidget {
   const PremiacaoTab({super.key});
@@ -396,7 +397,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                               const SizedBox(height: 9),
 
                               Text(
-                                'R\$ 5.000,00',
+                                formatMoneyValue('5000'),
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w900,
@@ -575,11 +576,10 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                                   ),
                                 ],
                               ),
-
                               const SizedBox(height: 9),
 
                               Text(
-                                'TV 50 Polegadas',
+                                'TV 65 Polegadas',
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w900,
@@ -589,20 +589,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-
-                              const SizedBox(height: 4),
-
-                              Text(
-                                'Smart TV LED 4K',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  height: 1.25,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              const SizedBox(height: 18),
                             ],
                           ),
                         ),
@@ -763,7 +750,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                               const SizedBox(height: 9),
 
                               Text(
-                                'R\$ 1.000,00',
+                                'Cervejeira Consul',
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w900,
@@ -773,20 +760,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-
-                              const SizedBox(height: 4),
-
-                              Text(
-                                'Em compras no Nikos',
-                                style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  height: 1.25,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              const SizedBox(height: 18),
                             ],
                           ),
                         ),
@@ -965,7 +939,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                               const SizedBox(height: 9),
 
                               Text(
-                                'R\$ 500,00',
+                                formatMoneyValue('1000'),
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w900,
@@ -979,7 +953,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                               const SizedBox(height: 4),
 
                               Text(
-                                'Em compras no Nikos',
+                                'Em compras',
                                 style: TextStyle(
                                   color: Colors.grey.shade700,
                                   fontSize: 13,
@@ -1167,7 +1141,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                               const SizedBox(height: 9),
 
                               Text(
-                                'R\$ 250,00',
+                                formatMoneyValue('500'),
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w900,
@@ -1181,7 +1155,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                               const SizedBox(height: 4),
 
                               Text(
-                                'Em compras no Nikos',
+                                'Em compras',
                                 style: TextStyle(
                                   color: Colors.grey.shade700,
                                   fontSize: 13,

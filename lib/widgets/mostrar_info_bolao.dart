@@ -322,7 +322,7 @@ void mostrarInformacoesBolao(BuildContext context) {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              'TV 50 Polegadas Smart LED',
+                                              'TV 65 Polegadas',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 height: 1.38,
@@ -378,7 +378,7 @@ void mostrarInformacoesBolao(BuildContext context) {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              'R\$ 1.000,00 em compras',
+                                              'Cervejeira Consul',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 height: 1.38,
@@ -434,7 +434,7 @@ void mostrarInformacoesBolao(BuildContext context) {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              'R\$ 500,00 em compras',
+                                              'R\$ 1000,00 em compras',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 height: 1.38,
@@ -490,7 +490,7 @@ void mostrarInformacoesBolao(BuildContext context) {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              'R\$ 250,00 em compras',
+                                              'R\$ 500,00 em compras',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 height: 1.38,
