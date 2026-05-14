@@ -147,7 +147,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 final siglaa = siglaaController.text.trim().toUpperCase();
                 final timebb = timebbController.text.trim();
                 final siglbb = siglbbController.text.trim().toUpperCase();
-                final parsedDatjog = tryParseDatjog(datjogRaw);
+                final parsedDatjog = tryParseDatjogFinal(datjogRaw);
 
                 if (datjogRaw.isEmpty || timeaa.isEmpty || siglaa.isEmpty || timebb.isEmpty || siglbb.isEmpty) {
                   setDialogState(() {
@@ -158,7 +158,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
                 if (parsedDatjog == null) {
                   setDialogState(() {
-                    erro = 'Data inválida. Use DD/MM/AAAA HH:MM (ex: 31/12/2026 20:30).';
+                    erro = 'Informe uma data e hora válidas. Ex: 31/12/2026 20:30.';
                   });
                   return;
                 }

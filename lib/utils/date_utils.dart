@@ -102,6 +102,36 @@ String formatMoneyValue(String? value, {bool allowNegative = false}) {
   return 'R\$ $formatted';
 }
 
+DateTime? tryParseDatjogFinal(String value) {
+  final texto = value.trim();
+
+  final match = RegExp(
+    r'^(\d{2})/(\d{2})/(\d{4}) (\d{2}):(\d{2})$',
+  ).firstMatch(texto);
+
+  if (match == null) {
+    return null;
+  }
+
+  final dia = int.parse(match.group(1)!);
+  final mes = int.parse(match.group(2)!);
+  final ano = int.parse(match.group(3)!);
+  final hora = int.parse(match.group(4)!);
+  final minuto = int.parse(match.group(5)!);
+
+  if (mes < 1 || mes > 12) return null;
+  if (hora < 0 || hora > 23) return null;
+  if (minuto < 0 || minuto > 59) return null;
+
+  final data = DateTime(ano, mes, dia, hora, minuto);
+
+  if (data.day != dia || data.month != mes || data.year != ano || data.hour != hora || data.minute != minuto) {
+    return null;
+  }
+
+  return data;
+}
+
 class DateTimeBrInputFormatter extends TextInputFormatter {
   static final _notDigit = RegExp(r'\D');
   static const _sep = {2: '/', 4: '/', 8: ' ', 10: ':'};

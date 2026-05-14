@@ -34,7 +34,68 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         "password": _passController.text,
       },
     );
-
+    if (resp.toString() == 'Erro de login') {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red.shade700,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            elevation: 8,
+            duration: const Duration(seconds: 4),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            content: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.lock_outline,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Não foi possível entrar',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      SizedBox(height: 3),
+                      Text(
+                        'Confira seus dados e tente novamente.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          height: 1.25,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      setState(() => _loading = false);
+      return;
+    }
     var decodedResponse = jsonDecode(resp);
     var responseData = jsonDecode(decodedResponse['Response'])[0];
     if (responseData["admin"] == "S") {
