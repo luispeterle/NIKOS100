@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  final List<String> _tabTitles = ['Palpites', 'Ranking', 'Premios', 'Regras'];
+  final List<String> _tabTitles = ['Palpites', 'Ranking', 'Prêmios', 'Regras'];
   final List<IconData> _tabIcons = [
     Icons.sports_soccer,
     Icons.leaderboard,

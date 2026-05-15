@@ -1086,7 +1086,7 @@ class _PremiacaoTabState extends State<PremiacaoTab> with SingleTickerProviderSt
                               const SizedBox(height: 4),
 
                               Text(
-                                "Em compras Lojas Adelino ou Niko's Supermercado",
+                                "Em compras nas Lojas Adelino ou Niko's Supermercado",
                                 style: TextStyle(
                                   color: Colors.grey.shade700,
                                   fontSize: 13,
