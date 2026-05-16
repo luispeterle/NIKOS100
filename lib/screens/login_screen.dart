@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import '../services/api_service.dart';
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     if (cpf.length != 11) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'CPF deve conter 11 dígitos';
+        _errorMessage = 'CPF deve conter 11 dÃ­gitos';
       });
       return;
     }
@@ -102,9 +102,13 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
       widget.onLogin(user);
     } else {
+      final errorText = ApiService.lastLoginError == LoginErrorType.transport
+          ? 'Nao foi possivel validar seu CPF agora.\n\nTente novamente em alguns instantes.'
+          : 'CPF inserido incorreto.\n\nSe seus dados estao corretos, procure uma de nossas lojas.';
+
       setState(() {
         _isLoading = false;
-        _errorMessage = 'CPF inserido incorreto.\n\nSe seus dados estão corretos, procure uma de nossas lojas.';
+        _errorMessage = errorText;
       });
     }
   }
@@ -596,7 +600,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                           Icon(Icons.info_outline, size: 16, color: Colors.grey.shade600),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'Participe do bolão da Copa 2026',
+                                            'Participe do bolÃ£o da Copa 2026',
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.grey.shade600,
@@ -612,7 +616,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                         TextSpan(
                                           children: [
                                             TextSpan(
-                                              text: 'Já é cliente ',
+                                              text: 'JÃ¡ Ã© cliente ',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.grey.shade700,
@@ -709,7 +713,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
-                                          'Configurações avançadas',
+                                          'ConfiguraÃ§Ãµes avanÃ§adas',
                                           style: TextStyle(
                                             fontSize: 13,
                                             color: Colors.grey.shade600,
@@ -771,3 +775,5 @@ class CpfInputFormatter extends TextInputFormatter {
     );
   }
 }
+
+

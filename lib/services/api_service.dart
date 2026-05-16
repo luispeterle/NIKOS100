@@ -4,51 +4,77 @@ import 'package:flutter/material.dart';
 import '../utils/micro_server_post.dart';
 import 'user_session.dart';
 
+enum LoginErrorType { none, invalidCpf, transport }
+
 class ApiService {
+  static LoginErrorType lastLoginError = LoginErrorType.none;
+
   // ============================================
   // LOGIN
   // ============================================
   static Future<Map<String, dynamic>?> login(String cgccpf) async {
     try {
-      final resp = await serverPost(
-        "bolao_login",
-        myJson: {
-          "cgccpf": cgccpf,
-        },
-      );
+      lastLoginError = LoginErrorType.none;
+      await getToken();
 
-      if (resp == true || resp == null) {
-        return null;
+      final user = await _loginAttempt(cgccpf);
+      if (user != null) return user;
+
+      final shouldRetry = hadLastServerError;
+      if (shouldRetry) {
+        await getToken();
+        final retryUser = await _loginAttempt(cgccpf);
+        if (retryUser != null) return retryUser;
       }
 
-      final data = jsonDecode(resp);
-      if (data['Response'] != null) {
-        final List responseList = jsonDecode(data['Response']);
-        if (responseList.isNotEmpty) {
-          final userData = responseList[0];
-          final maxPalpites = userData['max_palpites'] ?? 25;
-
-          UserSession.setSession(
-            cpf: cgccpf,
-            nome: userData['nomcli'] ?? '',
-            maxPalp: maxPalpites,
-            totalCompra: userData['total'] ?? 0,
-          );
-
-          return {
-            'cpf': userData['cpf']?.toString() ?? cgccpf,
-            'max_palpites': maxPalpites,
-            'nome': userData['nomcli'] ?? '',
-            'total': userData['total'] ?? 0,
-            'isAdmin': false,
-          };
-        }
-      }
+      lastLoginError = hadLastServerError ? LoginErrorType.transport : LoginErrorType.invalidCpf;
       return null;
     } catch (e) {
       debugPrint('Erro no login: $e');
+      lastLoginError = LoginErrorType.transport;
       return null;
     }
+  }
+
+  static Future<Map<String, dynamic>?> _loginAttempt(String cgccpf) async {
+    final resp = await serverPost(
+      "bolao_login",
+      myJson: {
+        "cgccpf": cgccpf,
+      },
+    );
+
+    if (resp == true || resp == null) {
+      return null;
+    }
+
+    final data = jsonDecode(resp);
+    if (data['Response'] == null) {
+      return null;
+    }
+
+    final List responseList = jsonDecode(data['Response']);
+    if (responseList.isEmpty) {
+      return null;
+    }
+
+    final userData = responseList[0];
+    final maxPalpites = userData['max_palpites'] ?? 25;
+
+    UserSession.setSession(
+      cpf: cgccpf,
+      nome: userData['nomcli'] ?? '',
+      maxPalp: maxPalpites,
+      totalCompra: userData['total'] ?? 0,
+    );
+
+    return {
+      'cpf': userData['cpf']?.toString() ?? cgccpf,
+      'max_palpites': maxPalpites,
+      'nome': userData['nomcli'] ?? '',
+      'total': userData['total'] ?? 0,
+      'isAdmin': false,
+    };
   }
 
   // ============================================

@@ -825,6 +825,10 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     final jogosAbertosExibidos = jogosAbertos.toList();
     final jogosFinalizadosExibidos = jogosFinalizados.toList();
 
+    int idJogo(Map<String, dynamic> jogo) => int.tryParse('${jogo['idjogo']}') ?? 0;
+    jogosAbertosExibidos.sort((a, b) => idJogo(a).compareTo(idJogo(b)));
+    jogosFinalizadosExibidos.sort((a, b) => idJogo(a).compareTo(idJogo(b)));
+
     return Stack(
       children: [
         Column(

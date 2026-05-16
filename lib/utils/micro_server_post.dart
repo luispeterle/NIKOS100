@@ -9,6 +9,15 @@ import 'package:cryptography/dart.dart';
 String? globalAcess;
 String? _kemPublic;
 String globalTokenInicialNginx = "";
+String? lastServerErrorDetail;
+String? lastServerErrorCode;
+
+bool get hadLastServerError => (lastServerErrorDetail?.isNotEmpty ?? false) || (lastServerErrorCode?.isNotEmpty ?? false);
+
+void clearLastServerError() {
+  lastServerErrorDetail = null;
+  lastServerErrorCode = null;
+}
 
 const String urlRust = String.fromEnvironment('URL_RUST', defaultValue: 'http://127.0.0.1:5001'); // Url Debug
 Future<void> getToken() async {
@@ -74,6 +83,8 @@ Future<dynamic> serverPost(String url, {dynamic myJson}) async {
   aplicarHeaderTokenInicialNginx(headers);
 
   Future<bool> returnErro() async {
+    lastServerErrorDetail = errorDetail;
+    lastServerErrorCode = errorCode;
     debugPrint(errorDetail);
     debugPrint(errorCode);
     debugPrint(url.substring(urlRust.length));
@@ -116,6 +127,8 @@ Future<dynamic> serverPost(String url, {dynamic myJson}) async {
     errorCode = bodyStr;
     return returnErro();
   }
+
+  clearLastServerError();
 
   final tempGlobal = response.headers['global'];
   if (tempGlobal != null) {
