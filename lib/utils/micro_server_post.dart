@@ -87,7 +87,9 @@ Future<dynamic> serverPost(String url, {dynamic myJson}) async {
     lastServerErrorCode = errorCode;
     debugPrint(errorDetail);
     debugPrint(errorCode);
-    debugPrint(url.substring(urlRust.length));
+
+    final endpointForLog = url.startsWith(urlRust) ? url.substring(urlRust.length) : url;
+    debugPrint(endpointForLog);
 
     return true;
   }

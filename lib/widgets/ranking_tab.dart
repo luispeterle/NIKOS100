@@ -16,6 +16,7 @@ class RankingTab extends StatefulWidget {
 
 class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> _ranking = [];
+  List<Map<String, dynamic>> _parcipantesCount = [];
   Map<String, dynamic>? meuRanking;
 
   DateTime? _lastUpdate;
@@ -55,9 +56,11 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
     setState(() => _loading = true);
 
     final ranking = await ApiService.getRanking();
+    final parcipantesCount = await ApiService.getCountParticipante();
     if (!mounted) return;
     final userRanking = _getUserRanking(ranking);
     setState(() {
+      _parcipantesCount = parcipantesCount;
       _ranking = ranking;
       meuRanking = userRanking;
       _lastUpdate = DateTime.now();
@@ -266,7 +269,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        '${_ranking.length} participantes',
+                                        '${_parcipantesCount[0]['totalParticipantes'] ?? 0} participantes',
                                         textAlign: TextAlign.center,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,

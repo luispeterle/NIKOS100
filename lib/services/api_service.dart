@@ -13,30 +13,10 @@ class ApiService {
   // LOGIN
   // ============================================
   static Future<Map<String, dynamic>?> login(String cgccpf) async {
-    try {
-      lastLoginError = LoginErrorType.none;
-      await getToken();
+    lastLoginError = LoginErrorType.none;
 
-      final user = await _loginAttempt(cgccpf);
-      if (user != null) return user;
+    await getToken();
 
-      final shouldRetry = hadLastServerError;
-      if (shouldRetry) {
-        await getToken();
-        final retryUser = await _loginAttempt(cgccpf);
-        if (retryUser != null) return retryUser;
-      }
-
-      lastLoginError = hadLastServerError ? LoginErrorType.transport : LoginErrorType.invalidCpf;
-      return null;
-    } catch (e) {
-      debugPrint('Erro no login: $e');
-      lastLoginError = LoginErrorType.transport;
-      return null;
-    }
-  }
-
-  static Future<Map<String, dynamic>?> _loginAttempt(String cgccpf) async {
     final resp = await serverPost(
       "bolao_login",
       myJson: {
@@ -44,37 +24,49 @@ class ApiService {
       },
     );
 
-    if (resp == true || resp == null) {
+    if (resp == null || resp == true) {
+      lastLoginError = LoginErrorType.transport;
       return null;
     }
 
-    final data = jsonDecode(resp);
-    if (data['Response'] == null) {
+    final respText = resp.toString().trim();
+
+    if (respText.toUpperCase() == 'ERRO DE LOGIN') {
+      lastLoginError = LoginErrorType.invalidCpf;
       return null;
     }
 
-    final List responseList = jsonDecode(data['Response']);
-    if (responseList.isEmpty) {
+    try {
+      final data = jsonDecode(respText);
+      final List responseList = jsonDecode(data['Response']);
+
+      if (responseList.isEmpty) {
+        lastLoginError = LoginErrorType.invalidCpf;
+        return null;
+      }
+
+      final userData = responseList[0];
+      final maxPalpites = userData['max_palpites'] ?? 25;
+
+      UserSession.setSession(
+        cpf: cgccpf,
+        nome: userData['nomcli'] ?? '',
+        maxPalp: maxPalpites,
+        totalCompra: userData['total'] ?? 0,
+      );
+
+      return {
+        'cpf': userData['cpf']?.toString() ?? cgccpf,
+        'max_palpites': maxPalpites,
+        'nome': userData['nomcli'] ?? '',
+        'total': userData['total'] ?? 0,
+        'isAdmin': false,
+      };
+    } catch (e) {
+      debugPrint('Erro no parse do login: $e');
+      lastLoginError = LoginErrorType.transport;
       return null;
     }
-
-    final userData = responseList[0];
-    final maxPalpites = userData['max_palpites'] ?? 25;
-
-    UserSession.setSession(
-      cpf: cgccpf,
-      nome: userData['nomcli'] ?? '',
-      maxPalp: maxPalpites,
-      totalCompra: userData['total'] ?? 0,
-    );
-
-    return {
-      'cpf': userData['cpf']?.toString() ?? cgccpf,
-      'max_palpites': maxPalpites,
-      'nome': userData['nomcli'] ?? '',
-      'total': userData['total'] ?? 0,
-      'isAdmin': false,
-    };
   }
 
   // ============================================
@@ -259,6 +251,36 @@ class ApiService {
       return [];
     } catch (e) {
       debugPrint('Erro ao buscar ranking: $e');
+      return [];
+    }
+  }
+
+  // ============================================
+  // COUNT PARTICIPANTES RANKING
+  // ============================================
+  static Future<List<Map<String, dynamic>>> getCountParticipante() async {
+    try {
+      final resp = await serverPost(
+        "bolao_count_palpites",
+        myJson: {},
+      );
+
+      if (resp == true || resp == null) {
+        return [];
+      }
+
+      final data = jsonDecode(resp);
+      if (data['Response'] != null) {
+        final List responseList = jsonDecode(data['Response']);
+        return responseList.map<Map<String, dynamic>>((item) {
+          return {
+            'totalParticipantes': item['total_cpfs_diferentes'] ?? '',
+          };
+        }).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Erro ao buscar participantes: $e');
       return [];
     }
   }
