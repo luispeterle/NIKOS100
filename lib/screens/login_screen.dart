@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     if (cpf.length != 11) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'CPF deve conter 11 dÃ­gitos';
+        _errorMessage = 'CPF deve conter 11 dí­gitos';
       });
       return;
     }
@@ -600,7 +600,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                           Icon(Icons.info_outline, size: 16, color: Colors.grey.shade600),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'Participe do bolÃ£o da Copa 2026',
+                                            'Participe do bolão da Copa 2026',
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.grey.shade600,
@@ -616,7 +616,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                         TextSpan(
                                           children: [
                                             TextSpan(
-                                              text: 'JÃ¡ Ã© cliente ',
+                                              text: 'Já é cliente ',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.grey.shade700,
@@ -713,7 +713,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
-                                          'ConfiguraÃ§Ãµes avanÃ§adas',
+                                          'Configurações avançadas',
                                           style: TextStyle(
                                             fontSize: 13,
                                             color: Colors.grey.shade600,
@@ -775,5 +775,3 @@ class CpfInputFormatter extends TextInputFormatter {
     );
   }
 }
-
-
