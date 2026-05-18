@@ -19,6 +19,8 @@ void clearLastServerError() {
   lastServerErrorCode = null;
 }
 
+const String bolaoVersion = String.fromEnvironment('VERSION', defaultValue: 'Debug');
+
 const String urlRust = String.fromEnvironment('URL_RUST', defaultValue: 'http://127.0.0.1:5001'); // Url Debug
 Future<void> getToken() async {
   await carregarTokenInicialNginx();

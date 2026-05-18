@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nikos/plataform/anon_id.dart';
+import 'package:uuid/uuid.dart';
 
 import '../utils/micro_server_post.dart';
 import 'user_session.dart';
@@ -322,8 +323,13 @@ class ApiService {
   // ============================================
   // SALVA METRIC ACESSO HOME
   // ============================================
+
+  static String? _anonIdFallbackMemoria;
+
   static Future<bool> salvaAcessoHomeScreen() async {
-    final anonId = getAnonId();
+    String? anonId = getAnonId();
+
+    anonId = (anonId.isEmpty) ? (_anonIdFallbackMemoria ??= const Uuid().v4()) : anonId;
 
     try {
       final resp = await serverPost(
@@ -335,10 +341,7 @@ class ApiService {
         },
       );
 
-      if (resp == true || resp == null) {
-        return false;
-      }
-      return true;
+      return resp == true;
     } catch (e) {
       debugPrint('Erro ao salvar metric: $e');
       return false;

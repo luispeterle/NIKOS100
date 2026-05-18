@@ -583,6 +583,17 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                           ],
                                         ),
                                       ),
+                                      SizedBox(height: 8),
+                                      Center(
+                                        child: Text(
+                                          'Versão: $bolaoVersion',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade700,
+                                            fontSize: 11.5,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
