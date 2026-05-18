@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:nikos/plataform/anon_id.dart';
 
 import '../utils/micro_server_post.dart';
 import 'user_session.dart';
@@ -314,6 +315,65 @@ class ApiService {
       return [];
     } catch (e) {
       debugPrint('Erro ao buscar participantes: $e');
+      return [];
+    }
+  }
+
+  // ============================================
+  // SALVA METRIC ACESSO HOME
+  // ============================================
+  static Future<bool> salvaAcessoHomeScreen() async {
+    final anonId = getAnonId();
+
+    try {
+      final resp = await serverPost(
+        "bolao_metric_event",
+        myJson: {
+          "event_type": "home",
+          "anon_id": anonId,
+          "descricao": "home_screen",
+        },
+      );
+
+      if (resp == true || resp == null) {
+        return false;
+      }
+      return true;
+    } catch (e) {
+      debugPrint('Erro ao salvar metric: $e');
+      return false;
+    }
+  }
+
+  // ============================================
+  // GET MÉTRICA DO BOLÃO
+  // ============================================
+  static Future<List<Map<String, dynamic>>> getMetricBolao() async {
+    try {
+      final resp = await serverPost(
+        "get_metric_bolao",
+        myJson: {},
+      );
+
+      if (resp == true || resp == null) {
+        return [];
+      }
+
+      final data = jsonDecode(resp);
+      if (data['Response'] != null) {
+        final List responseList = jsonDecode(data['Response']);
+        return responseList.map<Map<String, dynamic>>((item) {
+          return {
+            'event_type': item['event_type'] ?? '',
+            'cpf': item['cpf'] ?? '',
+            'anon_id': item['anon_id'] ?? '',
+            'descricao': item['descricao'] ?? '',
+          };
+        }).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Erro ao buscar métricas do bolão: $e');
       return [];
     }
   }

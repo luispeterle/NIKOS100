@@ -269,7 +269,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        '${_parcipantesCount[0]['totalParticipantes'] ?? 0} participantes',
+                                        '${_parcipantesCount.isNotEmpty ? _parcipantesCount[0]['totalParticipantes'] ?? 0 : 0} participantes',
                                         textAlign: TextAlign.center,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,

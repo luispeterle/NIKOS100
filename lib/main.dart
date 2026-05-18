@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:nikos/services/api_service.dart';
 import 'package:nikos/utils/micro_server_post.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -9,6 +13,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await getToken();
   runApp(const NikosApp());
+  if (kIsWeb) unawaited(ApiService.salvaAcessoHomeScreen());
 }
 
 class NikosApp extends StatelessWidget {

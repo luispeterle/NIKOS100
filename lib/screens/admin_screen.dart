@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nikos/services/api_service.dart';
@@ -1505,9 +1507,461 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
+  void _visualizarMetricas() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        bool carregando = true;
+        bool iniciou = false;
+        String? erro;
+        List<Map<String, dynamic>> metricas = [];
+
+        Future<void> carregar(StateSetter setModalState) async {
+          try {
+            final metricBolao = await ApiService.getMetricBolao();
+
+            setModalState(() {
+              metricas = [
+                {
+                  'titulo': 'Logins efetuados',
+                  'valor': metricBolao.where((item) {
+                    return item['event_type']?.toString() == 'login';
+                  }).length,
+                  'descricao': 'Total de eventos de login registrados',
+                  'icone': Icons.login_rounded,
+                },
+                {
+                  'titulo': 'Logins únicos efetuados',
+                  'valor': metricBolao
+                      .where((item) {
+                        return item['event_type']?.toString() == 'login';
+                      })
+                      .map((item) {
+                        return item['cpf']?.toString().replaceAll(RegExp(r'\.0$'), '').trim() ?? '';
+                      })
+                      .where((cpf) {
+                        return cpf.isNotEmpty;
+                      })
+                      .toSet()
+                      .length,
+                  'descricao': 'CPFs únicos que acessaram o bolão',
+                  'icone': Icons.people_alt_rounded,
+                },
+                {
+                  'titulo': 'Acessos no Site',
+                  'valor': metricBolao.where((item) {
+                    return item['event_type']?.toString().trim().toLowerCase() == 'home';
+                  }).length,
+                  'descricao': 'Total de acessos registrados no site',
+                  'icone': Icons.home_rounded,
+                },
+                {
+                  'titulo': 'Visitantes únicos no site',
+                  'valor': metricBolao
+                      .where((item) {
+                        return item['event_type']?.toString().trim().toLowerCase() == 'home';
+                      })
+                      .map((item) {
+                        return item['anon_id']?.toString().trim() ?? '';
+                      })
+                      .where((anonId) {
+                        return anonId.isNotEmpty;
+                      })
+                      .toSet()
+                      .length,
+                  'descricao': 'Total de acessos únicos no site',
+                  'icone': Icons.devices_rounded,
+                },
+              ];
+
+              carregando = false;
+              erro = null;
+            });
+          } catch (_) {
+            setModalState(() {
+              carregando = false;
+              erro = 'Não foi possível carregar as métricas.';
+            });
+          }
+        }
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            if (!iniciou) {
+              iniciou = true;
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (dialogContext.mounted) {
+                  carregar(setModalState);
+                }
+              });
+            }
+
+            return Dialog(
+              insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+              backgroundColor: Colors.transparent,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 720),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(28),
+                  child: Material(
+                    color: const Color(0xFFF7F7F7),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.fromLTRB(22, 22, 18, 22),
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xFFCC0000),
+                                Color(0xFF960000),
+                                Color(0xFF650000),
+                              ],
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.16),
+                                  borderRadius: BorderRadius.circular(17),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.22),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.analytics_outlined,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
+
+                              const SizedBox(width: 14),
+
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Métricas do bolão',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 21,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    SizedBox(height: 3),
+                                    Text(
+                                      'Resumo dos acessos registrados',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              IconButton(
+                                onPressed: () => Navigator.of(dialogContext).pop(),
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.white.withValues(alpha: 0.14),
+                                  foregroundColor: Colors.white,
+                                ),
+                                icon: const Icon(Icons.close_rounded),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Flexible(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.all(18),
+                            child: carregando
+                                ? Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(vertical: 44),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const SizedBox(
+                                          width: 38,
+                                          height: 38,
+                                          child: CircularProgressIndicator(
+                                            color: Color(0xFFCC0000),
+                                            strokeWidth: 3,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'Carregando métricas...',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade700,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : erro != null
+                                ? Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.shade50,
+                                      borderRadius: BorderRadius.circular(18),
+                                      border: Border.all(
+                                        color: Colors.red.shade100,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.error_outline_rounded,
+                                          color: Colors.red.shade700,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            erro!,
+                                            style: TextStyle(
+                                              color: Colors.red.shade700,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final isSmall = constraints.maxWidth < 560;
+
+                                      return GridView.builder(
+                                        shrinkWrap: true,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        itemCount: metricas.length,
+                                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: isSmall ? 1 : 2,
+                                          crossAxisSpacing: 12,
+                                          mainAxisSpacing: 12,
+                                          mainAxisExtent: 124,
+                                        ),
+                                        itemBuilder: (context, index) {
+                                          final item = metricas[index];
+
+                                          return Container(
+                                            padding: const EdgeInsets.all(16),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(20),
+                                              border: Border.all(
+                                                color: Colors.black.withValues(alpha: 0.06),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.07),
+                                                  blurRadius: 16,
+                                                  offset: const Offset(0, 7),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(0xFFCC0000).withValues(alpha: 0.10),
+                                                    borderRadius: BorderRadius.circular(16),
+                                                  ),
+                                                  child: Icon(
+                                                    item['icone'] as IconData,
+                                                    color: const Color(0xFFCC0000),
+                                                    size: 26,
+                                                  ),
+                                                ),
+
+                                                const SizedBox(width: 13),
+
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        item['titulo'].toString(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(
+                                                          color: Colors.grey.shade700,
+                                                          fontSize: 12,
+                                                          fontWeight: FontWeight.w800,
+                                                        ),
+                                                      ),
+
+                                                      const SizedBox(height: 5),
+
+                                                      Text(
+                                                        item['valor'].toString(),
+                                                        style: const TextStyle(
+                                                          color: Color(0xFF1F1F1F),
+                                                          fontSize: 26,
+                                                          fontWeight: FontWeight.w900,
+                                                        ),
+                                                      ),
+
+                                                      const SizedBox(height: 3),
+
+                                                      Text(
+                                                        item['descricao'].toString(),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(
+                                                          color: Colors.grey.shade500,
+                                                          fontSize: 11.5,
+                                                          height: 1.25,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      endDrawer: Drawer(
+        backgroundColor: Colors.white,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFCC0000),
+                      Color(0xFF8B0000),
+                    ],
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.16),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.admin_panel_settings_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'Olá, ${widget.user['nome'] ?? 'Admin'}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Painel administrativo',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.analytics_outlined, color: Color(0xFFCC0000)),
+                title: const Text(
+                  'Visualizar Métricas',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
+                onTap: () {
+                  _visualizarMetricas();
+                },
+              ),
+
+              const Spacer(),
+
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      widget.onLogout();
+                      UserSession.clear();
+                    },
+                    icon: const Icon(Icons.logout_rounded),
+                    label: const Text(
+                      'Sair',
+                      style: TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFCC0000),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       body: Column(
         children: [
           Container(
@@ -1610,49 +2064,136 @@ class _AdminScreenState extends State<AdminScreen> {
 
                     const SizedBox(width: 12),
 
-                    Material(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(14),
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          widget.onLogout();
-                          UserSession.clear();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-                          decoration: BoxDecoration(
+                    Builder(
+                      builder: (context) {
+                        final isMobile = MediaQuery.sizeOf(context).width < 700;
+
+                        if (isMobile) {
+                          return Material(
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.10),
-                                blurRadius: 12,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.logout_rounded,
-                                size: 18,
-                                color: Color(0xFFCC0000),
-                              ),
-                              SizedBox(width: 7),
-                              Text(
-                                'Sair',
-                                style: TextStyle(
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(14),
+                              onTap: () {
+                                Scaffold.of(context).openEndDrawer();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.10),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.menu_rounded,
+                                  size: 22,
                                   color: Color(0xFFCC0000),
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 13,
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
+                            ),
+                          );
+                        }
+
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Material(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(14),
+                                onTap: () {
+                                  _visualizarMetricas();
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.10),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.analytics_outlined,
+                                        size: 18,
+                                        color: Color(0xFFCC0000),
+                                      ),
+                                      SizedBox(width: 6),
+                                      Text(
+                                        'Métricas',
+                                        style: TextStyle(
+                                          color: Color(0xFFCC0000),
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 8),
+
+                            Material(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(14),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  widget.onLogout();
+                                  UserSession.clear();
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.10),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.logout_rounded,
+                                        size: 18,
+                                        color: Color(0xFFCC0000),
+                                      ),
+                                      SizedBox(width: 6),
+                                      Text(
+                                        'Sair',
+                                        style: TextStyle(
+                                          color: Color(0xFFCC0000),
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -1678,192 +2219,97 @@ class _AdminScreenState extends State<AdminScreen> {
             ),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final isSmall = constraints.maxWidth < 520;
+                return Row(
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFFCC0000),
+                            Color(0xFF8B0000),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(17),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFCC0000).withValues(alpha: 0.25),
+                            blurRadius: 14,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.analytics_outlined,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
 
-                return isSmall
-                    ? Column(
+                    const SizedBox(width: 14),
+
+                    const Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Color(0xFFCC0000),
-                                      Color(0xFF8B0000),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFCC0000).withValues(alpha: 0.25),
-                                      blurRadius: 14,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.sports_soccer_rounded,
-                                  color: Colors.white,
-                                  size: 26,
-                                ),
-                              ),
-
-                              const SizedBox(width: 12),
-
-                              const Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Gerenciar Jogos',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.w900,
-                                        color: Color(0xFF1F1F1F),
-                                      ),
-                                    ),
-                                    SizedBox(height: 3),
-                                    Text(
-                                      'Controle os jogos do bolão',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color(0xFF777777),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          Text(
+                            'Visualizar Métricas',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF1F1F1F),
+                            ),
                           ),
-
-                          const SizedBox(height: 16),
-
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: ElevatedButton.icon(
-                              onPressed: _adicionarJogo,
-                              icon: const Icon(Icons.add_rounded, size: 20),
-                              label: const Text(
-                                'Adicionar Jogo',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.2,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFCC0000),
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shadowColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                              ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Visualize as métricas dentro do site',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF777777),
                             ),
                           ),
                         ],
-                      )
-                    : Row(
-                        children: [
-                          Container(
-                            width: 52,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Color(0xFFCC0000),
-                                  Color(0xFF8B0000),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(17),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFFCC0000).withValues(alpha: 0.25),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.sports_soccer_rounded,
-                              color: Colors.white,
-                              size: 28,
-                            ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 16),
+
+                    SizedBox(
+                      height: 48,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          _visualizarMetricas();
+                        },
+                        icon: const Icon(Icons.add_rounded, size: 20),
+                        label: const Text(
+                          'Visualizar Métricas',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.2,
                           ),
-
-                          const SizedBox(width: 14),
-
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Gerenciar Jogos',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w900,
-                                    color: Color(0xFF1F1F1F),
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Cadastre partidas, organize confrontos e acompanhe os jogos do bolão.',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF777777),
-                                  ),
-                                ),
-                              ],
-                            ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFCC0000),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-
-                          const SizedBox(width: 16),
-
-                          SizedBox(
-                            height: 48,
-                            child: ElevatedButton.icon(
-                              onPressed: _adicionarJogo,
-                              icon: const Icon(Icons.add_rounded, size: 20),
-                              label: const Text(
-                                'Adicionar Jogo',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.2,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFCC0000),
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shadowColor: Colors.transparent,
-                                padding: const EdgeInsets.symmetric(horizontal: 18),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
+                        ),
+                      ),
+                    ),
+                  ],
+                );
               },
             ),
           ),

@@ -15,6 +15,7 @@ dependencies:
   cryptography: ^2.9.0
   mask_text_input_formatter: ^2.9.0
   lottie: ^3.3.3
+  uuid: ^4.5.3
   
 dev_dependencies:
   flutter_test:
