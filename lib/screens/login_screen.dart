@@ -102,9 +102,12 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
       widget.onLogin(user);
     } else {
-      final errorText = ApiService.lastLoginError == LoginErrorType.transport
-          ? 'Não foi possível validar seu CPF agora.\n\nTente novamente em alguns instantes.'
-          : 'CPF inserido incorreto.\n\nSe seus dados estão corretos, procure uma de nossas lojas.';
+      var errorText = '';
+      if (ApiService.lastLoginError == LoginErrorType.transport) {
+        errorText = 'Não foi possível validar seu CPF agora.\n\nPor favor valide sua conexão com a internet\nTente novamente em alguns instantes.';
+      } else {
+        errorText = 'CPF inserido incorreto.\n\nSe seus dados estão corretos, procure uma de nossas lojas.';
+      }
 
       setState(() {
         _isLoading = false;

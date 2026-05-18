@@ -9,6 +9,12 @@ enum LoginErrorType { none, invalidCpf, transport }
 class ApiService {
   static LoginErrorType lastLoginError = LoginErrorType.none;
 
+  static bool _isBackendLoginError(String? value) {
+    if (value == null) return false;
+    final text = value.trim().toUpperCase();
+    return text.contains('ERRO DE LOGIN');
+  }
+
   // ============================================
   // LOGIN
   // ============================================
@@ -24,22 +30,49 @@ class ApiService {
       },
     );
 
-    if (resp == null || resp == true) {
-      lastLoginError = LoginErrorType.transport;
-      return null;
-    }
-
-    final respText = resp.toString().trim();
-
-    if (respText.toUpperCase() == 'ERRO DE LOGIN') {
-      lastLoginError = LoginErrorType.invalidCpf;
-      return null;
-    }
-
     try {
-      final data = jsonDecode(respText);
-      final List responseList = jsonDecode(data['Response']);
+      if (resp == null || resp == true) {
+        final backendLoginError = _isBackendLoginError(lastServerErrorDetail) || _isBackendLoginError(lastServerErrorCode);
+        if (backendLoginError) {
+          lastLoginError = LoginErrorType.invalidCpf;
+        } else {
+          lastLoginError = LoginErrorType.transport;
+        }
+        return null;
+      }
 
+      final respText = resp.toString().trim();
+      if (respText.toUpperCase() == 'ERRO DE LOGIN') {
+        lastLoginError = LoginErrorType.invalidCpf;
+        return null;
+      }
+
+      final data = jsonDecode(respText);
+      final dynamic rawResponse = data['Response'];
+
+      if (rawResponse == null) {
+        lastLoginError = LoginErrorType.transport;
+        return null;
+      }
+
+      if (rawResponse is String && rawResponse.trim().toUpperCase() == 'ERRO DE LOGIN') {
+        lastLoginError = LoginErrorType.invalidCpf;
+        return null;
+      }
+
+      final dynamic decodedResponse = rawResponse is String ? jsonDecode(rawResponse) : rawResponse;
+
+      if (decodedResponse is String && decodedResponse.trim().toUpperCase() == 'ERRO DE LOGIN') {
+        lastLoginError = LoginErrorType.invalidCpf;
+        return null;
+      }
+
+      if (decodedResponse is! List) {
+        lastLoginError = LoginErrorType.transport;
+        return null;
+      }
+
+      final List responseList = decodedResponse;
       if (responseList.isEmpty) {
         lastLoginError = LoginErrorType.invalidCpf;
         return null;
