@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       if (ApiService.lastLoginError == LoginErrorType.transport) {
         errorText = 'Não foi possível validar seu CPF agora.\n\nPor favor valide sua conexão com a internet\nTente novamente em alguns instantes.';
       } else {
-        errorText = 'CPF inserido incorreto.\n\nSe seus dados estão corretos, procure uma de nossas lojas.';
+        errorText = 'CPF inserido incorreto ou não possui cadastro em nossa rede.\n\nPor favor entre em contato com uma de nossas lojas para realizar o seu cadastro ou validar os dados!';
       }
 
       setState(() {

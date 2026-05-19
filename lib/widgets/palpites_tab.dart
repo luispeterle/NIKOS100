@@ -1917,7 +1917,8 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                     ),
                                                                   ),
                                                                 )
-                                                              : KeyedSubtree(
+                                                              : (gol1Controller.text.isEmpty && gol2Controller.text.isEmpty)
+                                                              ? KeyedSubtree(
                                                                   key: ValueKey('pronto-$idjogo'),
                                                                   child: Container(
                                                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
@@ -1938,6 +1939,36 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                                             textAlign: TextAlign.center,
                                                                             style: TextStyle(
                                                                               color: Colors.blue,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 11.5,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              : KeyedSubtree(
+                                                                  key: ValueKey('pronto-$idjogo'),
+                                                                  child: Container(
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors.deepOrange.withAlpha(26),
+                                                                      borderRadius: BorderRadius.circular(12),
+                                                                      border: Border.all(color: Colors.deepOrange.withAlpha(77)),
+                                                                    ),
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                                      children: [
+                                                                        Icon(Icons.edit_rounded, color: Colors.deepOrange, size: 16),
+                                                                        const SizedBox(width: 8),
+                                                                        Flexible(
+                                                                          child: Text(
+                                                                            'Altere um placar para habilitar o salvamento',
+                                                                            textAlign: TextAlign.center,
+                                                                            style: TextStyle(
+                                                                              color: Colors.deepOrange,
                                                                               fontWeight: FontWeight.w600,
                                                                               fontSize: 11.5,
                                                                             ),
