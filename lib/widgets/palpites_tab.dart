@@ -340,17 +340,22 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   }
 
   int? _obterProximoJogoElegivelId(int idjogoAtual) {
-    final indiceAtual = _jogos.indexWhere(
-      (jogo) => int.tryParse('${jogo['idjogo']}') == idjogoAtual,
-    );
-    if (indiceAtual < 0) return null;
+    final porId = <int, Map<String, dynamic>>{};
+    int maxId = 0;
 
-    for (int i = indiceAtual + 1; i < _jogos.length; i++) {
-      final jogo = _jogos[i];
+    for (final jogo in _jogos) {
       final id = int.tryParse('${jogo['idjogo']}') ?? 0;
       if (id <= 0) continue;
+      porId[id] = jogo;
+      if (id > maxId) maxId = id;
+    }
+
+    for (int proxId = idjogoAtual + 1; proxId <= maxId; proxId++) {
+      final jogo = porId[proxId];
+      if (jogo == null) continue;
+
       if (_jogoPodeReceberPalpite(jogo)) {
-        return id;
+        return proxId;
       }
     }
 
