@@ -118,6 +118,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         ),
       );
     } else {
+      setState(() => _loading = false);
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(

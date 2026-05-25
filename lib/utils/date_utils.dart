@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 String formatDate(DateTime date) {
@@ -173,4 +174,166 @@ class DateTimeBrInputFormatter extends TextInputFormatter {
       composing: TextRange.empty,
     );
   }
+}
+
+String formatCpfCnpj(String v) {
+  var d = v.replaceAll(RegExp(r'\D'), ''); //onlyDigits
+
+  if (d.length == 10) d = '0$d';
+
+  if (d.length == 11) {
+    return '${d.substring(0, 3)}.${d.substring(3, 6)}.${d.substring(6, 9)}-${d.substring(9, 11)}';
+  }
+  if (d.length == 14) {
+    return '${d.substring(0, 2)}.${d.substring(2, 5)}.${d.substring(5, 8)}/${d.substring(8, 12)}-${d.substring(12, 14)}';
+  }
+  return d;
+}
+
+String getSiglaParaBandeira(String sigla) {
+  final Map<String, String> siglaParaCodigo = {
+    'QAT': 'qa',
+    'ECU': 'ec',
+    'ENG': 'gb-eng',
+    'IRN': 'ir',
+    'ARG': 'ar',
+    'KSA': 'sa',
+    'GER': 'de',
+    'JPN': 'jp',
+    'BRA': 'br',
+    'SRB': 'rs',
+    'POR': 'pt',
+    'GHA': 'gh',
+    'FRA': 'fr',
+    'DEN': 'dk',
+    'ESP': 'es',
+    'CRO': 'hr',
+    'NED': 'nl',
+    'USA': 'us',
+    'MAR': 'ma',
+    'BEL': 'be',
+    'MEX': 'mx',
+    'CAN': 'ca',
+    'ITA': 'it',
+    'URU': 'uy',
+    'COL': 'co',
+    'CHI': 'cl',
+    'PER': 'pe',
+    'KOR': 'kr',
+    'AUS': 'au',
+    'NZL': 'nz',
+    'NGA': 'ng',
+    'SEN': 'sn',
+    'UAE': 'ae',
+    'POL': 'pl',
+    'SUI': 'ch',
+    'SWE': 'se',
+    'NOR': 'no',
+    'FIN': 'fi',
+    'ISL': 'is',
+    'TUR': 'tr',
+    'GRE': 'gr',
+    'CZE': 'cz',
+    'HUN': 'hu',
+    'SCO': 'gb-sct',
+    'IRL': 'ie',
+    'WAL': 'gb-wls',
+    'UKR': 'ua',
+    'CRC': 'cr',
+    'RSA': 'za',
+    'BIH': 'ba',
+    'PAR': 'py',
+    'HAI': 'ht',
+    'CUW': 'cw',
+    'CIV': 'ci',
+    'TUN': 'tn',
+    'CPV': 'cv',
+    'EGY': 'eg',
+    'AUT': 'at',
+    'JOR': 'jo',
+    'IRQ': 'iq',
+    'ALG': 'dz',
+    'COD': 'cd',
+    'PAN': 'pa',
+    'UZB': 'uz',
+  };
+
+  final codigo = siglaParaCodigo[sigla.toUpperCase()];
+  if (codigo != null) {
+    return codigo;
+  }
+
+  if (sigla.length == 2) {
+    return sigla.toLowerCase();
+  }
+
+  return '';
+}
+
+Widget getBandeira(String sigla) {
+  if (sigla.isEmpty) {
+    return Container(
+      width: 50,
+      height: 35,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: const Icon(Icons.flag, color: Colors.grey, size: 20),
+    );
+  }
+
+  final codigo = getSiglaParaBandeira(sigla);
+  if (codigo.isEmpty) {
+    return Container(
+      width: 50,
+      height: 35,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Center(
+        child: Text(
+          sigla,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(6),
+      boxShadow: [
+        const BoxShadow(
+          color: Color.fromRGBO(0, 0, 0, 0.1),
+          blurRadius: 4,
+          offset: Offset(0, 2),
+        ),
+      ],
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(6),
+      child: Image.network(
+        'https://flagcdn.com/w80/$codigo.png',
+        width: 50,
+        height: 35,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => Container(
+          width: 50,
+          height: 35,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Center(
+            child: Text(
+              sigla,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }

@@ -1857,6 +1857,1241 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
+  void _visualizarDetailsPalpites() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        bool carregando = true;
+        bool iniciou = false;
+        String? erro;
+        List<Map<String, dynamic>> palpitesInfo = [];
+
+        final pesquisaCtrl = TextEditingController();
+        String filialSelecionada = 'Todas';
+
+        Future<void> carregar(StateSetter setModalState) async {
+          try {
+            final result = await ApiService.getCliDetails();
+            setModalState(() {
+              palpitesInfo = result;
+              carregando = false;
+              erro = null;
+            });
+          } catch (_) {
+            setModalState(() {
+              carregando = false;
+              erro = 'Não foi possível carregar os dados dos participantes.';
+            });
+          }
+        }
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            if (!iniciou) {
+              iniciou = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) => carregar(setModalState));
+            }
+
+            final totalPorFilial = <String, int>{};
+            int totalPalpites = 0;
+
+            for (final item in palpitesInfo) {
+              final codfil = '${item['codfil'] ?? 'Sem filial'}';
+              totalPorFilial.update(codfil, (qtd) => qtd + 1, ifAbsent: () => 1);
+              totalPalpites += (item['qtd_palpites_bolao'] as num).toInt();
+            }
+
+            final filiais = totalPorFilial.keys.toList()
+              ..sort((a, b) {
+                if (a == 'Sem filial') return 1;
+                if (b == 'Sem filial') return -1;
+
+                return int.parse(a).compareTo(int.parse(b));
+              });
+
+            final pesquisa = pesquisaCtrl.text.trim().toLowerCase();
+
+            final listaFiltrada = palpitesInfo.where((item) {
+              final codfil = '${item['codfil'] ?? 'Sem filial'}';
+
+              final textoBusca = '${item['codcli']} ${item['nomcli']} ${item['cgccpf']} $codfil'.toLowerCase();
+
+              return textoBusca.contains(pesquisa) && ['Todas', codfil].contains(filialSelecionada);
+            }).toList();
+
+            return Dialog(
+              insetPadding: EdgeInsets.zero,
+              backgroundColor: Colors.transparent,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.zero,
+                  child: Material(
+                    color: const Color(0xFFF7F7F7),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.fromLTRB(22, 22, 18, 22),
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xFFCC0000),
+                                Color(0xFF960000),
+                                Color(0xFF650000),
+                              ],
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.16),
+                                  borderRadius: BorderRadius.circular(17),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.22),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.leaderboard_rounded,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
+
+                              const SizedBox(width: 14),
+
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Resumo dos participantes',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 21,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    SizedBox(height: 3),
+                                    Text(
+                                      'Consulte palpites, títulos e distribuição por filial',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              IconButton(
+                                onPressed: () {
+                                  pesquisaCtrl.dispose();
+                                  Navigator.of(dialogContext).pop();
+                                },
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.white.withValues(alpha: 0.14),
+                                  foregroundColor: Colors.white,
+                                ),
+                                icon: const Icon(Icons.close_rounded),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Flexible(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.all(18),
+                            child: carregando
+                                ? SizedBox(
+                                    width: double.infinity,
+                                    height: MediaQuery.of(context).size.height * 0.65,
+                                    child: Center(
+                                      child: Container(
+                                        width: 320,
+                                        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 30),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(26),
+                                          border: Border.all(
+                                            color: Colors.black.withValues(alpha: 0.06),
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withValues(alpha: 0.10),
+                                              blurRadius: 24,
+                                              offset: const Offset(0, 10),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              width: 62,
+                                              height: 62,
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                borderRadius: BorderRadius.circular(22),
+                                              ),
+                                              child: const Center(
+                                                child: SizedBox(
+                                                  width: 34,
+                                                  height: 34,
+                                                  child: CircularProgressIndicator(
+                                                    color: Color(0xFFCC0000),
+                                                    strokeWidth: 3.2,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+
+                                            const SizedBox(height: 18),
+
+                                            const Text(
+                                              'Carregando participantes',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Color(0xFF1F1F1F),
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            ),
+
+                                            const SizedBox(height: 6),
+
+                                            Text(
+                                              'Aguarde enquanto buscamos os dados do bolão.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Colors.grey.shade600,
+                                                fontSize: 13,
+                                                height: 1.3,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : erro != null
+                                ? Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.shade50,
+                                      borderRadius: BorderRadius.circular(18),
+                                      border: Border.all(
+                                        color: Colors.red.shade100,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.error_outline_rounded,
+                                          color: Colors.red.shade700,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            erro!,
+                                            style: TextStyle(
+                                              color: Colors.red.shade700,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final isSmall = constraints.maxWidth < 920;
+
+                                      final painelResumo = Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.all(16),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(22),
+                                              border: Border.all(
+                                                color: Colors.black.withValues(alpha: 0.06),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.06),
+                                                  blurRadius: 16,
+                                                  offset: const Offset(0, 7),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                const Text(
+                                                  'Totalizadores',
+                                                  style: TextStyle(
+                                                    color: Color(0xFF1F1F1F),
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w900,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  'Resumo geral dos clientes listados',
+                                                  style: TextStyle(
+                                                    color: Colors.grey.shade600,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+
+                                                const SizedBox(height: 16),
+
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Container(
+                                                        padding: const EdgeInsets.all(13),
+                                                        decoration: BoxDecoration(
+                                                          color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                          borderRadius: BorderRadius.circular(17),
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            Text(
+                                                              rdz(palpitesInfo.length.toString()),
+                                                              style: const TextStyle(
+                                                                color: Color(0xFFCC0000),
+                                                                fontSize: 23,
+                                                                fontWeight: FontWeight.w900,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              'clientes',
+                                                              style: TextStyle(
+                                                                color: Colors.grey.shade700,
+                                                                fontSize: 11,
+                                                                fontWeight: FontWeight.w800,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+
+                                                const SizedBox(height: 10),
+
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Container(
+                                                        padding: const EdgeInsets.all(13),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.grey.shade100,
+                                                          borderRadius: BorderRadius.circular(17),
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            Text(
+                                                              rdz(totalPalpites.toString()),
+                                                              style: const TextStyle(
+                                                                color: Color(0xFF1F1F1F),
+                                                                fontSize: 23,
+                                                                fontWeight: FontWeight.w900,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              'palpites',
+                                                              style: TextStyle(
+                                                                color: Colors.grey.shade700,
+                                                                fontSize: 11,
+                                                                fontWeight: FontWeight.w800,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          const SizedBox(height: 14),
+
+                                          Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.all(16),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(22),
+                                              border: Border.all(
+                                                color: Colors.black.withValues(alpha: 0.06),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.06),
+                                                  blurRadius: 16,
+                                                  offset: const Offset(0, 7),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                const Text(
+                                                  'Clientes por filial',
+                                                  style: TextStyle(
+                                                    color: Color(0xFF1F1F1F),
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w900,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  'Quantidade de registros por código de filial',
+                                                  style: TextStyle(
+                                                    color: Colors.grey.shade600,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+
+                                                const SizedBox(height: 14),
+
+                                                if (filiais.isEmpty)
+                                                  Text(
+                                                    'Nenhuma filial encontrada.',
+                                                    style: TextStyle(
+                                                      color: Colors.grey.shade600,
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w700,
+                                                    ),
+                                                  )
+                                                else
+                                                  ...filiais.map((filial) {
+                                                    final qtd = totalPorFilial[filial] ?? 0;
+
+                                                    return Container(
+                                                      margin: const EdgeInsets.only(bottom: 8),
+                                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                                      decoration: BoxDecoration(
+                                                        color: filialSelecionada == filial ? const Color(0xFFCC0000).withValues(alpha: 0.08) : Colors.grey.shade100,
+                                                        borderRadius: BorderRadius.circular(15),
+                                                        border: Border.all(
+                                                          color: filialSelecionada == filial ? const Color(0xFFCC0000).withValues(alpha: 0.20) : Colors.transparent,
+                                                        ),
+                                                      ),
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Text(
+                                                              filial == 'Sem filial' ? 'Sem filial' : 'Filial $filial',
+                                                              style: TextStyle(
+                                                                color: filialSelecionada == filial ? const Color(0xFFCC0000) : const Color(0xFF1F1F1F),
+                                                                fontSize: 13,
+                                                                fontWeight: FontWeight.w900,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.white,
+                                                              borderRadius: BorderRadius.circular(12),
+                                                            ),
+                                                            child: Text(
+                                                              rdz(qtd.toString()),
+                                                              style: const TextStyle(
+                                                                color: Color(0xFF1F1F1F),
+                                                                fontSize: 12,
+                                                                fontWeight: FontWeight.w900,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                  }),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      );
+
+                                      final painelLista = Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.all(16),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(22),
+                                              border: Border.all(
+                                                color: Colors.black.withValues(alpha: 0.06),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.06),
+                                                  blurRadius: 16,
+                                                  offset: const Offset(0, 7),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    const Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            'Lista de clientes',
+                                                            style: TextStyle(
+                                                              color: Color(0xFF1F1F1F),
+                                                              fontSize: 16,
+                                                              fontWeight: FontWeight.w900,
+                                                            ),
+                                                          ),
+                                                          SizedBox(height: 4),
+                                                          Text(
+                                                            'Pesquise, filtre e ordene os participantes',
+                                                            style: TextStyle(
+                                                              color: Colors.grey,
+                                                              fontSize: 12,
+                                                              fontWeight: FontWeight.w700,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                        borderRadius: BorderRadius.circular(14),
+                                                      ),
+                                                      child: Text(
+                                                        '${rdz(listaFiltrada.length.toString())} exibidos',
+                                                        style: const TextStyle(
+                                                          color: Color(0xFFCC0000),
+                                                          fontSize: 12,
+                                                          fontWeight: FontWeight.w900,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+
+                                                const SizedBox(height: 14),
+
+                                                SizedBox(
+                                                  width: double.infinity,
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        flex: 3,
+                                                        child: TextField(
+                                                          controller: pesquisaCtrl,
+                                                          onChanged: (_) => setModalState(() {}),
+                                                          decoration: InputDecoration(
+                                                            hintText: 'Pesquisar por nome, código, CPF ou filial',
+                                                            hintStyle: TextStyle(
+                                                              color: Colors.grey.shade500,
+                                                              fontSize: 13,
+                                                              fontWeight: FontWeight.w600,
+                                                            ),
+                                                            prefixIcon: const Icon(
+                                                              Icons.search_rounded,
+                                                              color: Color(0xFFCC0000),
+                                                            ),
+                                                            suffixIcon: pesquisaCtrl.text.isEmpty
+                                                                ? null
+                                                                : IconButton(
+                                                                    onPressed: () {
+                                                                      pesquisaCtrl.clear();
+                                                                      setModalState(() {});
+                                                                    },
+                                                                    icon: const Icon(Icons.close_rounded),
+                                                                  ),
+                                                            filled: true,
+                                                            fillColor: const Color(0xFFF7F7F7),
+                                                            border: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(17),
+                                                              borderSide: BorderSide.none,
+                                                            ),
+                                                            enabledBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(17),
+                                                              borderSide: BorderSide(
+                                                                color: Colors.black.withValues(alpha: 0.06),
+                                                              ),
+                                                            ),
+                                                            focusedBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(17),
+                                                              borderSide: const BorderSide(
+                                                                color: Color(0xFFCC0000),
+                                                                width: 1.4,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Expanded(
+                                                        flex: 2,
+                                                        child: DropdownButtonFormField<String>(
+                                                          value: filialSelecionada,
+                                                          isExpanded: true,
+                                                          menuMaxHeight: 320,
+                                                          dropdownColor: Colors.white,
+                                                          borderRadius: BorderRadius.circular(18),
+                                                          icon: const Icon(
+                                                            Icons.keyboard_arrow_down_rounded,
+                                                            color: Color(0xFFCC0000),
+                                                          ),
+                                                          style: const TextStyle(
+                                                            color: Color(0xFF1F1F1F),
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.w800,
+                                                          ),
+                                                          decoration: InputDecoration(
+                                                            labelText: 'Filial',
+                                                            labelStyle: TextStyle(
+                                                              color: Colors.grey.shade700,
+                                                              fontWeight: FontWeight.w800,
+                                                            ),
+                                                            prefixIcon: Container(
+                                                              margin: const EdgeInsets.all(8),
+                                                              decoration: BoxDecoration(
+                                                                color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                                borderRadius: BorderRadius.circular(13),
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons.storefront_rounded,
+                                                                color: Color(0xFFCC0000),
+                                                                size: 21,
+                                                              ),
+                                                            ),
+                                                            filled: true,
+                                                            fillColor: Colors.white,
+                                                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                                                            border: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(18),
+                                                              borderSide: BorderSide.none,
+                                                            ),
+                                                            enabledBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(18),
+                                                              borderSide: BorderSide(
+                                                                color: Colors.black.withValues(alpha: 0.07),
+                                                              ),
+                                                            ),
+                                                            focusedBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(18),
+                                                              borderSide: const BorderSide(
+                                                                color: Color(0xFFCC0000),
+                                                                width: 1.5,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          selectedItemBuilder: (context) {
+                                                            return [
+                                                              const Text(
+                                                                'Todas as filiais',
+                                                                overflow: TextOverflow.ellipsis,
+                                                              ),
+                                                              ...filiais.map(
+                                                                (filial) => Text(
+                                                                  filial == 'Sem filial' ? 'Sem filial' : 'Filial $filial',
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                ),
+                                                              ),
+                                                            ];
+                                                          },
+                                                          items: [
+                                                            DropdownMenuItem(
+                                                              value: 'Todas',
+                                                              child: Row(
+                                                                children: [
+                                                                  const Icon(
+                                                                    Icons.all_inclusive_rounded,
+                                                                    color: Color(0xFFCC0000),
+                                                                    size: 20,
+                                                                  ),
+                                                                  const SizedBox(width: 10),
+                                                                  const Expanded(
+                                                                    child: Text(
+                                                                      'Todas as filiais',
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            ...filiais.map(
+                                                              (filial) => DropdownMenuItem(
+                                                                value: filial,
+                                                                child: Row(
+                                                                  children: [
+                                                                    Container(
+                                                                      width: 30,
+                                                                      height: 30,
+                                                                      alignment: Alignment.center,
+                                                                      decoration: BoxDecoration(
+                                                                        color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                                        borderRadius: BorderRadius.circular(10),
+                                                                      ),
+                                                                      child: Icon(
+                                                                        filial == 'Sem filial' ? Icons.help_outline_rounded : Icons.store_rounded,
+                                                                        color: const Color(0xFFCC0000),
+                                                                        size: 18,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(width: 10),
+                                                                    Expanded(
+                                                                      child: Text(
+                                                                        filial == 'Sem filial' ? 'Sem filial' : 'Filial $filial',
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: const TextStyle(
+                                                                          color: Color(0xFF1F1F1F),
+                                                                          fontSize: 14,
+                                                                          fontWeight: FontWeight.w800,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                          onChanged: (value) {
+                                                            setModalState(() {
+                                                              filialSelecionada = value ?? 'Todas';
+                                                            });
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          const SizedBox(height: 12),
+
+                                          if (listaFiltrada.isEmpty)
+                                            Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.all(18),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(20),
+                                                border: Border.all(
+                                                  color: Colors.black.withValues(alpha: 0.06),
+                                                ),
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Icon(
+                                                    Icons.search_off_rounded,
+                                                    color: Colors.grey.shade500,
+                                                    size: 34,
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  const Text(
+                                                    'Nenhum cliente encontrado',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF1F1F1F),
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w900,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 3),
+                                                  Text(
+                                                    'Ajuste a pesquisa ou altere o filtro de filial.',
+                                                    style: TextStyle(
+                                                      color: Colors.grey.shade600,
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          else
+                                            ListView.separated(
+                                              shrinkWrap: true,
+                                              physics: const NeverScrollableScrollPhysics(),
+                                              itemCount: listaFiltrada.length,
+                                              separatorBuilder: (_, __) => const SizedBox(height: 8),
+                                              itemBuilder: (context, index) {
+                                                final item = listaFiltrada[index];
+
+                                                return Container(
+                                                  padding: const EdgeInsets.all(16),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    border: Border.all(
+                                                      color: Colors.black.withValues(alpha: 0.06),
+                                                    ),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.black.withValues(alpha: 0.06),
+                                                        blurRadius: 14,
+                                                        offset: const Offset(0, 6),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: InkWell(
+                                                    onTap: () async {
+                                                      final result = await ApiService.getCliDetailsPalpites(item['cgccpf']);
+                                                      final palpitesDoCliente = result;
+
+                                                      showDialog(
+                                                        context: context,
+                                                        barrierDismissible: true,
+                                                        builder: (dialogContext) {
+                                                          return Dialog(
+                                                            backgroundColor: Colors.transparent,
+                                                            insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+                                                            child: Container(
+                                                              width: 720,
+                                                              constraints: BoxConstraints(
+                                                                maxHeight: MediaQuery.of(context).size.height * 0.86,
+                                                              ),
+                                                              decoration: BoxDecoration(
+                                                                color: const Color(0xFFF7F7F7),
+                                                                borderRadius: BorderRadius.circular(28),
+                                                                boxShadow: [
+                                                                  BoxShadow(
+                                                                    color: Colors.black.withValues(alpha: 0.22),
+                                                                    blurRadius: 30,
+                                                                    offset: const Offset(0, 14),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              child: ClipRRect(
+                                                                borderRadius: BorderRadius.circular(28),
+                                                                child: Column(
+                                                                  mainAxisSize: MainAxisSize.min,
+                                                                  children: [
+                                                                    Container(
+                                                                      width: double.infinity,
+                                                                      padding: const EdgeInsets.fromLTRB(22, 22, 16, 22),
+                                                                      decoration: const BoxDecoration(
+                                                                        gradient: LinearGradient(
+                                                                          begin: Alignment.topLeft,
+                                                                          end: Alignment.bottomRight,
+                                                                          colors: [
+                                                                            Color(0xFFCC0000),
+                                                                            Color(0xFF970000),
+                                                                            Color(0xFF620000),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                      child: Row(
+                                                                        children: [
+                                                                          Container(
+                                                                            width: 50,
+                                                                            height: 50,
+                                                                            decoration: BoxDecoration(
+                                                                              color: Colors.white.withValues(alpha: 0.16),
+                                                                              borderRadius: BorderRadius.circular(17),
+                                                                              border: Border.all(
+                                                                                color: Colors.white.withValues(alpha: 0.22),
+                                                                              ),
+                                                                            ),
+                                                                            child: const Icon(
+                                                                              Icons.sports_soccer_rounded,
+                                                                              color: Colors.white,
+                                                                              size: 28,
+                                                                            ),
+                                                                          ),
+
+                                                                          const SizedBox(width: 14),
+
+                                                                          Expanded(
+                                                                            child: Column(
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                Text(
+                                                                                  '${item['codcli']} - ${item['nomcli']}',
+                                                                                  maxLines: 1,
+                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                  style: const TextStyle(
+                                                                                    color: Colors.white,
+                                                                                    fontSize: 19,
+                                                                                    fontWeight: FontWeight.w900,
+                                                                                  ),
+                                                                                ),
+                                                                                const SizedBox(height: 3),
+                                                                                Text(
+                                                                                  '${formatCpfCnpj(item['cgccpf'].toString())} • ${palpitesDoCliente.length} palpites',
+                                                                                  style: const TextStyle(
+                                                                                    color: Colors.white70,
+                                                                                    fontSize: 13,
+                                                                                    fontWeight: FontWeight.w700,
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+
+                                                                          IconButton(
+                                                                            onPressed: () => Navigator.of(dialogContext).pop(),
+                                                                            style: IconButton.styleFrom(
+                                                                              backgroundColor: Colors.white.withValues(alpha: 0.14),
+                                                                              foregroundColor: Colors.white,
+                                                                            ),
+                                                                            icon: const Icon(Icons.close_rounded),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+
+                                                                    Flexible(
+                                                                      child: ListView.separated(
+                                                                        padding: const EdgeInsets.all(18),
+                                                                        itemCount: palpitesDoCliente.length,
+                                                                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                                                                        itemBuilder: (context, index) {
+                                                                          final palpite = palpitesDoCliente[index];
+
+                                                                          return Container(
+                                                                            padding: const EdgeInsets.all(16),
+                                                                            decoration: BoxDecoration(
+                                                                              color: Colors.white,
+                                                                              borderRadius: BorderRadius.circular(22),
+                                                                              border: Border.all(
+                                                                                color: Colors.black.withValues(alpha: 0.06),
+                                                                              ),
+                                                                              boxShadow: [
+                                                                                BoxShadow(
+                                                                                  color: Colors.black.withValues(alpha: 0.07),
+                                                                                  blurRadius: 16,
+                                                                                  offset: const Offset(0, 7),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                            child: Column(
+                                                                              children: [
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                                                                      decoration: BoxDecoration(
+                                                                                        color: Colors.grey.shade100,
+                                                                                        borderRadius: BorderRadius.circular(12),
+                                                                                      ),
+                                                                                      child: Text(
+                                                                                        'Jogo ${palpite['idjogo']}',
+                                                                                        style: TextStyle(
+                                                                                          color: Colors.grey.shade700,
+                                                                                          fontSize: 11.5,
+                                                                                          fontWeight: FontWeight.w900,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+
+                                                                                const SizedBox(height: 14),
+
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Expanded(
+                                                                                      child: Column(
+                                                                                        children: [
+                                                                                          Container(
+                                                                                            padding: const EdgeInsets.all(4),
+                                                                                            decoration: BoxDecoration(
+                                                                                              borderRadius: BorderRadius.circular(12),
+                                                                                              color: Colors.grey.shade50,
+                                                                                              shape: BoxShape.rectangle,
+                                                                                              border: Border.all(color: Colors.grey.shade200),
+                                                                                            ),
+                                                                                            child: getBandeira(palpite['siglaa']),
+                                                                                          ),
+                                                                                          const SizedBox(height: 8),
+                                                                                          Text(
+                                                                                            palpite['timeaa'],
+                                                                                            maxLines: 2,
+                                                                                            overflow: TextOverflow.ellipsis,
+                                                                                            textAlign: TextAlign.center,
+                                                                                            style: const TextStyle(
+                                                                                              color: Color(0xFF1F1F1F),
+                                                                                              fontSize: 12,
+                                                                                              height: 1.15,
+                                                                                              fontWeight: FontWeight.w900,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ),
+
+                                                                                    const SizedBox(width: 12),
+
+                                                                                    Column(
+                                                                                      children: [
+                                                                                        Text(
+                                                                                          'Palpite',
+                                                                                          style: TextStyle(
+                                                                                            color: Colors.grey.shade600,
+                                                                                            fontSize: 11,
+                                                                                            fontWeight: FontWeight.w800,
+                                                                                          ),
+                                                                                        ),
+                                                                                        const SizedBox(height: 5),
+                                                                                        Container(
+                                                                                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+                                                                                          decoration: BoxDecoration(
+                                                                                            color: const Color(0xFFCC0000).withValues(alpha: 0.09),
+                                                                                            borderRadius: BorderRadius.circular(18),
+                                                                                            border: Border.all(
+                                                                                              color: const Color(0xFFCC0000).withValues(alpha: 0.12),
+                                                                                            ),
+                                                                                          ),
+                                                                                          child: Text(
+                                                                                            '${palpite['palpaa']} x ${palpite['palpbb']}',
+                                                                                            style: const TextStyle(
+                                                                                              color: Color(0xFFCC0000),
+                                                                                              fontSize: 25,
+                                                                                              fontWeight: FontWeight.w900,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ),
+                                                                                        const SizedBox(height: 8),
+                                                                                        Text(
+                                                                                          'Resultado: ${palpite['plcraa'] ?? '-'} x ${palpite['plcrbb'] ?? '-'}',
+                                                                                          style: TextStyle(
+                                                                                            color: Colors.grey.shade700,
+                                                                                            fontSize: 12,
+                                                                                            fontWeight: FontWeight.w800,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+
+                                                                                    const SizedBox(width: 12),
+
+                                                                                    Expanded(
+                                                                                      child: Column(
+                                                                                        children: [
+                                                                                          Container(
+                                                                                            padding: const EdgeInsets.all(4),
+                                                                                            decoration: BoxDecoration(
+                                                                                              borderRadius: BorderRadius.circular(12),
+                                                                                              color: Colors.grey.shade50,
+                                                                                              shape: BoxShape.rectangle,
+                                                                                              border: Border.all(color: Colors.grey.shade200),
+                                                                                            ),
+                                                                                            child: getBandeira(palpite['siglbb']),
+                                                                                          ),
+                                                                                          const SizedBox(height: 8),
+                                                                                          Text(
+                                                                                            palpite['timebb'],
+                                                                                            maxLines: 2,
+                                                                                            overflow: TextOverflow.ellipsis,
+                                                                                            textAlign: TextAlign.center,
+                                                                                            style: const TextStyle(
+                                                                                              color: Color(0xFF1F1F1F),
+                                                                                              fontSize: 12,
+                                                                                              height: 1.15,
+                                                                                              fontWeight: FontWeight.w900,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          );
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    child: Row(
+                                                      children: [
+                                                        Container(
+                                                          width: 46,
+                                                          height: 46,
+                                                          decoration: BoxDecoration(
+                                                            color: const Color(0xFFCC0000).withValues(alpha: 0.09),
+                                                            borderRadius: BorderRadius.circular(16),
+                                                          ),
+                                                          child: const Icon(
+                                                            Icons.person_rounded,
+                                                            color: Color(0xFFCC0000),
+                                                            size: 26,
+                                                          ),
+                                                        ),
+
+                                                        const SizedBox(width: 14),
+
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  Container(
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors.grey.shade100,
+                                                                      borderRadius: BorderRadius.circular(10),
+                                                                    ),
+                                                                    child: Text(
+                                                                      item['codfil'] == 'Sem filial' ? 'Sem filial' : 'Filial ${item['codfil']}',
+                                                                      style: TextStyle(
+                                                                        color: Colors.grey.shade700,
+                                                                        fontSize: 11,
+                                                                        fontWeight: FontWeight.w900,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+
+                                                              const SizedBox(height: 6),
+
+                                                              Text(
+                                                                '${item['codcli']} - ${item['nomcli']}',
+                                                                maxLines: 1,
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: const TextStyle(
+                                                                  color: Color(0xFF1F1F1F),
+                                                                  fontSize: 15,
+                                                                  fontWeight: FontWeight.w900,
+                                                                ),
+                                                              ),
+
+                                                              const SizedBox(height: 5),
+
+                                                              Text(
+                                                                'CPF: ${formatCpfCnpj('${item['cgccpf']}')}',
+                                                                maxLines: 1,
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: TextStyle(
+                                                                  color: Colors.grey.shade600,
+                                                                  fontSize: 12,
+                                                                  fontWeight: FontWeight.w700,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+
+                                                        const SizedBox(width: 12),
+
+                                                        Row(
+                                                          children: [
+                                                            Container(
+                                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                                                              decoration: BoxDecoration(
+                                                                color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                                borderRadius: BorderRadius.circular(14),
+                                                              ),
+                                                              child: Column(
+                                                                children: [
+                                                                  Text(
+                                                                    rdz(item['qtd_palpites_bolao'].toString()),
+                                                                    style: const TextStyle(
+                                                                      color: Color(0xFFCC0000),
+                                                                      fontSize: 18,
+                                                                      fontWeight: FontWeight.w900,
+                                                                    ),
+                                                                  ),
+                                                                  Text(
+                                                                    'palpites',
+                                                                    style: TextStyle(
+                                                                      color: Colors.grey.shade600,
+                                                                      fontSize: 10.5,
+                                                                      fontWeight: FontWeight.w800,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                        ],
+                                      );
+
+                                      if (isSmall) {
+                                        return Column(
+                                          children: [
+                                            painelResumo,
+                                            const SizedBox(height: 16),
+                                            painelLista,
+                                          ],
+                                        );
+                                      }
+
+                                      return Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            width: 310,
+                                            child: painelResumo,
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            child: painelLista,
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1917,7 +3152,19 @@ class _AdminScreenState extends State<AdminScreen> {
                   ],
                 ),
               ),
+              SizedBox(height: 12),
 
+              ListTile(
+                leading: const Icon(Icons.person_search, color: Color(0xFFCC0000)),
+                title: const Text(
+                  'Detalhes Palpites',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
+                onTap: () {
+                  _visualizarDetailsPalpites();
+                },
+              ),
+              SizedBox(height: 2),
               ListTile(
                 leading: const Icon(Icons.analytics_outlined, color: Color(0xFFCC0000)),
                 title: const Text(
@@ -1984,333 +3231,254 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ],
             ),
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 46,
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.14),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.24),
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.admin_panel_settings_rounded,
-                        color: Colors.white,
-                        size: 26,
-                      ),
+            child: Stack(
+              children: [
+                Positioned(
+                  right: 220,
+                  top: -55,
+                  child: Container(
+                    width: 170,
+                    height: 170,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(alpha: 0.07),
                     ),
-
-                    const SizedBox(width: 12),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.16),
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.22),
-                              ),
-                            ),
-                            child: const Text(
-                              "ADMIN",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 11,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 6),
-
-                          Text(
-                            'Olá, ${widget.user['nome'] ?? 'Admin'}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-
-                          const SizedBox(height: 2),
-
-                          Text(
-                            'Painel administrativo',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.68),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    Builder(
-                      builder: (context) {
-                        final isMobile = MediaQuery.sizeOf(context).width < 700;
-
-                        if (isMobile) {
-                          return Material(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(14),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(14),
-                              onTap: () {
-                                Scaffold.of(context).openEndDrawer();
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(14),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.10),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.menu_rounded,
-                                  size: 22,
-                                  color: Color(0xFFCC0000),
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Material(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(14),
-                                onTap: () {
-                                  _visualizarMetricas();
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.10),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 5),
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.analytics_outlined,
-                                        size: 18,
-                                        color: Color(0xFFCC0000),
-                                      ),
-                                      SizedBox(width: 6),
-                                      Text(
-                                        'Métricas',
-                                        style: TextStyle(
-                                          color: Color(0xFFCC0000),
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(width: 8),
-
-                            Material(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(14),
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                  widget.onLogout();
-                                  UserSession.clear();
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.10),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 5),
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.logout_rounded,
-                                        size: 18,
-                                        color: Color(0xFFCC0000),
-                                      ),
-                                      SizedBox(width: 6),
-                                      Text(
-                                        'Sair',
-                                        style: TextStyle(
-                                          color: Color(0xFFCC0000),
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: Colors.black.withValues(alpha: 0.05),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
+                Positioned(
+                  right: -45,
+                  bottom: -70,
+                  child: Container(
+                    width: 210,
+                    height: 210,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black.withValues(alpha: 0.08),
+                    ),
+                  ),
+                ),
+
+                SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 18, 22, 20),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 58,
+                          height: 58,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(21),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.24),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.16),
+                                blurRadius: 18,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.admin_panel_settings_rounded,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ),
+
+                        const SizedBox(width: 15),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.18),
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.24),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'ADMINISTRADOR',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 10.5,
+                                    letterSpacing: 1.1,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 7),
+
+                              Text(
+                                'Olá, ${widget.user['nome'] ?? 'Admin'}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.2,
+                                ),
+                              ),
+
+                              const SizedBox(height: 3),
+
+                              Text(
+                                'Painel administrativo do bolão',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.76),
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(width: 14),
+
+                        Builder(
+                          builder: (context) {
+                            final isMobile = MediaQuery.sizeOf(context).width < 700;
+
+                            Widget botaoTopo({
+                              required IconData icon,
+                              required String texto,
+                              required VoidCallback onTap,
+                              bool perigo = false,
+                            }) {
+                              return Material(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                elevation: 0,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(18),
+                                  onTap: onTap,
+                                  child: Container(
+                                    height: 46,
+                                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(18),
+                                      border: Border.all(
+                                        color: Colors.white.withValues(alpha: 0.55),
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.13),
+                                          blurRadius: 18,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 28,
+                                          height: 28,
+                                          decoration: BoxDecoration(
+                                            color: (perigo ? Colors.red : const Color(0xFFCC0000)).withValues(alpha: 0.08),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: Icon(
+                                            icon,
+                                            size: 17,
+                                            color: perigo ? Colors.red.shade700 : const Color(0xFFCC0000),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 9),
+                                        Text(
+                                          texto,
+                                          style: TextStyle(
+                                            color: perigo ? Colors.red.shade700 : const Color(0xFFCC0000),
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            if (isMobile) {
+                              return Material(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(18),
+                                  onTap: () => Scaffold.of(context).openEndDrawer(),
+                                  child: Container(
+                                    width: 46,
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(18),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.13),
+                                          blurRadius: 18,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.menu_rounded,
+                                      size: 24,
+                                      color: Color(0xFFCC0000),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              alignment: WrapAlignment.end,
+                              children: [
+                                botaoTopo(
+                                  icon: Icons.person_search_rounded,
+                                  texto: 'Detalhes dos palpites',
+                                  onTap: () {
+                                    _visualizarDetailsPalpites();
+                                  },
+                                ),
+                                botaoTopo(
+                                  icon: Icons.analytics_outlined,
+                                  texto: 'Métricas',
+                                  onTap: () {
+                                    _visualizarMetricas();
+                                  },
+                                ),
+                                botaoTopo(
+                                  icon: Icons.logout_rounded,
+                                  texto: 'Sair',
+                                  perigo: true,
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    widget.onLogout();
+                                    UserSession.clear();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
-            ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Row(
-                  children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFFCC0000),
-                            Color(0xFF8B0000),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(17),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFCC0000).withValues(alpha: 0.25),
-                            blurRadius: 14,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.analytics_outlined,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-
-                    const SizedBox(width: 14),
-
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Visualizar Métricas',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFF1F1F1F),
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Visualize as métricas dentro do site',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF777777),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(width: 16),
-
-                    SizedBox(
-                      height: 48,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          _visualizarMetricas();
-                        },
-                        icon: const Icon(Icons.add_rounded, size: 20),
-                        label: const Text(
-                          'Visualizar Métricas',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.2,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFCC0000),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          padding: const EdgeInsets.symmetric(horizontal: 18),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
             ),
           ),
 

@@ -380,4 +380,58 @@ class ApiService {
       return [];
     }
   }
+
+  // ============================================
+  // GET MÉTRICA DO BOLÃO
+  // ============================================
+  static Future<List<Map<String, dynamic>>> getCliDetails() async {
+    try {
+      final resp = await serverPost(
+        "get_cli_details",
+        myJson: {},
+      );
+      if (resp == true || resp == null) {
+        return [];
+      }
+
+      final data = jsonDecode(resp);
+      if (data['Response'] != null) {
+        final List responseList = jsonDecode(data['Response']);
+        return responseList.map<Map<String, dynamic>>((item) {
+          return item;
+        }).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Erro ao buscar métricas do bolão: $e');
+      return [];
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getCliDetailsPalpites(String cpfCliente) async {
+    try {
+      final resp = await serverPost(
+        "get_cli_details_palpites",
+        myJson: {
+          "cpf_cli": cpfCliente,
+        },
+      );
+
+      if (resp == true || resp == null) {
+        return [];
+      }
+
+      final data = jsonDecode(resp);
+      if (data['Response'] != null) {
+        final List responseList = jsonDecode(data['Response']);
+        return responseList.map<Map<String, dynamic>>((item) {
+          return item;
+        }).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Erro ao buscar métricas do bolão: $e');
+      return [];
+    }
+  }
 }
