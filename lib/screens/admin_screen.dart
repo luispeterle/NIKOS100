@@ -1868,6 +1868,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
         final pesquisaCtrl = TextEditingController();
         String filialSelecionada = 'Todas';
+        String compraSelecionada = 'Todas';
 
         Future<void> carregar(StateSetter setModalState) async {
           try {
@@ -1894,11 +1895,10 @@ class _AdminScreenState extends State<AdminScreen> {
 
             final totalPorFilial = <String, int>{};
             int totalPalpites = 0;
-
             for (final item in palpitesInfo) {
               final codfil = '${item['codfil'] ?? 'Sem filial'}';
               totalPorFilial.update(codfil, (qtd) => qtd + 1, ifAbsent: () => 1);
-              totalPalpites += (item['qtd_palpites_bolao'] as num).toInt();
+              totalPalpites += toInt(item['qtd_palpites_bolao']);
             }
 
             final filiais = totalPorFilial.keys.toList()
@@ -1913,10 +1913,16 @@ class _AdminScreenState extends State<AdminScreen> {
 
             final listaFiltrada = palpitesInfo.where((item) {
               final codfil = '${item['codfil'] ?? 'Sem filial'}';
+              final compraFeita = (item['compra_feita'] ?? item['compras_feitas'] ?? '').toString().toUpperCase();
+              final matchCompra = switch (compraSelecionada) {
+                'Com compra' => compraFeita == 'S',
+                'Sem compra' => compraFeita == 'N',
+                _ => true,
+              };
 
               final textoBusca = '${item['codcli']} ${item['nomcli']} ${item['cgccpf']} $codfil'.toLowerCase();
 
-              return textoBusca.contains(pesquisa) && ['Todas', codfil].contains(filialSelecionada);
+              return textoBusca.contains(pesquisa) && ['Todas', codfil].contains(filialSelecionada) && matchCompra;
             }).toList();
 
             return Dialog(
@@ -2191,13 +2197,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
-
-                                                const SizedBox(height: 10),
-
-                                                Row(
-                                                  children: [
+                                                    SizedBox(width: 8),
                                                     Expanded(
                                                       child: Container(
                                                         padding: const EdgeInsets.all(13),
@@ -2226,6 +2226,383 @@ class _AdminScreenState extends State<AdminScreen> {
                                                             ),
                                                           ],
                                                         ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+
+                                                const SizedBox(height: 10),
+
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Builder(
+                                                        builder: (context) {
+                                                          final semCompra = palpitesInfo.where((item) => (item['compra_feita'] ?? '').toString().toUpperCase() == 'N').toList();
+
+                                                          final clientesPorFilial = semCompra.fold<Map<String, List<dynamic>>>({}, (map, item) {
+                                                            final filial = (item['codfil'] ?? 'Sem filial').toString();
+
+                                                            map.putIfAbsent(filial, () => []);
+                                                            map[filial]!.add(item);
+
+                                                            return map;
+                                                          });
+
+                                                          final filiais = clientesPorFilial.entries.toList()
+                                                            ..sort((a, b) {
+                                                              final fa = int.tryParse(a.key);
+                                                              final fb = int.tryParse(b.key);
+
+                                                              if (fa == null && fb == null) return a.key.compareTo(b.key);
+                                                              if (fa == null) return 1;
+                                                              if (fb == null) return -1;
+
+                                                              return fa.compareTo(fb);
+                                                            });
+
+                                                          return Material(
+                                                            color: Colors.transparent,
+                                                            child: InkWell(
+                                                              borderRadius: BorderRadius.circular(22),
+                                                              onTap: () {
+                                                                showModalBottomSheet(
+                                                                  context: context,
+                                                                  isScrollControlled: true,
+                                                                  useSafeArea: true,
+                                                                  backgroundColor: Colors.transparent,
+                                                                  builder: (context) {
+                                                                    return DraggableScrollableSheet(
+                                                                      initialChildSize: 0.58,
+                                                                      minChildSize: 0.35,
+                                                                      maxChildSize: 0.88,
+                                                                      expand: false,
+                                                                      builder: (context, scrollController) {
+                                                                        return Container(
+                                                                          decoration: const BoxDecoration(
+                                                                            color: Colors.white,
+                                                                            borderRadius: BorderRadius.vertical(
+                                                                              top: Radius.circular(28),
+                                                                            ),
+                                                                          ),
+                                                                          child: Column(
+                                                                            children: [
+                                                                              const SizedBox(height: 10),
+                                                                              Container(
+                                                                                width: 46,
+                                                                                height: 5,
+                                                                                decoration: BoxDecoration(
+                                                                                  color: Colors.blueGrey.shade100,
+                                                                                  borderRadius: BorderRadius.circular(99),
+                                                                                ),
+                                                                              ),
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
+                                                                                child: Row(
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      padding: const EdgeInsets.all(12),
+                                                                                      decoration: BoxDecoration(
+                                                                                        color: Colors.blue.shade50,
+                                                                                        borderRadius: BorderRadius.circular(16),
+                                                                                      ),
+                                                                                      child: Icon(
+                                                                                        Icons.people_alt_rounded,
+                                                                                        color: Colors.blue.shade700,
+                                                                                        size: 26,
+                                                                                      ),
+                                                                                    ),
+                                                                                    const SizedBox(width: 12),
+                                                                                    Expanded(
+                                                                                      child: Column(
+                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                        children: [
+                                                                                          Text(
+                                                                                            'Clientes sem compra',
+                                                                                            style: TextStyle(
+                                                                                              color: Colors.blueGrey.shade900,
+                                                                                              fontSize: 18,
+                                                                                              fontWeight: FontWeight.w900,
+                                                                                            ),
+                                                                                          ),
+                                                                                          Text(
+                                                                                            'Detalhamento por filial na campanha',
+                                                                                            style: TextStyle(
+                                                                                              color: Colors.blueGrey.shade500,
+                                                                                              fontSize: 12,
+                                                                                              fontWeight: FontWeight.w700,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ),
+                                                                                    Container(
+                                                                                      padding: const EdgeInsets.symmetric(
+                                                                                        horizontal: 14,
+                                                                                        vertical: 9,
+                                                                                      ),
+                                                                                      decoration: BoxDecoration(
+                                                                                        color: Colors.blue.shade700,
+                                                                                        borderRadius: BorderRadius.circular(99),
+                                                                                      ),
+                                                                                      child: Text(
+                                                                                        rdz(semCompra.length.toString()),
+                                                                                        style: const TextStyle(
+                                                                                          color: Colors.white,
+                                                                                          fontSize: 16,
+                                                                                          fontWeight: FontWeight.w900,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                                                child: Container(
+                                                                                  padding: const EdgeInsets.all(14),
+                                                                                  decoration: BoxDecoration(
+                                                                                    color: Colors.blue.shade50,
+                                                                                    borderRadius: BorderRadius.circular(18),
+                                                                                    border: Border.all(
+                                                                                      color: Colors.blue.shade100,
+                                                                                    ),
+                                                                                  ),
+                                                                                  child: Row(
+                                                                                    children: [
+                                                                                      Expanded(
+                                                                                        child: Text(
+                                                                                          'Total sem compra',
+                                                                                          style: TextStyle(
+                                                                                            color: Colors.blueGrey.shade700,
+                                                                                            fontSize: 13,
+                                                                                            fontWeight: FontWeight.w800,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                      Text(
+                                                                                        '${rdz(semCompra.length.toString())} clientes',
+                                                                                        style: TextStyle(
+                                                                                          color: Colors.blue.shade800,
+                                                                                          fontSize: 14,
+                                                                                          fontWeight: FontWeight.w900,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              const SizedBox(height: 10),
+                                                                              Expanded(
+                                                                                child: filiais.isEmpty
+                                                                                    ? Center(
+                                                                                        child: Text(
+                                                                                          'Nenhum cliente sem compra encontrado.',
+                                                                                          style: TextStyle(
+                                                                                            color: Colors.blueGrey.shade500,
+                                                                                            fontSize: 13,
+                                                                                            fontWeight: FontWeight.w700,
+                                                                                          ),
+                                                                                        ),
+                                                                                      )
+                                                                                    : ListView.separated(
+                                                                                        controller: scrollController,
+                                                                                        padding: const EdgeInsets.fromLTRB(20, 6, 20, 24),
+                                                                                        itemCount: filiais.length,
+                                                                                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                                                                                        itemBuilder: (context, index) {
+                                                                                          final filial = filiais[index];
+
+                                                                                          final clientes = [...filial.value]
+                                                                                            ..sort((a, b) {
+                                                                                              final nomeA = (a['nomcli'] ?? '').toString();
+                                                                                              final nomeB = (b['nomcli'] ?? '').toString();
+                                                                                              return nomeA.compareTo(nomeB);
+                                                                                            });
+
+                                                                                          final clientesTooltip = clientes
+                                                                                              .map((cliente) {
+                                                                                                final codcli = (cliente['codcli'] ?? '-').toString();
+                                                                                                final nomcli = (cliente['nomcli'] ?? 'Cliente sem nome').toString();
+
+                                                                                                return '$codcli - $nomcli';
+                                                                                              })
+                                                                                              .join('\n');
+
+                                                                                          return Tooltip(
+                                                                                            message: clientesTooltip.isEmpty ? 'Nenhum cliente encontrado' : clientesTooltip,
+                                                                                            waitDuration: const Duration(milliseconds: 300),
+                                                                                            showDuration: const Duration(seconds: 8),
+                                                                                            preferBelow: false,
+                                                                                            padding: const EdgeInsets.all(14),
+                                                                                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                                                                                            constraints: const BoxConstraints(
+                                                                                              maxWidth: 460,
+                                                                                            ),
+                                                                                            decoration: BoxDecoration(
+                                                                                              color: const Color(0xFF0F172A).withOpacity(0.96),
+                                                                                              borderRadius: BorderRadius.circular(14),
+                                                                                              boxShadow: [
+                                                                                                BoxShadow(
+                                                                                                  color: Colors.black.withOpacity(0.22),
+                                                                                                  blurRadius: 18,
+                                                                                                  offset: const Offset(0, 8),
+                                                                                                ),
+                                                                                              ],
+                                                                                            ),
+                                                                                            textStyle: const TextStyle(
+                                                                                              color: Colors.white,
+                                                                                              fontSize: 12,
+                                                                                              height: 1.35,
+                                                                                              fontWeight: FontWeight.w700,
+                                                                                            ),
+                                                                                            child: Container(
+                                                                                              padding: const EdgeInsets.all(14),
+                                                                                              decoration: BoxDecoration(
+                                                                                                color: Colors.grey.shade50,
+                                                                                                borderRadius: BorderRadius.circular(18),
+                                                                                                border: Border.all(
+                                                                                                  color: Colors.grey.shade200,
+                                                                                                ),
+                                                                                              ),
+                                                                                              child: Row(
+                                                                                                children: [
+                                                                                                  Container(
+                                                                                                    width: 42,
+                                                                                                    height: 42,
+                                                                                                    alignment: Alignment.center,
+                                                                                                    decoration: BoxDecoration(
+                                                                                                      color: Colors.blue.shade50,
+                                                                                                      borderRadius: BorderRadius.circular(14),
+                                                                                                    ),
+                                                                                                    child: Icon(
+                                                                                                      Icons.storefront_rounded,
+                                                                                                      color: Colors.blue.shade700,
+                                                                                                      size: 22,
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  const SizedBox(width: 12),
+                                                                                                  Expanded(
+                                                                                                    child: Column(
+                                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                      children: [
+                                                                                                        Text(
+                                                                                                          filial.key == 'Sem filial' ? 'Sem filial' : 'Filial ${filial.key}',
+                                                                                                          style: TextStyle(
+                                                                                                            color: Colors.blueGrey.shade900,
+                                                                                                            fontSize: 14,
+                                                                                                            fontWeight: FontWeight.w900,
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                        Text(
+                                                                                                          'Passe o mouse para ver os clientes',
+                                                                                                          style: TextStyle(
+                                                                                                            color: Colors.blueGrey.shade500,
+                                                                                                            fontSize: 11,
+                                                                                                            fontWeight: FontWeight.w700,
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                      ],
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  Container(
+                                                                                                    padding: const EdgeInsets.symmetric(
+                                                                                                      horizontal: 13,
+                                                                                                      vertical: 8,
+                                                                                                    ),
+                                                                                                    decoration: BoxDecoration(
+                                                                                                      color: Colors.blue.shade700,
+                                                                                                      borderRadius: BorderRadius.circular(99),
+                                                                                                    ),
+                                                                                                    child: Text(
+                                                                                                      rdz(filial.value.length.toString()),
+                                                                                                      style: const TextStyle(
+                                                                                                        color: Colors.white,
+                                                                                                        fontSize: 14,
+                                                                                                        fontWeight: FontWeight.w900,
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ],
+                                                                                              ),
+                                                                                            ),
+                                                                                          );
+                                                                                        },
+                                                                                      ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                );
+                                                              },
+                                                              child: Container(
+                                                                padding: const EdgeInsets.all(16),
+                                                                decoration: BoxDecoration(
+                                                                  gradient: LinearGradient(
+                                                                    colors: [
+                                                                      Colors.blue.shade50,
+                                                                      Colors.white,
+                                                                    ],
+                                                                    begin: Alignment.topLeft,
+                                                                    end: Alignment.bottomRight,
+                                                                  ),
+                                                                  borderRadius: BorderRadius.circular(22),
+                                                                  border: Border.all(
+                                                                    color: Colors.blue.shade100,
+                                                                  ),
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                      color: Colors.blue.shade900.withOpacity(0.08),
+                                                                      blurRadius: 18,
+                                                                      offset: const Offset(0, 8),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: Column(
+                                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                                        children: [
+                                                                          Text(
+                                                                            rdz(semCompra.length.toString()),
+                                                                            style: TextStyle(
+                                                                              color: Colors.blueGrey.shade900,
+                                                                              fontSize: 26,
+                                                                              fontWeight: FontWeight.w900,
+                                                                              height: 1,
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(height: 5),
+                                                                          Text(
+                                                                            'Clientes sem compra',
+                                                                            style: TextStyle(
+                                                                              color: Colors.blueGrey.shade800,
+                                                                              fontSize: 13,
+                                                                              fontWeight: FontWeight.w900,
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(height: 2),
+                                                                          Text(
+                                                                            'na campanha',
+                                                                            style: TextStyle(
+                                                                              color: Colors.blueGrey.shade500,
+                                                                              fontSize: 11,
+                                                                              fontWeight: FontWeight.w700,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
                                                       ),
                                                     ),
                                                   ],
@@ -2454,6 +2831,151 @@ class _AdminScreenState extends State<AdminScreen> {
                                                               ),
                                                             ),
                                                           ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: DropdownButtonFormField<String>(
+                                                          value: compraSelecionada,
+                                                          isExpanded: true,
+                                                          menuMaxHeight: 320,
+                                                          dropdownColor: Colors.white,
+                                                          borderRadius: BorderRadius.circular(18),
+                                                          icon: const Icon(
+                                                            Icons.keyboard_arrow_down_rounded,
+                                                            color: Color(0xFFCC0000),
+                                                          ),
+                                                          style: const TextStyle(
+                                                            color: Color(0xFF1F1F1F),
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.w800,
+                                                          ),
+                                                          decoration: InputDecoration(
+                                                            labelText: 'Compra feita',
+                                                            labelStyle: TextStyle(
+                                                              color: Colors.grey.shade700,
+                                                              fontWeight: FontWeight.w800,
+                                                            ),
+                                                            prefixIcon: Container(
+                                                              margin: const EdgeInsets.all(8),
+                                                              decoration: BoxDecoration(
+                                                                color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                                borderRadius: BorderRadius.circular(13),
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons.shopping_bag_rounded,
+                                                                color: Color(0xFFCC0000),
+                                                                size: 21,
+                                                              ),
+                                                            ),
+                                                            filled: true,
+                                                            fillColor: Colors.white,
+                                                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                                                            border: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(18),
+                                                              borderSide: BorderSide.none,
+                                                            ),
+                                                            enabledBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(18),
+                                                              borderSide: BorderSide(
+                                                                color: Colors.black.withValues(alpha: 0.07),
+                                                              ),
+                                                            ),
+                                                            focusedBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(18),
+                                                              borderSide: const BorderSide(
+                                                                color: Color(0xFFCC0000),
+                                                                width: 1.5,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          selectedItemBuilder: (context) {
+                                                            return [
+                                                              const Text(
+                                                                'Todas',
+                                                                overflow: TextOverflow.ellipsis,
+                                                              ),
+                                                              ...['Com compra', 'Sem compra'].map(
+                                                                (opcao) => Text(
+                                                                  opcao,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                ),
+                                                              ),
+                                                            ];
+                                                          },
+                                                          items: [
+                                                            DropdownMenuItem(
+                                                              value: 'Todas',
+                                                              child: Row(
+                                                                children: [
+                                                                  const Icon(
+                                                                    Icons.all_inclusive_rounded,
+                                                                    color: Color(0xFFCC0000),
+                                                                    size: 20,
+                                                                  ),
+                                                                  const SizedBox(width: 10),
+                                                                  const Expanded(
+                                                                    child: Text(
+                                                                      'Todas',
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            ...[
+                                                              {
+                                                                'value': 'Com compra',
+                                                                'label': 'Com compra',
+                                                                'icon': Icons.check_circle_rounded,
+                                                              },
+                                                              {
+                                                                'value': 'Sem compra',
+                                                                'label': 'Sem compra',
+                                                                'icon': Icons.remove_circle_rounded,
+                                                              },
+                                                            ].map(
+                                                              (opcao) => DropdownMenuItem(
+                                                                value: opcao['value']! as String,
+                                                                child: Row(
+                                                                  children: [
+                                                                    Container(
+                                                                      width: 30,
+                                                                      height: 30,
+                                                                      alignment: Alignment.center,
+                                                                      decoration: BoxDecoration(
+                                                                        color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                                                                        borderRadius: BorderRadius.circular(10),
+                                                                      ),
+                                                                      child: Icon(
+                                                                        opcao['icon']! as IconData,
+                                                                        color: const Color(0xFFCC0000),
+                                                                        size: 18,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(width: 10),
+                                                                    Expanded(
+                                                                      child: Text(
+                                                                        opcao['label']! as String,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: const TextStyle(
+                                                                          color: Color(0xFF1F1F1F),
+                                                                          fontSize: 14,
+                                                                          fontWeight: FontWeight.w800,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                          onChanged: (value) {
+                                                            setModalState(() {
+                                                              compraSelecionada = value ?? 'Todas';
+                                                            });
+                                                          },
                                                         ),
                                                       ),
                                                       const SizedBox(width: 12),
@@ -2971,9 +3493,9 @@ class _AdminScreenState extends State<AdminScreen> {
                                                                       borderRadius: BorderRadius.circular(10),
                                                                     ),
                                                                     child: Text(
-                                                                      item['codfil'] == 'Sem filial' ? 'Sem filial' : 'Filial ${item['codfil']}',
+                                                                      '${((item['codfil'] ?? 'Sem filial').toString() == 'Sem filial') ? 'Sem filial' : 'Filial ${(item['codfil'] ?? 'Sem filial')}'} • Compra feita: ${((item['compra_feita'] ?? 'N').toString() == 'S') ? 'Sim' : 'Não'}',
                                                                       style: TextStyle(
-                                                                        color: Colors.grey.shade700,
+                                                                        color: ((item['compra_feita'] ?? 'N').toString() == 'S') ? Colors.green.shade700 : Colors.red.shade700,
                                                                         fontSize: 11,
                                                                         fontWeight: FontWeight.w900,
                                                                       ),

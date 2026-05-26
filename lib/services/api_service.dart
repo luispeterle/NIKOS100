@@ -390,6 +390,7 @@ class ApiService {
         "get_cli_details",
         myJson: {},
       );
+
       if (resp == true || resp == null) {
         return [];
       }

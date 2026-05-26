@@ -337,3 +337,11 @@ Widget getBandeira(String sigla) {
     ),
   );
 }
+
+int toInt(dynamic v) {
+  if (v == null) return 0;
+  if (v is int) return v;
+  if (v is num) return v.toInt();
+  if (v is String) return int.tryParse(v.trim()) ?? 0;
+  return 0;
+}
