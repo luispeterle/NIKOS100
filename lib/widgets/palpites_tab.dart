@@ -85,7 +85,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     });
   }
 
-   bool _podeEditarPalpite(String datjog) {
+  bool _podeEditarPalpite(String datjog) {
     final dataJogo = tryParseDatjog(datjog);
     if (dataJogo == null) return false;
 
@@ -721,7 +721,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                     child: Text.rich(
                       TextSpan(
                         children: [
-                          if (UserSession.totalCompra >= 500) ...[
+                          if (UserSession.totalCompra >= 500 || UserSession.maxPalpites == 110) ...[
                             TextSpan(
                               text: 'Todos os jogos ',
                               style: TextStyle(
