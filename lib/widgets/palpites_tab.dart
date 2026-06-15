@@ -1665,7 +1665,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                             const SizedBox(width: 8),
                                                             Flexible(
                                                               child: Text(
-                                                                'Palpites bloqueados, aguarde \naté ser cadastro o placar final',
+                                                                'Palpites bloqueados, aguarde \naté ser cadastrado o placar final',
                                                                 textAlign: TextAlign.center,
                                                                 style: TextStyle(
                                                                   color: Colors.orange,
@@ -2611,7 +2611,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                             const SizedBox(width: 8),
                                                             Flexible(
                                                               child: Text(
-                                                                'Palpites bloqueados, aguarde \naté ser cadastro o placar final',
+                                                                'Palpites bloqueados, aguarde \naté ser cadastrado o placar final',
                                                                 textAlign: TextAlign.center,
                                                                 style: TextStyle(
                                                                   color: Colors.orange,

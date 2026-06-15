@@ -763,8 +763,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                     final pontos = (item['pontos'] as num).toInt();
 
                     final isMeuRanking = normalizarCpf(item['cpfcli']) == normalizarCpf(meuRanking?['cpfcli']);
-                    final isPodium = posicao <= 3;
-
+                    final isPremiado = posicao <= 5;
                     Color accentColor = Colors.grey.shade400;
 
                     List<Color> podiumColors = [
@@ -839,6 +838,44 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                       ];
                     }
 
+                    if (posicao == 4) {
+                      accentColor = const Color(0xFF4B5563);
+
+                      podiumColors = const [
+                        Color(0xFF5B6472),
+                        Color(0xFF3F4752),
+                      ];
+
+                      posicaoGradient = const [
+                        Color(0xFFA8B0BA),
+                        Color(0xFF5B6472),
+                      ];
+
+                      medalhaColors = const [
+                        Color(0xFFB6BEC8),
+                        Color(0xFF6B7280),
+                      ];
+                    }
+
+                    if (posicao == 5) {
+                      accentColor = const Color(0xFF516174);
+
+                      podiumColors = const [
+                        Color(0xFF6B7A8F),
+                        Color(0xFF4A586A),
+                      ];
+
+                      posicaoGradient = const [
+                        Color(0xFFB3C0D1),
+                        Color(0xFF607086),
+                      ];
+
+                      medalhaColors = const [
+                        Color(0xFFC2CCD8),
+                        Color(0xFF718096),
+                      ];
+                    }
+
                     return AnimatedBuilder(
                       animation: _animController,
                       builder: (context, child) {
@@ -857,7 +894,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                         margin: const EdgeInsets.only(bottom: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(18),
-                          gradient: isPodium
+                          gradient: isPremiado
                               ? LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
@@ -873,12 +910,12 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                                   ],
                                 )
                               : null,
-                          color: isPodium || isMeuRanking ? null : Colors.white,
+                          color: isPremiado || isMeuRanking ? null : Colors.white,
                           border: Border.all(
                             width: isMeuRanking ? 2 : 1,
                             color: isMeuRanking
                                 ? Colors.amber.shade700
-                                : isPodium
+                                : isPremiado
                                 ? Colors.white.withValues(alpha: 0.16)
                                 : Colors.grey.shade100,
                           ),
@@ -886,17 +923,17 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                             BoxShadow(
                               color: isMeuRanking
                                   ? Colors.amber.withValues(alpha: 0.32)
-                                  : isPodium
+                                  : isPremiado
                                   ? accentColor.withValues(alpha: 0.28)
                                   : Colors.black.withValues(alpha: 0.045),
                               blurRadius: isMeuRanking
                                   ? 18
-                                  : isPodium
+                                  : isPremiado
                                   ? 16
                                   : 10,
                               spreadRadius: isMeuRanking
                                   ? -1
-                                  : isPodium
+                                  : isPremiado
                                   ? -2
                                   : 0,
                               offset: const Offset(0, 5),
@@ -907,7 +944,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                           borderRadius: BorderRadius.circular(18),
                           child: Stack(
                             children: [
-                              if (!isPodium)
+                              if (!isPremiado)
                                 Positioned(
                                   left: 0,
                                   top: 0,
@@ -918,7 +955,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                                   ),
                                 ),
 
-                              if (isPodium)
+                              if (isPremiado)
                                 Positioned(
                                   right: -18,
                                   top: -18,
@@ -945,7 +982,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                                         borderRadius: BorderRadius.circular(14),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: accentColor.withValues(alpha: isPodium ? 0.38 : 0.18),
+                                            color: accentColor.withValues(alpha: isPremiado ? 0.38 : 0.18),
                                             blurRadius: 10,
                                             offset: const Offset(0, 4),
                                           ),
@@ -955,7 +992,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                                         child: Text(
                                           '$posicao',
                                           style: TextStyle(
-                                            color: isPodium ? Colors.white : Colors.black87,
+                                            color: isPremiado ? Colors.white : Colors.black87,
                                             fontWeight: FontWeight.w900,
                                             fontSize: 17,
                                           ),
@@ -974,7 +1011,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                                             style: TextStyle(
                                               fontWeight: FontWeight.w900,
                                               fontSize: 14,
-                                              color: isPodium ? Colors.white : Colors.black87,
+                                              color: isPremiado ? Colors.white : Colors.black87,
                                               letterSpacing: 0.2,
                                             ),
                                             maxLines: 1,
@@ -986,14 +1023,14 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
                                               Icon(
                                                 Icons.star_rounded,
                                                 size: 14,
-                                                color: isPodium ? Colors.white.withValues(alpha: 0.75) : Colors.amber.shade700,
+                                                color: isPremiado ? Colors.white.withValues(alpha: 0.75) : Colors.amber.shade700,
                                               ),
                                               const SizedBox(width: 4),
                                               Text(
                                                 '$pontos pontos acumulados',
                                                 style: TextStyle(
                                                   fontSize: 11.5,
-                                                  color: isPodium ? Colors.white.withValues(alpha: 0.78) : Colors.grey.shade600,
+                                                  color: isPremiado ? Colors.white.withValues(alpha: 0.78) : Colors.grey.shade600,
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
@@ -1005,7 +1042,7 @@ class _RankingTabState extends State<RankingTab> with SingleTickerProviderStateM
 
                                     const SizedBox(width: 10),
 
-                                    if (isPodium)
+                                    if (isPremiado)
                                       Container(
                                         width: 38,
                                         height: 38,
