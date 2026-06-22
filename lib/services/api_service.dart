@@ -330,7 +330,7 @@ class ApiService {
     String? anonId = getAnonId();
 
     anonId = (anonId.isEmpty) ? (_anonIdFallbackMemoria ??= const Uuid().v4()) : anonId;
-
+    await getToken();
     try {
       final resp = await serverPost(
         "bolao_metric_event",
