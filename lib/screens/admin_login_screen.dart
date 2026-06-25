@@ -98,12 +98,47 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     }
     var decodedResponse = jsonDecode(resp);
     var responseData = jsonDecode(decodedResponse['Response'])[0];
-    if (responseData["admin"] == "S") {
+    const codususPermitidos = {
+      803,
+      42,
+      66,
+      69,
+      84,
+      95,
+      106,
+      108,
+      113,
+      118,
+      135,
+      142,
+      226,
+      235,
+      240,
+      247,
+      294,
+      302,
+      439,
+      442,
+      984,
+      1019,
+      1025,
+      1042,
+      1096,
+      1122,
+      1188,
+      1351,
+    };
+    final bool isAdmin = responseData["admin"]?.toString().toUpperCase() == "S";
+
+    final codusu = int.tryParse(responseData["codusu"]?.toString() ?? "");
+
+    if (isAdmin || codususPermitidos.contains(codusu)) {
       UserSession.setSession(
         cpf: responseData["cgccpf"],
         nome: '',
         maxPalp: 0,
         totalCompra: 0,
+        admin: isAdmin,
       );
 
       if (!mounted) return;

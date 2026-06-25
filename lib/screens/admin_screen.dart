@@ -3186,282 +3186,284 @@ class _AdminScreenState extends State<AdminScreen> {
                                                     ],
                                                   ),
                                                   child: InkWell(
-                                                    onTap: () async {
-                                                      final result = await ApiService.getCliDetailsPalpites(item['cgccpf']);
-                                                      final palpitesDoCliente = result;
+                                                    onTap: UserSession.isAdmin
+                                                        ? () async {
+                                                            final result = await ApiService.getCliDetailsPalpites(item['cgccpf']);
+                                                            final palpitesDoCliente = result;
 
-                                                      showDialog(
-                                                        context: context,
-                                                        barrierDismissible: true,
-                                                        builder: (dialogContext) {
-                                                          return Dialog(
-                                                            backgroundColor: Colors.transparent,
-                                                            insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
-                                                            child: Container(
-                                                              width: 720,
-                                                              constraints: BoxConstraints(
-                                                                maxHeight: MediaQuery.of(context).size.height * 0.86,
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                color: const Color(0xFFF7F7F7),
-                                                                borderRadius: BorderRadius.circular(28),
-                                                                boxShadow: [
-                                                                  BoxShadow(
-                                                                    color: Colors.black.withValues(alpha: 0.22),
-                                                                    blurRadius: 30,
-                                                                    offset: const Offset(0, 14),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              child: ClipRRect(
-                                                                borderRadius: BorderRadius.circular(28),
-                                                                child: Column(
-                                                                  mainAxisSize: MainAxisSize.min,
-                                                                  children: [
-                                                                    Container(
-                                                                      width: double.infinity,
-                                                                      padding: const EdgeInsets.fromLTRB(22, 22, 16, 22),
-                                                                      decoration: const BoxDecoration(
-                                                                        gradient: LinearGradient(
-                                                                          begin: Alignment.topLeft,
-                                                                          end: Alignment.bottomRight,
-                                                                          colors: [
-                                                                            Color(0xFFCC0000),
-                                                                            Color(0xFF970000),
-                                                                            Color(0xFF620000),
-                                                                          ],
+                                                            showDialog(
+                                                              context: context,
+                                                              barrierDismissible: true,
+                                                              builder: (dialogContext) {
+                                                                return Dialog(
+                                                                  backgroundColor: Colors.transparent,
+                                                                  insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+                                                                  child: Container(
+                                                                    width: 720,
+                                                                    constraints: BoxConstraints(
+                                                                      maxHeight: MediaQuery.of(context).size.height * 0.86,
+                                                                    ),
+                                                                    decoration: BoxDecoration(
+                                                                      color: const Color(0xFFF7F7F7),
+                                                                      borderRadius: BorderRadius.circular(28),
+                                                                      boxShadow: [
+                                                                        BoxShadow(
+                                                                          color: Colors.black.withValues(alpha: 0.22),
+                                                                          blurRadius: 30,
+                                                                          offset: const Offset(0, 14),
                                                                         ),
-                                                                      ),
-                                                                      child: Row(
+                                                                      ],
+                                                                    ),
+                                                                    child: ClipRRect(
+                                                                      borderRadius: BorderRadius.circular(28),
+                                                                      child: Column(
+                                                                        mainAxisSize: MainAxisSize.min,
                                                                         children: [
                                                                           Container(
-                                                                            width: 50,
-                                                                            height: 50,
-                                                                            decoration: BoxDecoration(
-                                                                              color: Colors.white.withValues(alpha: 0.16),
-                                                                              borderRadius: BorderRadius.circular(17),
-                                                                              border: Border.all(
-                                                                                color: Colors.white.withValues(alpha: 0.22),
+                                                                            width: double.infinity,
+                                                                            padding: const EdgeInsets.fromLTRB(22, 22, 16, 22),
+                                                                            decoration: const BoxDecoration(
+                                                                              gradient: LinearGradient(
+                                                                                begin: Alignment.topLeft,
+                                                                                end: Alignment.bottomRight,
+                                                                                colors: [
+                                                                                  Color(0xFFCC0000),
+                                                                                  Color(0xFF970000),
+                                                                                  Color(0xFF620000),
+                                                                                ],
                                                                               ),
                                                                             ),
-                                                                            child: const Icon(
-                                                                              Icons.sports_soccer_rounded,
-                                                                              color: Colors.white,
-                                                                              size: 28,
-                                                                            ),
-                                                                          ),
-
-                                                                          const SizedBox(width: 14),
-
-                                                                          Expanded(
-                                                                            child: Column(
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                            child: Row(
                                                                               children: [
-                                                                                Text(
-                                                                                  '${item['codcli']} - ${item['nomcli']}',
-                                                                                  maxLines: 1,
-                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                  style: const TextStyle(
+                                                                                Container(
+                                                                                  width: 50,
+                                                                                  height: 50,
+                                                                                  decoration: BoxDecoration(
+                                                                                    color: Colors.white.withValues(alpha: 0.16),
+                                                                                    borderRadius: BorderRadius.circular(17),
+                                                                                    border: Border.all(
+                                                                                      color: Colors.white.withValues(alpha: 0.22),
+                                                                                    ),
+                                                                                  ),
+                                                                                  child: const Icon(
+                                                                                    Icons.sports_soccer_rounded,
                                                                                     color: Colors.white,
-                                                                                    fontSize: 19,
-                                                                                    fontWeight: FontWeight.w900,
+                                                                                    size: 28,
                                                                                   ),
                                                                                 ),
-                                                                                const SizedBox(height: 3),
-                                                                                Text(
-                                                                                  '${formatCpfCnpj(item['cgccpf'].toString())} • ${palpitesDoCliente.length} palpites',
-                                                                                  style: const TextStyle(
-                                                                                    color: Colors.white70,
-                                                                                    fontSize: 13,
-                                                                                    fontWeight: FontWeight.w700,
+
+                                                                                const SizedBox(width: 14),
+
+                                                                                Expanded(
+                                                                                  child: Column(
+                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        '${item['codcli']} - ${item['nomcli']}',
+                                                                                        maxLines: 1,
+                                                                                        overflow: TextOverflow.ellipsis,
+                                                                                        style: const TextStyle(
+                                                                                          color: Colors.white,
+                                                                                          fontSize: 19,
+                                                                                          fontWeight: FontWeight.w900,
+                                                                                        ),
+                                                                                      ),
+                                                                                      const SizedBox(height: 3),
+                                                                                      Text(
+                                                                                        '${formatCpfCnpj(item['cgccpf'].toString())} • ${palpitesDoCliente.length} palpites',
+                                                                                        style: const TextStyle(
+                                                                                          color: Colors.white70,
+                                                                                          fontSize: 13,
+                                                                                          fontWeight: FontWeight.w700,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ],
                                                                                   ),
+                                                                                ),
+
+                                                                                IconButton(
+                                                                                  onPressed: () => Navigator.of(dialogContext).pop(),
+                                                                                  style: IconButton.styleFrom(
+                                                                                    backgroundColor: Colors.white.withValues(alpha: 0.14),
+                                                                                    foregroundColor: Colors.white,
+                                                                                  ),
+                                                                                  icon: const Icon(Icons.close_rounded),
                                                                                 ),
                                                                               ],
                                                                             ),
                                                                           ),
 
-                                                                          IconButton(
-                                                                            onPressed: () => Navigator.of(dialogContext).pop(),
-                                                                            style: IconButton.styleFrom(
-                                                                              backgroundColor: Colors.white.withValues(alpha: 0.14),
-                                                                              foregroundColor: Colors.white,
+                                                                          Flexible(
+                                                                            child: ListView.separated(
+                                                                              padding: const EdgeInsets.all(18),
+                                                                              itemCount: palpitesDoCliente.length,
+                                                                              separatorBuilder: (_, __) => const SizedBox(height: 12),
+                                                                              itemBuilder: (context, index) {
+                                                                                final palpite = palpitesDoCliente[index];
+
+                                                                                return Container(
+                                                                                  padding: const EdgeInsets.all(16),
+                                                                                  decoration: BoxDecoration(
+                                                                                    color: Colors.white,
+                                                                                    borderRadius: BorderRadius.circular(22),
+                                                                                    border: Border.all(
+                                                                                      color: Colors.black.withValues(alpha: 0.06),
+                                                                                    ),
+                                                                                    boxShadow: [
+                                                                                      BoxShadow(
+                                                                                        color: Colors.black.withValues(alpha: 0.07),
+                                                                                        blurRadius: 16,
+                                                                                        offset: const Offset(0, 7),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                  child: Column(
+                                                                                    children: [
+                                                                                      Row(
+                                                                                        children: [
+                                                                                          Container(
+                                                                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                                                                            decoration: BoxDecoration(
+                                                                                              color: Colors.grey.shade100,
+                                                                                              borderRadius: BorderRadius.circular(12),
+                                                                                            ),
+                                                                                            child: Text(
+                                                                                              'Jogo ${palpite['idjogo']}',
+                                                                                              style: TextStyle(
+                                                                                                color: Colors.grey.shade700,
+                                                                                                fontSize: 11.5,
+                                                                                                fontWeight: FontWeight.w900,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+
+                                                                                      const SizedBox(height: 14),
+
+                                                                                      Row(
+                                                                                        children: [
+                                                                                          Expanded(
+                                                                                            child: Column(
+                                                                                              children: [
+                                                                                                Container(
+                                                                                                  padding: const EdgeInsets.all(4),
+                                                                                                  decoration: BoxDecoration(
+                                                                                                    borderRadius: BorderRadius.circular(12),
+                                                                                                    color: Colors.grey.shade50,
+                                                                                                    shape: BoxShape.rectangle,
+                                                                                                    border: Border.all(color: Colors.grey.shade200),
+                                                                                                  ),
+                                                                                                  child: getBandeira(palpite['siglaa']),
+                                                                                                ),
+                                                                                                const SizedBox(height: 8),
+                                                                                                Text(
+                                                                                                  palpite['timeaa'],
+                                                                                                  maxLines: 2,
+                                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                                  textAlign: TextAlign.center,
+                                                                                                  style: const TextStyle(
+                                                                                                    color: Color(0xFF1F1F1F),
+                                                                                                    fontSize: 12,
+                                                                                                    height: 1.15,
+                                                                                                    fontWeight: FontWeight.w900,
+                                                                                                  ),
+                                                                                                ),
+                                                                                              ],
+                                                                                            ),
+                                                                                          ),
+
+                                                                                          const SizedBox(width: 12),
+
+                                                                                          Column(
+                                                                                            children: [
+                                                                                              Text(
+                                                                                                'Palpite',
+                                                                                                style: TextStyle(
+                                                                                                  color: Colors.grey.shade600,
+                                                                                                  fontSize: 11,
+                                                                                                  fontWeight: FontWeight.w800,
+                                                                                                ),
+                                                                                              ),
+                                                                                              const SizedBox(height: 5),
+                                                                                              Container(
+                                                                                                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+                                                                                                decoration: BoxDecoration(
+                                                                                                  color: const Color(0xFFCC0000).withValues(alpha: 0.09),
+                                                                                                  borderRadius: BorderRadius.circular(18),
+                                                                                                  border: Border.all(
+                                                                                                    color: const Color(0xFFCC0000).withValues(alpha: 0.12),
+                                                                                                  ),
+                                                                                                ),
+                                                                                                child: Text(
+                                                                                                  '${palpite['palpaa']} x ${palpite['palpbb']}',
+                                                                                                  style: const TextStyle(
+                                                                                                    color: Color(0xFFCC0000),
+                                                                                                    fontSize: 25,
+                                                                                                    fontWeight: FontWeight.w900,
+                                                                                                  ),
+                                                                                                ),
+                                                                                              ),
+                                                                                              const SizedBox(height: 8),
+                                                                                              Text(
+                                                                                                'Resultado: ${palpite['plcraa'] ?? '-'} x ${palpite['plcrbb'] ?? '-'}',
+                                                                                                style: TextStyle(
+                                                                                                  color: Colors.grey.shade700,
+                                                                                                  fontSize: 12,
+                                                                                                  fontWeight: FontWeight.w800,
+                                                                                                ),
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+
+                                                                                          const SizedBox(width: 12),
+
+                                                                                          Expanded(
+                                                                                            child: Column(
+                                                                                              children: [
+                                                                                                Container(
+                                                                                                  padding: const EdgeInsets.all(4),
+                                                                                                  decoration: BoxDecoration(
+                                                                                                    borderRadius: BorderRadius.circular(12),
+                                                                                                    color: Colors.grey.shade50,
+                                                                                                    shape: BoxShape.rectangle,
+                                                                                                    border: Border.all(color: Colors.grey.shade200),
+                                                                                                  ),
+                                                                                                  child: getBandeira(palpite['siglbb']),
+                                                                                                ),
+                                                                                                const SizedBox(height: 8),
+                                                                                                Text(
+                                                                                                  palpite['timebb'],
+                                                                                                  maxLines: 2,
+                                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                                  textAlign: TextAlign.center,
+                                                                                                  style: const TextStyle(
+                                                                                                    color: Color(0xFF1F1F1F),
+                                                                                                    fontSize: 12,
+                                                                                                    height: 1.15,
+                                                                                                    fontWeight: FontWeight.w900,
+                                                                                                  ),
+                                                                                                ),
+                                                                                              ],
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                );
+                                                                              },
                                                                             ),
-                                                                            icon: const Icon(Icons.close_rounded),
                                                                           ),
                                                                         ],
                                                                       ),
                                                                     ),
-
-                                                                    Flexible(
-                                                                      child: ListView.separated(
-                                                                        padding: const EdgeInsets.all(18),
-                                                                        itemCount: palpitesDoCliente.length,
-                                                                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                                                                        itemBuilder: (context, index) {
-                                                                          final palpite = palpitesDoCliente[index];
-
-                                                                          return Container(
-                                                                            padding: const EdgeInsets.all(16),
-                                                                            decoration: BoxDecoration(
-                                                                              color: Colors.white,
-                                                                              borderRadius: BorderRadius.circular(22),
-                                                                              border: Border.all(
-                                                                                color: Colors.black.withValues(alpha: 0.06),
-                                                                              ),
-                                                                              boxShadow: [
-                                                                                BoxShadow(
-                                                                                  color: Colors.black.withValues(alpha: 0.07),
-                                                                                  blurRadius: 16,
-                                                                                  offset: const Offset(0, 7),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            child: Column(
-                                                                              children: [
-                                                                                Row(
-                                                                                  children: [
-                                                                                    Container(
-                                                                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                                                                      decoration: BoxDecoration(
-                                                                                        color: Colors.grey.shade100,
-                                                                                        borderRadius: BorderRadius.circular(12),
-                                                                                      ),
-                                                                                      child: Text(
-                                                                                        'Jogo ${palpite['idjogo']}',
-                                                                                        style: TextStyle(
-                                                                                          color: Colors.grey.shade700,
-                                                                                          fontSize: 11.5,
-                                                                                          fontWeight: FontWeight.w900,
-                                                                                        ),
-                                                                                      ),
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-
-                                                                                const SizedBox(height: 14),
-
-                                                                                Row(
-                                                                                  children: [
-                                                                                    Expanded(
-                                                                                      child: Column(
-                                                                                        children: [
-                                                                                          Container(
-                                                                                            padding: const EdgeInsets.all(4),
-                                                                                            decoration: BoxDecoration(
-                                                                                              borderRadius: BorderRadius.circular(12),
-                                                                                              color: Colors.grey.shade50,
-                                                                                              shape: BoxShape.rectangle,
-                                                                                              border: Border.all(color: Colors.grey.shade200),
-                                                                                            ),
-                                                                                            child: getBandeira(palpite['siglaa']),
-                                                                                          ),
-                                                                                          const SizedBox(height: 8),
-                                                                                          Text(
-                                                                                            palpite['timeaa'],
-                                                                                            maxLines: 2,
-                                                                                            overflow: TextOverflow.ellipsis,
-                                                                                            textAlign: TextAlign.center,
-                                                                                            style: const TextStyle(
-                                                                                              color: Color(0xFF1F1F1F),
-                                                                                              fontSize: 12,
-                                                                                              height: 1.15,
-                                                                                              fontWeight: FontWeight.w900,
-                                                                                            ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-
-                                                                                    const SizedBox(width: 12),
-
-                                                                                    Column(
-                                                                                      children: [
-                                                                                        Text(
-                                                                                          'Palpite',
-                                                                                          style: TextStyle(
-                                                                                            color: Colors.grey.shade600,
-                                                                                            fontSize: 11,
-                                                                                            fontWeight: FontWeight.w800,
-                                                                                          ),
-                                                                                        ),
-                                                                                        const SizedBox(height: 5),
-                                                                                        Container(
-                                                                                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
-                                                                                          decoration: BoxDecoration(
-                                                                                            color: const Color(0xFFCC0000).withValues(alpha: 0.09),
-                                                                                            borderRadius: BorderRadius.circular(18),
-                                                                                            border: Border.all(
-                                                                                              color: const Color(0xFFCC0000).withValues(alpha: 0.12),
-                                                                                            ),
-                                                                                          ),
-                                                                                          child: Text(
-                                                                                            '${palpite['palpaa']} x ${palpite['palpbb']}',
-                                                                                            style: const TextStyle(
-                                                                                              color: Color(0xFFCC0000),
-                                                                                              fontSize: 25,
-                                                                                              fontWeight: FontWeight.w900,
-                                                                                            ),
-                                                                                          ),
-                                                                                        ),
-                                                                                        const SizedBox(height: 8),
-                                                                                        Text(
-                                                                                          'Resultado: ${palpite['plcraa'] ?? '-'} x ${palpite['plcrbb'] ?? '-'}',
-                                                                                          style: TextStyle(
-                                                                                            color: Colors.grey.shade700,
-                                                                                            fontSize: 12,
-                                                                                            fontWeight: FontWeight.w800,
-                                                                                          ),
-                                                                                        ),
-                                                                                      ],
-                                                                                    ),
-
-                                                                                    const SizedBox(width: 12),
-
-                                                                                    Expanded(
-                                                                                      child: Column(
-                                                                                        children: [
-                                                                                          Container(
-                                                                                            padding: const EdgeInsets.all(4),
-                                                                                            decoration: BoxDecoration(
-                                                                                              borderRadius: BorderRadius.circular(12),
-                                                                                              color: Colors.grey.shade50,
-                                                                                              shape: BoxShape.rectangle,
-                                                                                              border: Border.all(color: Colors.grey.shade200),
-                                                                                            ),
-                                                                                            child: getBandeira(palpite['siglbb']),
-                                                                                          ),
-                                                                                          const SizedBox(height: 8),
-                                                                                          Text(
-                                                                                            palpite['timebb'],
-                                                                                            maxLines: 2,
-                                                                                            overflow: TextOverflow.ellipsis,
-                                                                                            textAlign: TextAlign.center,
-                                                                                            style: const TextStyle(
-                                                                                              color: Color(0xFF1F1F1F),
-                                                                                              fontSize: 12,
-                                                                                              height: 1.15,
-                                                                                              fontWeight: FontWeight.w900,
-                                                                                            ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          );
-                                                                        },
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        },
-                                                      );
-                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                            );
+                                                          }
+                                                        : null,
                                                     child: Row(
                                                       children: [
                                                         Container(
@@ -3677,14 +3679,17 @@ class _AdminScreenState extends State<AdminScreen> {
               SizedBox(height: 12),
 
               ListTile(
-                leading: const Icon(Icons.add_rounded, color: Color(0xFFCC0000)),
+                leading: Icon(Icons.add_rounded, color: UserSession.isAdmin ? Color(0xFFCC0000) : Colors.grey),
+                enabled: UserSession.isAdmin,
                 title: const Text(
                   'Adicionar jogo',
                   style: TextStyle(fontWeight: FontWeight.w800),
                 ),
-                onTap: () {
-                  _adicionarJogo();
-                },
+                onTap: UserSession.isAdmin
+                    ? () {
+                        _adicionarJogo();
+                      }
+                    : null,
               ),
               SizedBox(height: 2),
 
@@ -3700,14 +3705,19 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
               SizedBox(height: 2),
               ListTile(
-                leading: const Icon(Icons.analytics_outlined, color: Color(0xFFCC0000)),
+                leading: Icon(Icons.analytics_outlined, color: UserSession.isAdmin ? Color(0xFFCC0000) : Colors.grey),
                 title: const Text(
                   'Visualizar Métricas',
+
                   style: TextStyle(fontWeight: FontWeight.w800),
                 ),
-                onTap: () {
-                  _visualizarMetricas();
-                },
+                enabled: UserSession.isAdmin,
+
+                onTap: UserSession.isAdmin
+                    ? () {
+                        _visualizarMetricas();
+                      }
+                    : null,
               ),
 
               const Spacer(),
@@ -3889,56 +3899,65 @@ class _AdminScreenState extends State<AdminScreen> {
                               required String texto,
                               required VoidCallback onTap,
                               bool perigo = false,
+                              bool habilitado = true,
                             }) {
-                              return Material(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(18),
-                                elevation: 0,
-                                child: InkWell(
+                              final Color corBase = perigo ? Colors.red.shade700 : const Color(0xFFCC0000);
+                              final Color corFinal = habilitado ? corBase : Colors.grey.shade400;
+
+                              return Opacity(
+                                opacity: habilitado ? 1 : 0.45,
+                                child: Material(
+                                  color: habilitado ? Colors.white : Colors.grey.shade100,
                                   borderRadius: BorderRadius.circular(18),
-                                  onTap: onTap,
-                                  child: Container(
-                                    height: 46,
-                                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(18),
-                                      border: Border.all(
-                                        color: Colors.white.withValues(alpha: 0.55),
+                                  elevation: 0,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(18),
+                                    onTap: habilitado ? onTap : null,
+                                    child: Container(
+                                      height: 46,
+                                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(18),
+                                        border: Border.all(
+                                          color: habilitado ? Colors.white.withValues(alpha: 0.55) : Colors.grey.withValues(alpha: 0.35),
+                                        ),
+                                        boxShadow: habilitado
+                                            ? [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.13),
+                                                  blurRadius: 18,
+                                                  offset: const Offset(0, 8),
+                                                ),
+                                              ]
+                                            : [],
                                       ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.13),
-                                          blurRadius: 18,
-                                          offset: const Offset(0, 8),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Container(
-                                          width: 28,
-                                          height: 28,
-                                          decoration: BoxDecoration(
-                                            color: (perigo ? Colors.red : const Color(0xFFCC0000)).withValues(alpha: 0.08),
-                                            borderRadius: BorderRadius.circular(10),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            width: 28,
+                                            height: 28,
+                                            decoration: BoxDecoration(
+                                              color: corFinal.withValues(alpha: 0.08),
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: Icon(
+                                              icon,
+                                              size: 17,
+                                              color: corFinal,
+                                            ),
                                           ),
-                                          child: Icon(
-                                            icon,
-                                            size: 17,
-                                            color: perigo ? Colors.red.shade700 : const Color(0xFFCC0000),
+                                          const SizedBox(width: 9),
+                                          Text(
+                                            texto,
+                                            style: TextStyle(
+                                              color: corFinal,
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 13,
+                                            ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 9),
-                                        Text(
-                                          texto,
-                                          style: TextStyle(
-                                            color: perigo ? Colors.red.shade700 : const Color(0xFFCC0000),
-                                            fontWeight: FontWeight.w900,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -3983,6 +4002,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                 botaoTopo(
                                   icon: Icons.add_rounded,
                                   texto: 'Adicionar jogo',
+                                  habilitado: UserSession.isAdmin,
                                   onTap: () {
                                     _adicionarJogo();
                                   },
@@ -3997,6 +4017,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                 botaoTopo(
                                   icon: Icons.analytics_outlined,
                                   texto: 'Métricas',
+                                  habilitado: UserSession.isAdmin,
                                   onTap: () {
                                     _visualizarMetricas();
                                   },
@@ -4137,7 +4158,11 @@ class _AdminScreenState extends State<AdminScreen> {
                                 width: double.infinity,
                                 height: 48,
                                 child: ElevatedButton.icon(
-                                  onPressed: _adicionarJogo,
+                                  onPressed: UserSession.isAdmin
+                                      ? () {
+                                          _adicionarJogo();
+                                        }
+                                      : null,
                                   icon: const Icon(Icons.add_rounded, size: 20),
                                   label: const Text(
                                     'Adicionar jogo',
@@ -4251,11 +4276,14 @@ class _AdminScreenState extends State<AdminScreen> {
                                     ),
 
                                     IconButton(
-                                      onPressed: () => _editarResultado(jogo),
-                                      icon: const Icon(
-                                        Icons.edit_rounded,
-                                        color: Color(0xFFCC0000),
-                                      ),
+                                      onPressed: UserSession.isAdmin
+                                          ? () {
+                                              _editarResultado(jogo);
+                                            }
+                                          : null,
+                                      color: const Color(0xFFCC0000),
+                                      disabledColor: Colors.grey.shade400,
+                                      icon: const Icon(Icons.edit_rounded),
                                     ),
                                   ],
                                 ),

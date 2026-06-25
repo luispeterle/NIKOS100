@@ -4,18 +4,21 @@ class UserSession {
   static int? maxPalpites;
   static int palpitesFeitos = 0;
   static double totalCompra = 0;
+  static bool isAdmin = false;
 
   static void setSession({
     required String cpf,
     required String nome,
     required int maxPalp,
     required double totalCompra,
+    bool admin = false,
   }) {
     cgccpf = cpf;
     UserSession.nome = nome;
     maxPalpites = maxPalp;
     palpitesFeitos = 0;
     UserSession.totalCompra = totalCompra;
+    UserSession.isAdmin = admin;
   }
 
   static void clear() {
@@ -24,6 +27,7 @@ class UserSession {
     maxPalpites = null;
     palpitesFeitos = 0;
     totalCompra = 0;
+    isAdmin = false;
   }
 
   static bool get isLoggedIn => cgccpf != null;
