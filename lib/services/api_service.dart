@@ -130,7 +130,7 @@ class ApiService {
           final fase = id >= 1 && id <= 72
               ? 'Fase de grupos'
               : id >= 73 && id <= 88
-              ? 'Fase de 32'
+              ? 'dezesseis avos'
               : id >= 89 && id <= 96
               ? 'Oitavas de final'
               : id >= 97 && id <= 100

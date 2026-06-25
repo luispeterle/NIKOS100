@@ -1174,6 +1174,40 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                   ],
                                                 ),
                                               ),
+                                              if (idjogo > 72)
+                                                Container(
+                                                  width: double.infinity,
+                                                  margin: const EdgeInsets.fromLTRB(14, 8, 14, 0),
+                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(0xFFFFF8E1),
+                                                    borderRadius: BorderRadius.circular(12),
+                                                    border: Border.all(
+                                                      color: const Color(0xFFFFE8A3),
+                                                    ),
+                                                  ),
+                                                  child: const Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.info_outline_rounded,
+                                                        size: 15,
+                                                        color: Color(0xFF9A6A00),
+                                                      ),
+                                                      SizedBox(width: 7),
+                                                      Expanded(
+                                                        child: Text(
+                                                          'Só será considerado o placar em tempo regulamentar!',
+                                                          style: TextStyle(
+                                                            fontSize: 11.5,
+                                                            height: 1.25,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: Color(0xFF7A5700),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
                                               Padding(
                                                 padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
                                                 child: Column(
