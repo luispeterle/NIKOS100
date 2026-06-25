@@ -3677,6 +3677,18 @@ class _AdminScreenState extends State<AdminScreen> {
               SizedBox(height: 12),
 
               ListTile(
+                leading: const Icon(Icons.add_rounded, color: Color(0xFFCC0000)),
+                title: const Text(
+                  'Adicionar jogo',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
+                onTap: () {
+                  _adicionarJogo();
+                },
+              ),
+              SizedBox(height: 2),
+
+              ListTile(
                 leading: const Icon(Icons.person_search, color: Color(0xFFCC0000)),
                 title: const Text(
                   'Detalhes Palpites',
@@ -3968,6 +3980,13 @@ class _AdminScreenState extends State<AdminScreen> {
                               runSpacing: 10,
                               alignment: WrapAlignment.end,
                               children: [
+                                botaoTopo(
+                                  icon: Icons.add_rounded,
+                                  texto: 'Adicionar jogo',
+                                  onTap: () {
+                                    _adicionarJogo();
+                                  },
+                                ),
                                 botaoTopo(
                                   icon: Icons.person_search_rounded,
                                   texto: 'Detalhes dos palpites',
