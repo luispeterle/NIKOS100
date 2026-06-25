@@ -690,7 +690,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                 const SizedBox(height: 16),
 
                                 GestureDetector(
-                                  onLongPress: () {
+                                  onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
