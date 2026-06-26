@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nikos/plataform/anon_id.dart';
 import 'package:uuid/uuid.dart';
 
+import '../utils/date_utils.dart';
 import '../utils/micro_server_post.dart';
 import 'user_session.dart';
 
@@ -15,6 +16,24 @@ class ApiService {
     if (value == null) return false;
     final text = value.trim().toUpperCase();
     return text.contains('ERRO DE LOGIN');
+  }
+
+  static int _idJogo(Map<String, dynamic> jogo) => int.tryParse('${jogo['idjogo']}') ?? 0;
+
+  static int _compararJogosPorDataHora(Map<String, dynamic> a, Map<String, dynamic> b) {
+    final dataA = tryParseDatjog('${a['datjog'] ?? ''}');
+    final dataB = tryParseDatjog('${b['datjog'] ?? ''}');
+
+    if (dataA != null && dataB != null) {
+      final comparacaoData = dataA.compareTo(dataB);
+      if (comparacaoData != 0) return comparacaoData;
+    } else if (dataA != null) {
+      return -1;
+    } else if (dataB != null) {
+      return 1;
+    }
+
+    return _idJogo(a).compareTo(_idJogo(b));
   }
 
   // ============================================
@@ -172,10 +191,10 @@ class ApiService {
           final c1 = aberto(a).compareTo(aberto(b));
           if (c1 != 0) return c1;
 
-          final c2 = '${a['datjog'] ?? ''}'.compareTo('${b['datjog'] ?? ''}');
+          final c2 = _compararJogosPorDataHora(a, b);
           if (c2 != 0) return c2;
 
-          return (int.tryParse('${a['idjogo']}') ?? 0).compareTo(int.tryParse('${b['idjogo']}') ?? 0);
+          return 0;
         });
 
         return jogos;

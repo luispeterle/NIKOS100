@@ -191,23 +191,42 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
     );
   }
 
-  int? _obterProximoJogoElegivelId(int idjogoAtual) {
-    final porId = <int, Map<String, dynamic>>{};
-    int maxId = 0;
+  int _idJogo(Map<String, dynamic> jogo) => int.tryParse('${jogo['idjogo']}') ?? 0;
 
-    for (final jogo in _jogos) {
-      final id = int.tryParse('${jogo['idjogo']}') ?? 0;
-      if (id <= 0) continue;
-      porId[id] = jogo;
-      if (id > maxId) maxId = id;
+  DateTime? _dataHoraJogo(Map<String, dynamic> jogo) {
+    final datjog = (jogo['datjog'] ?? '').toString();
+    return tryParseDatjog(datjog);
+  }
+
+  int _compararJogosPorDataHora(Map<String, dynamic> a, Map<String, dynamic> b) {
+    final dataA = _dataHoraJogo(a);
+    final dataB = _dataHoraJogo(b);
+
+    if (dataA != null && dataB != null) {
+      final comparacaoData = dataA.compareTo(dataB);
+      if (comparacaoData != 0) return comparacaoData;
+    } else if (dataA != null) {
+      return -1;
+    } else if (dataB != null) {
+      return 1;
     }
 
-    for (int proxId = idjogoAtual + 1; proxId <= maxId; proxId++) {
-      final jogo = porId[proxId];
-      if (jogo == null) continue;
+    return _idJogo(a).compareTo(_idJogo(b));
+  }
+
+  List<Map<String, dynamic>> _ordenarJogosPorDataHora(Iterable<Map<String, dynamic>> jogos) {
+    return jogos.toList()..sort(_compararJogosPorDataHora);
+  }
+
+  int? _obterProximoJogoElegivelId(int idjogoAtual) {
+    final jogosOrdenados = _ordenarJogosPorDataHora(_jogos.where((jogo) => !_jogoEstaFinalizado(jogo)));
+    final indiceAtual = jogosOrdenados.indexWhere((jogo) => _idJogo(jogo) == idjogoAtual);
+
+    for (var index = indiceAtual + 1; index < jogosOrdenados.length; index++) {
+      final jogo = jogosOrdenados[index];
 
       if (_jogoPodeReceberPalpite(jogo)) {
-        return proxId;
+        return _idJogo(jogo);
       }
     }
 
@@ -679,12 +698,8 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final jogosAbertos = _jogos.where((jogo) => !_jogoEstaFinalizado(jogo)).toList();
     final jogosFinalizados = _jogos.where((jogo) => _jogoEstaFinalizado(jogo)).toList();
-    final jogosAbertosExibidos = jogosAbertos.toList();
-    final jogosFinalizadosExibidos = jogosFinalizados.toList();
-
-    int idJogo(Map<String, dynamic> jogo) => int.tryParse('${jogo['idjogo']}') ?? 0;
-    jogosAbertosExibidos.sort((a, b) => idJogo(a).compareTo(idJogo(b)));
-    jogosFinalizadosExibidos.sort((a, b) => idJogo(a).compareTo(idJogo(b)));
+    final jogosAbertosExibidos = _ordenarJogosPorDataHora(jogosAbertos);
+    final jogosFinalizadosExibidos = _ordenarJogosPorDataHora(jogosFinalizados);
 
     return Stack(
       children: [
@@ -1115,7 +1130,7 @@ class _PalpitesTabState extends State<PalpitesTab> with SingleTickerProviderStat
                                                     const SizedBox(width: 10),
                                                     Expanded(
                                                       child: Text(
-                                                        '#$idjogo - $fase',
+                                                        '$fase',
                                                         style: TextStyle(
                                                           fontSize: 13,
                                                           fontWeight: FontWeight.w800,
